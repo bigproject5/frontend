@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom"
 export function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState("");
     const [isIdChecked, setIsIdChecked] = useState(false);
     const [lastCheckedId, setLastCheckedId] = useState('');
     const [formData, setFormData] = useState({
@@ -20,8 +19,7 @@ export function Signup() {
     });
     const navigate = useNavigate();
 
-    const handleSignupSuccess = (e) => {
-        e.preventDefault();
+    const handleSignupSuccess = () => {
         navigate("/")
     }
 
@@ -62,14 +60,31 @@ export function Signup() {
     };
     useEffect(() => {
         if (isIdChecked && formData.loginId !== lastCheckedId) {
-            setIsIdChecked(fasle);
+            setIsIdChecked(false);
         }
     }, [formData.loginId, lastCheckedId, isIdChecked])
+
+
+    const isFormComplete = () => {
+        return (
+            formData.adminCode.trim() &&
+            formData.employeeNumber.trim() &&
+            formData.loginId.trim() &&
+            formData.name.trim() &&
+            formData.email.trim() &&
+            formData.phoneNumber.trim() &&
+            formData.address.trim() &&
+            formData.password.trim() &&
+            confirmPassword.trim() &&
+            formData.password === confirmPassword
+        );
+    };
+
+    const isButtonEnabled = isFormComplete() && isIdChecked;
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
-        setSuccess("");
 
         if (!formData.adminCode.trim() ||
             !formData.employeeNumber.trim() ||
@@ -94,7 +109,6 @@ export function Signup() {
         }
         alert("회원가입 성공")
         handleSignupSuccess();
-        setSuccess("회원가입 성공")
     };
 
     return (
@@ -211,11 +225,16 @@ export function Signup() {
                             placeholder="비밀번호를 다시 입력하세요."
                         />
                     </div>
-                    <button type="submit" className="signup-button" onClick={handleSubmit} disabled={!isIdChecked}>
+                    <button
+                        type="submit"
+                        className={`signup-button ${isButtonEnabled ? "enabled" : "disabled"}`}
+                        onClick={handleSubmit}
+                        disabled={!isButtonEnabled}
+                    >
                         회원가입
                     </button>
                     {error && <div className="login-error-message">{error}</div>}
-                    {success && <div className="login-success-message">{success}</div>}
+
                 </form>
             </div>
         </div>
