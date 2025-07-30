@@ -1,0 +1,117 @@
+/* 로그인 화면 스타일 */
+
+body {
+    background: linear-gradient(135deg, #1256a3 0%, #63a4ff 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 32px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-role-btn-group {
+    background-color: #f5f5f5;
+    padding: 5px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 16px;
+    gap: 12px;
+    justify-content: center;
+}
+
+.login-role-btn {
+    flex: 1;
+    min-width: 0;
+    width: 180px;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px;
+    background: #e0e0e0;
+    color: #1976d2;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: background 0.2s, color 0.2s, opacity 0.2s;
+    box-sizing: border-box;
+}
+
+
+.login-role-btn.selected {
+    background: #1976d2;
+    color: #fff;
+    opacity: 1;
+    border: 1px;
+}
+
+.login-role-btn:hover {
+    background: #bdbdbd;
+    color: #ccc;
+    opacity: 1;
+    border: 1px;
+}
+
+.login-role-label {
+    display: flex;
+    align-items: center;
+    margin-right: 24px;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.login-radio {
+    margin-right: 6px;
+}
+
+.login-input-group {
+    margin-bottom: 16px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-button:hover {
+    background: #1256a3;
+}
+
+.signup-link {
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
