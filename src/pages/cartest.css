@@ -1,0 +1,57 @@
+.cartest-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #fff;
+  padding: 40px 0 0 340px; 
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.cartest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.cartest-title {
+  font-size: 24px;
+  font-weight: 600;
+}
+.cartest-tab {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.tab-btn {
+  padding: 12px 24px;
+  border-radius: 8px;
+  background: #f3f3f3;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+.tab-btn.active {
+  background: #e5e5e5;
+}
+.cartest-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.part-card {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  background: #f8f8f8;
+}
+.part-bad { background: #fff8cb; }
+.part-done { background: #c6f7e2; }
+.part-ok { background: #e0f2fe; }
+.part-default { background: #f3f3f3; }
+.part-name {
+  font-weight: 600;
+}
+.part-time, .part-worker {
+  margin-top: 8px;
+  font-size: 14px;
+}
