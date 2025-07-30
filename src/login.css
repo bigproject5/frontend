@@ -1,20 +1,26 @@
 /* 로그인 화면 스타일 */
 
-body {
+.login-body {
     background: linear-gradient(135deg, #1256a3 0%, #63a4ff 100%);
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    width: 100vw;
+    text-align: center;
+    justify-content: center;
+    flex-direction: column;
 }
 
 .login-container {
     max-width: 400px;
-    margin: 100px auto;
+    margin: 0 auto;
     padding: 32px;
-    border: 1px solid #ddd;
+
     border-radius: 8px;
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+
 }
 
 .login-form {
@@ -114,4 +120,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 14px;
+    color: #555;
 }

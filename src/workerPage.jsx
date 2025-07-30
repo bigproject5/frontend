@@ -3,7 +3,7 @@ import './workerPage.css';
 
 function WorkerPage() {
     return (
-        <div className="body">
+        <div className='worker-body'>
             <div className="profile-container">
                 {/* 왼쪽 프로필 */}
                 <div className="profile-sidebar">
@@ -18,19 +18,20 @@ function WorkerPage() {
                         <h2>내 정보</h2>
                         <div className="info-row">
                             <div className="info-labels">
-                                <div>이름</div>
-                                <div>사번</div>
-                                <div>이메일</div>
-                                <div>비밀번호</div>
+                                <div className='type-labels'>이름</div>
+                                <input type="text" disabled />
                             </div>
-                            <div className="info-inputs">
+                            <div className="info-labels">
+                                <div className='type-labels'>사번</div>
                                 <input type="text" disabled />
+                            </div>
+                            <div className="info-labels">
+                                <div className='type-labels'>이메일</div>
                                 <input type="text" disabled />
+                            </div>
+                            <div className="info-labels">
+                                <div className='type-labels'>비밀번호</div>
                                 <input type="text" disabled />
-                                <div className="password-field">
-                                    <input type="password" disabled />
-                                    <span className="eye-icon">👁️</span>
-                                </div>
                             </div>
                         </div>
                         <button className="edit-button">수정</button>
