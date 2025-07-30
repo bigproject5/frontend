@@ -79,7 +79,7 @@
 
 .signup-id-row {
     display: flex;
-    align-items: center;
+    align-items: end;
     gap: 8px;
     width: 545px;
 }
