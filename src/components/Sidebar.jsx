@@ -29,7 +29,7 @@ import {
   Settings,
   AccountCircle,
 } from "@mui/icons-material";
-// import hyundaiLogo from "../assets/현대로고.png"; // 로고 이미지 import 제거
+
 
 const menuItems = [
   {
