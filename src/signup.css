@@ -1,0 +1,91 @@
+.signup-container {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    width: 800px;
+}
+
+.signup-container-input {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    align-items: center;
+
+}
+
+.signup-input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 15px;
+    box-sizing: border-box;
+}
+
+.signup-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+
+    width: 100%;
+    max-width: 350px;
+}
+
+.signup-input-group label {
+    font-weight: 500;
+    text-align: left;
+
+}
+
+.signup-button {
+    width: 200px;
+}
+
+.signup-id-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    width: 100%;
+    max-width: 450px;
+    justify-content: center;
+}
+
+.signup-id-container .signup-input-group {
+    flex-grow: 1;
+    max-width: 450px;
+}
+
+.signup-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 450px;
+}
+
+.signup-id-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 545px;
+}
+
+.signup-input {
+    flex-grow: 1;
+    height: 36px;
+    padding: 6px 10px;
+    font-size: 14px;
+}
+
+.id-check-btn {
+    height: 36px;
+    padding: 0 12px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 100px;
+}
