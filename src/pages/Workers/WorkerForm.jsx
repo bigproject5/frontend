@@ -5,7 +5,7 @@ const WorkerForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [formData, setFormData] = useState({
     loginId: '',
     password: '',
@@ -50,7 +50,7 @@ const WorkerForm = () => {
       address: '대구시 수성구 수성로 789'
     }
   ];
-  
+
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
@@ -88,7 +88,7 @@ const WorkerForm = () => {
   // 필수 필드 유효성 검사
   const requiredFields = ['loginId', 'password', 'name', 'employeeNumber', 'email', 'phone'];
   const missingFields = requiredFields.filter(field => !formData[field]?.trim());
-  
+
   if (missingFields.length > 0) {
     setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
     setLoading(false);
@@ -102,14 +102,14 @@ const WorkerForm = () => {
     employeeNumber: formData.employeeNumber,
     name: formData.name,
     email: formData.email,
-    phoneNumber: formData.phone, 
+    phoneNumber: formData.phone,
     address: formData.address
   };
 
   try {
     console.log('🔍 전송할 데이터:', submitData);
-    
-    const response = await fetch('http://localhost:8081/api/operation/workers', { 
+
+    const response = await fetch('http://localhost:8081/api/operation/workers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submitData),
@@ -124,7 +124,7 @@ const WorkerForm = () => {
       // 응답 본문이 있는지 확인
       const text = await response.text();
       console.log('🔍 응답 텍스트:', text);
-      
+
       let data = null;
       if (text.trim()) {
         try {
@@ -137,10 +137,10 @@ const WorkerForm = () => {
 
       alert('✅ 작업자 등록이 완료되었습니다!');
       navigate('/workers');
-      
+
     } else {
       let errorMessage = `등록 실패 (HTTP ${response.status})`;
-      
+
       try {
         const errorText = await response.text();
         if (errorText) {
@@ -150,11 +150,11 @@ const WorkerForm = () => {
       } catch (e) {
         // 에러 응답 파싱 실패
       }
-      
+
       console.error('등록 실패:', errorMessage);
       setError(errorMessage);
     }
-    
+
   } catch (err) {
     console.error('등록 요청 실패:', err);
     setError('서버 연결 오류가 발생했습니다. 네트워크를 확인해주세요.');
@@ -162,7 +162,7 @@ const WorkerForm = () => {
     setLoading(false);
   }
 };
-  
+
   const inputStyle = {
     width: '100%',
     padding: '8px 12px',
@@ -184,15 +184,15 @@ const WorkerForm = () => {
         padding: '16px',
         marginBottom: '24px'
       }}>
-        <h4 style={{ 
-          margin: '0 0 12px 0', 
+        <h4 style={{
+          margin: '0 0 12px 0',
           color: '#0369a1',
           fontSize: '14px',
           fontWeight: '600'
         }}>🧪 테스트 데이터 (개발용)</h4>
-        <div style={{ 
-          display: 'flex', 
-          gap: '8px', 
+        <div style={{
+          display: 'flex',
+          gap: '8px',
           flexWrap: 'wrap',
           alignItems: 'center'
         }}>

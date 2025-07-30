@@ -51,23 +51,23 @@ const WorkerList = () => {
         }
 
         // UI에서 해당 작업자 제거
-        setWorkers(prevWorkers => 
+        setWorkers(prevWorkers =>
           prevWorkers.filter(worker => {
             const workerId = worker.id || worker.workerId;
             return workerId != id;
           })
         );
-        
+
         alert('✅ 작업자가 삭제되었습니다.');
-        
+
       } else {
         // HTTP 오류 상태
         const errorText = await response.text();
         console.error('삭제 HTTP 오류:', response.status, errorText);
-        
+
         // 404 오류인 경우 이미 삭제된 것일 수 있음
         if (response.status === 404) {
-          setWorkers(prevWorkers => 
+          setWorkers(prevWorkers =>
             prevWorkers.filter(worker => {
               const workerId = worker.id || worker.workerId;
               return workerId != id;
@@ -78,7 +78,7 @@ const WorkerList = () => {
           alert(`❌ 삭제 실패: HTTP ${response.status}`);
         }
       }
-      
+
     } catch (error) {
       console.error('삭제 요청 실패:', error);
       alert('❌ 삭제 중 네트워크 오류가 발생했습니다.');
@@ -88,21 +88,21 @@ const WorkerList = () => {
   // 검색 기능
   const filteredWorkers = workers.filter(worker => {
     if (!searchTerm.trim()) return true; // 검색어가 없으면 모든 작업자 표시
-    
+
     const searchLower = searchTerm.toLowerCase();
-    
+
     // 이름, 로그인ID, 부서명에서 검색
     const nameMatch = worker.name?.toLowerCase().includes(searchLower) || false;
     const loginIdMatch = worker.loginId?.toLowerCase().includes(searchLower) || false;
     const departmentMatch = worker.department?.toLowerCase().includes(searchLower) || false;
-    
+
     return nameMatch || loginIdMatch || departmentMatch;
   });
 
   const getDepartmentColor = (department) => {
     switch(department) {
       case '도장': return { bg: '#dbeafe', text: '#1e40af' };
-      case '와퍼': 
+      case '와퍼':
       case '와이퍼': return { bg: '#dcfce7', text: '#16a34a' };
       case '패널': return { bg: '#f3e8ff', text: '#9333ea' };
       case '엔진': return { bg: '#fed7aa', text: '#ea580c' };
@@ -302,7 +302,7 @@ const WorkerList = () => {
             margin: 0,
             fontSize: '16px'
           }}>작업자 목록 {searchTerm && `(검색: "${searchTerm}")`}</h3>
-          <p style={{ 
+          <p style={{
             fontSize: '14px', 
             color: '#6b7280',
             margin: 0,
@@ -419,10 +419,10 @@ const WorkerList = () => {
           filteredWorkers.map((worker) => {
             const depColor = getDepartmentColor(worker.department);
             const workerId = worker.id || worker.workerId;
-            
+
             return (
-              <div 
-                key={workerId} 
+              <div
+                key={workerId}
                 style={{
                   backgroundColor: 'white',
                   border: '1px solid #e5e7eb',
@@ -464,8 +464,8 @@ const WorkerList = () => {
                         gap: '8px',
                         marginBottom: '4px'
                       }}>
-                        <h3 style={{ 
-                          fontWeight: 'bold', 
+                        <h3 style={{
+                          fontWeight: 'bold',
                           color: '#111827',
                           margin: 0,
                           fontSize: '16px'
@@ -512,7 +512,7 @@ const WorkerList = () => {
                       }}>
                         <span>사번: {worker.employeeNumber || 'N/A'}</span>
                         <span>등록일: {
-                          worker.createdAt 
+                          worker.createdAt
                             ? new Date(worker.createdAt).toLocaleDateString('ko-KR', {
                                 year: 'numeric',
                                 month: '2-digit',
@@ -540,7 +540,7 @@ const WorkerList = () => {
                     }}>
                       📞 호출
                     </button>
-                    <button 
+                    <button
                       onClick={() => onDelete(workerId)}
                       style={{
                         padding: '8px',
