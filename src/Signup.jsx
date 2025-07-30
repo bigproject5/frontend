@@ -65,110 +65,112 @@ export function Signup() {
     };
 
     return (
-        <div className="signup-container">
-            <h2>회원가입</h2>
-            <form className="signup-container-input" onSubmit={handleSubmit}>
-                <div className="signup-input-group">
-                    <label>관리자 코드</label>
-                    <input
-                        type="text"
-                        value={adminCode}
-                        onChange={(e) => setAdminCode(e.target.value)}
-                        className="signup-input"
-                        placeholder="관리자 코드를 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>사번</label>
-                    <input
-                        type="text"
-                        value={employeeId}
-                        onChange={(e) => setEmployeeId(e.target.value)}
-                        className="signup-input"
-                        placeholder="사번을 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>아이디</label>
-                    <div className="signup-id-row">
+        <div className="body">
+            <div className="signup-container">
+                <h2>회원가입</h2>
+                <form className="signup-container-input" onSubmit={handleSubmit}>
+                    <div className="signup-input-group">
+                        <label>관리자 코드</label>
                         <input
                             type="text"
-                            value={userId}
-                            onChange={(e) => { setUserId(e.target.value); setIsIdChecked(false); }}
+                            value={adminCode}
+                            onChange={(e) => setAdminCode(e.target.value)}
                             className="signup-input"
-                            placeholder="아이디를 입력하세요."
-                            disabled={isIdChecked}
+                            placeholder="관리자 코드를 입력하세요."
                         />
-                        <button type="button" className="id-check-btn" onClick={handleIdCheck} disabled={isIdChecked}>중복확인</button>
                     </div>
-                </div>
+                    <div className="signup-input-group">
+                        <label>사번</label>
+                        <input
+                            type="text"
+                            value={employeeId}
+                            onChange={(e) => setEmployeeId(e.target.value)}
+                            className="signup-input"
+                            placeholder="사번을 입력하세요."
+                        />
+                    </div>
+                    <div className="signup-input-group">
+                        <label>아이디</label>
+                        <div className="signup-id-row">
+                            <input
+                                type="text"
+                                value={userId}
+                                onChange={(e) => { setUserId(e.target.value); setIsIdChecked(false); }}
+                                className="signup-input"
+                                placeholder="아이디를 입력하세요."
+                                disabled={isIdChecked}
+                            />
+                            <button type="button" className="id-check-btn" onClick={handleIdCheck} disabled={isIdChecked}>중복확인</button>
+                        </div>
+                    </div>
 
-                <div className="signup-input-group">
-                    <label>이름</label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="signup-input"
-                        placeholder="이름을 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>이메일</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="signup-input"
-                        placeholder="이메일을 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>연락처</label>
-                    <input
-                        type="text"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        className="signup-input"
-                        placeholder="연락처를 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>주소</label>
-                    <input
-                        type="text"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        className="signup-input"
-                        placeholder="주소를 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>비밀번호</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="signup-input"
-                        placeholder="비밀번호를 입력하세요."
-                    />
-                </div>
-                <div className="signup-input-group">
-                    <label>비밀번호 재입력</label>
-                    <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        className="signup-input"
-                        placeholder="비밀번호를 다시 입력하세요."
-                    />
-                </div>
-                <button type="submit" className="signup-button" disabled={!isIdChecked}>
-                    회원가입
-                </button>
-                {error && <div className="login-error-message">{error}</div>}
-                {success && <div className="login-success-message">{success}</div>}
-            </form>
+                    <div className="signup-input-group">
+                        <label>이름</label>
+                        <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="signup-input"
+                            placeholder="이름을 입력하세요."
+                        />
+                    </div>
+                    <div className="signup-input-group">
+                        <label>이메일</label>
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="signup-input"
+                            placeholder="이메일을 입력하세요."
+                        />
+                    </div>
+                    <div className="signup-input-group">
+                        <label>연락처</label>
+                        <input
+                            type="text"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            className="signup-input"
+                            placeholder="연락처를 입력하세요."
+                        />
+                    </div>
+                    <div className="signup-input-group">
+                        <label>주소</label>
+                        <input
+                            type="text"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="signup-input"
+                            placeholder="주소를 입력하세요."
+                        />
+                    </div>
+                    <div className="signup-input-group">
+                        <label>비밀번호</label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="signup-input"
+                            placeholder="비밀번호를 입력하세요."
+                        />
+                    </div>
+                    <div className="signup-input-group">
+                        <label>비밀번호 재입력</label>
+                        <input
+                            type="password"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            className="signup-input"
+                            placeholder="비밀번호를 다시 입력하세요."
+                        />
+                    </div>
+                    <button type="submit" className="signup-button" disabled={!isIdChecked}>
+                        회원가입
+                    </button>
+                    {error && <div className="login-error-message">{error}</div>}
+                    {success && <div className="login-success-message">{success}</div>}
+                </form>
+            </div>
         </div>
     );
 }

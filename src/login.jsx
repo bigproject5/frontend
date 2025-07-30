@@ -24,7 +24,7 @@ export function Login() {
     }
 
     return (
-        <div className="body">
+        <div className="login-body">
             <div className="login-container">
                 <h2>로그인</h2>
                 <form className="login-form" onSubmit={handleSubmit}>
