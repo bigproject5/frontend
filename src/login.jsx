@@ -102,6 +102,7 @@ export function Login() {
                         로그인
                     </button>
                 </form>
+
                 <div className="signup-link">
                     {role === "admin" ? (
                         <button className="login-signup-btn" onClick={handleSignup}>회원가입</button>
