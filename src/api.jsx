@@ -21,7 +21,7 @@ export async function worker_login_api(postData) {
 }
 
 export async function Signup_api(postData) {
-    return response = await fetch(`${Base_URL}/books`, {
+    return response = await fetch(`${Base_URL}/api/operation/admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
+import { Signup_api } from "./api";
 
 export function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -108,6 +109,17 @@ export function Signup() {
             setError("비밀번호가 일치하지 않습니다.");
             return;
         }
+
+        try {
+            const response = Signup_api(formData);
+        }
+        catch (err) {
+            alert("회원가입 실패")
+            return;
+        }
+
+
+
         alert("회원가입 성공")
         handlePrev();
     };
