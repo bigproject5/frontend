@@ -111,3 +111,7 @@
     border-radius: 4px;
     width: 100px;
 }
+
+.prev-button {
+    margin-right: 10px;
+}

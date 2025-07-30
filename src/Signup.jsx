@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom"
 export function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+
     const [isIdChecked, setIsIdChecked] = useState(false);
     const [lastCheckedId, setLastCheckedId] = useState('');
     const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ export function Signup() {
     });
     const navigate = useNavigate();
 
-    const handleSignupSuccess = () => {
+    const handlePrev = () => {
         navigate("/")
     }
 
@@ -108,7 +109,7 @@ export function Signup() {
             return;
         }
         alert("회원가입 성공")
-        handleSignupSuccess();
+        handlePrev();
     };
 
     return (
@@ -225,16 +226,19 @@ export function Signup() {
                             placeholder="비밀번호를 다시 입력하세요."
                         />
                     </div>
-                    <button
-                        type="submit"
-                        className={`signup-button ${isButtonEnabled ? "enabled" : "disabled"}`}
-                        onClick={handleSubmit}
-                        disabled={!isButtonEnabled}
-                    >
-                        회원가입
-                    </button>
-                    {error && <div className="login-error-message">{error}</div>}
+                    <div>
+                        <button type="button" className="prev-button" onClick={handlePrev}>이전</button>
+                        <button
+                            type="submit"
+                            className={`signup-button ${isButtonEnabled ? "enabled" : "disabled"}`}
+                            onClick={handleSubmit}
+                            disabled={!isButtonEnabled}
+                        >
+                            회원가입
+                        </button>
+                    </div>
 
+                    {error && <div className="login-error-message">{error}</div>}
                 </form>
             </div>
         </div>
