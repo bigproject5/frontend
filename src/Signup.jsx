@@ -1,52 +1,84 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './signup.css'
+import { useNavigate } from "react-router-dom"
 
 export function Signup() {
-    const [adminCode, setAdminCode] = useState("");
-    const [employeeId, setEmployeeId] = useState("");
-    const [userId, setUserId] = useState("");
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
-    const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [isIdChecked, setIsIdChecked] = useState(false);
+    const [lastCheckedId, setLastCheckedId] = useState('');
+    const [formData, setFormData] = useState({
+        "adminCode": "",
+        "employeeNumber": "",
+        "loginId": "",
+        "name": "",
+        "email": "",
+        "phoneNumber": "",
+        "address": "",
+        "password": ""
+    });
+    const navigate = useNavigate();
+
+    const handleSignupSuccess = (e) => {
+        e.preventDefault();
+        navigate("/")
+    }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     const handleIdCheck = () => {
-        if (!userId.trim()) {
+        const loginId = formData.loginId.trim();
+        if (!loginId) {
             setError("아이디를 입력해주세요.");
             return;
         }
-        // In a real application, you would make an API call to check for the user ID.
-        // For this example, we'll simulate it.
-        const existingUserIds = ["admin", "user"];
-        if (existingUserIds.includes(userId)) {
-            setError("이미 사용중인 아이디입니다.");
-            setIsIdChecked(false);
-        } else {
-            setError("");
-            alert("사용 가능한 아이디입니다.");
-            setIsIdChecked(true);
+
+        try {
+
+            // const res = await fetch(``);
+            // const data = await res.json();
+            let data = false;
+            if (loginId == "admin") data = true;
+            if (data.exists) {
+                setError("이미 사용 중인 아이디입니다.");
+                setIsIdChecked(false);
+            } else {
+                setError("");
+                alert("사용 가능한 아이디입니다.");
+                setIsIdChecked(true);
+                setLastCheckedId(loginId);
+            }
+        } catch (err) {
+            console.error(err);
+            setError("중복 확인 중 오류가 발생했습니다.");
         }
     };
+    useEffect(() => {
+        if (isIdChecked && formData.loginId !== lastCheckedId) {
+            setIsIdChecked(fasle);
+        }
+    }, [formData.loginId, lastCheckedId, isIdChecked])
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setError("");
         setSuccess("");
 
-        if (
-            !adminCode.trim() ||
-            !employeeId.trim() ||
-            !userId.trim() ||
-            !name.trim() ||
-            !email.trim() ||
-            !phone.trim() ||
-            !address.trim() ||
-            !password.trim() ||
+        if (!formData.adminCode.trim() ||
+            !formData.employeeNumber.trim() ||
+            !formData.loginId.trim() ||
+            !formData.name.trim() ||
+            !formData.email.trim() ||
+            !formData.phoneNumber.trim() ||
+            !formData.address.trim() ||
+            !formData.password.trim() ||
             !confirmPassword.trim()
         ) {
             setError("모든 항목을 입력해주세요.");
@@ -56,25 +88,27 @@ export function Signup() {
             setError("아이디 중복 확인을 해주세요.");
             return;
         }
-        if (password !== confirmPassword) {
+        if (formData.password !== confirmPassword) {
             setError("비밀번호가 일치하지 않습니다.");
             return;
         }
-
-        setSuccess("회원가입이 완료되었습니다!");
+        alert("회원가입 성공")
+        handleSignupSuccess();
+        setSuccess("회원가입 성공")
     };
 
     return (
         <div className="signup-body">
             <div className="signup-container">
                 <h2>회원가입</h2>
-                <form className="signup-container-input" onSubmit={handleSubmit}>
+                <form className="signup-container-input">
                     <div className="signup-input-group">
                         <label>관리자 코드</label>
                         <input
                             type="text"
-                            value={adminCode}
-                            onChange={(e) => setAdminCode(e.target.value)}
+                            name="adminCode"
+                            value={formData.adminCode}
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="관리자 코드를 입력하세요."
                         />
@@ -83,8 +117,9 @@ export function Signup() {
                         <label>사번</label>
                         <input
                             type="text"
-                            value={employeeId}
-                            onChange={(e) => setEmployeeId(e.target.value)}
+                            value={formData.employeeNumber}
+                            name="employeeNumber"
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="사번을 입력하세요."
                         />
@@ -94,13 +129,20 @@ export function Signup() {
                         <div className="signup-id-row">
                             <input
                                 type="text"
-                                value={userId}
-                                onChange={(e) => { setUserId(e.target.value); setIsIdChecked(false); }}
+                                name="loginId"
+                                value={formData.loginId}
+                                onChange={handleChange}
                                 className="signup-input"
                                 placeholder="아이디를 입력하세요."
-                                disabled={isIdChecked}
+                                disabled={isIdChecked && !formData.loginId.trim()}
                             />
-                            <button type="button" className="id-check-btn" onClick={handleIdCheck} disabled={isIdChecked}>중복확인</button>
+                            <button
+                                type="button"
+                                className="id-check-btn"
+                                onClick={handleIdCheck}
+                                disabled={isIdChecked || !formData.loginId.trim()}
+
+                            >중복확인</button>
                         </div>
                     </div>
 
@@ -108,8 +150,9 @@ export function Signup() {
                         <label>이름</label>
                         <input
                             type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="이름을 입력하세요."
                         />
@@ -118,8 +161,9 @@ export function Signup() {
                         <label>이메일</label>
                         <input
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="이메일을 입력하세요."
                         />
@@ -128,8 +172,9 @@ export function Signup() {
                         <label>연락처</label>
                         <input
                             type="text"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="연락처를 입력하세요."
                         />
@@ -138,8 +183,9 @@ export function Signup() {
                         <label>주소</label>
                         <input
                             type="text"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="주소를 입력하세요."
                         />
@@ -148,8 +194,9 @@ export function Signup() {
                         <label>비밀번호</label>
                         <input
                             type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
                             className="signup-input"
                             placeholder="비밀번호를 입력하세요."
                         />
@@ -164,7 +211,7 @@ export function Signup() {
                             placeholder="비밀번호를 다시 입력하세요."
                         />
                     </div>
-                    <button type="submit" className="signup-button" disabled={!isIdChecked}>
+                    <button type="submit" className="signup-button" onClick={handleSubmit} disabled={!isIdChecked}>
                         회원가입
                     </button>
                     {error && <div className="login-error-message">{error}</div>}
