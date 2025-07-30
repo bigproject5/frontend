@@ -10,6 +10,7 @@
     text-align: center;
     justify-content: center;
     flex-direction: column;
+    font: 1em sans-serif;
 }
 
 .login-container {
@@ -127,4 +128,15 @@
     text-align: center;
     font-size: 14px;
     color: #555;
+}
+
+.login-signup-btn {
+    border: none;
+    background-color: transparent;
+    color: inherit;
+    outline: none;
+}
+
+button:focus {
+    outline: none;
 }
