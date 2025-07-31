@@ -36,28 +36,25 @@ export function Signup() {
     const handleIdCheck = () => {
         const loginId = formData.loginId.trim();
         if (!loginId) {
-            setError("ì•„ì´ë””ë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš”.");
+            setError("¾ÆÀÌµğ¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.");
             return;
         }
 
         try {
-
-            // const res = await fetch(``);
-            // const data = await res.json();
             let data = false;
             if (loginId == "admin") data = true;
             if (data.exists) {
-                setError("ì´ë¯¸ ì‚¬ìš© ì¤‘ì¸ ì•„ì´ë””ì…ë‹ˆë‹¤.");
+                setError("ÀÌ¹Ì »ç¿ë ÁßÀÎ ¾ÆÀÌµğÀÔ´Ï´Ù.");
                 setIsIdChecked(false);
             } else {
                 setError("");
-                alert("ì‚¬ìš© ê°€ëŠ¥í•œ ì•„ì´ë””ì…ë‹ˆë‹¤.");
+                alert("»ç¿ë °¡´ÉÇÑ ¾ÆÀÌµğÀÔ´Ï´Ù.");
                 setIsIdChecked(true);
                 setLastCheckedId(loginId);
             }
         } catch (err) {
             console.error(err);
-            setError("ì¤‘ë³µ í™•ì¸ ì¤‘ ì˜¤ë¥˜ê°€ ë°œìƒí–ˆìŠµë‹ˆë‹¤.");
+            setError("Áßº¹ È®ÀÎ Áß ¿À·ù°¡ ¹ß»ıÇß½À´Ï´Ù.");
         }
     };
     useEffect(() => {
@@ -98,15 +95,15 @@ export function Signup() {
             !formData.password.trim() ||
             !confirmPassword.trim()
         ) {
-            setError("ëª¨ë“  í•­ëª©ì„ ì…ë ¥í•´ì£¼ì„¸ìš”.");
+            setError("¸ğµç Ç×¸ñÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.");
             return;
         }
         if (!isIdChecked) {
-            setError("ì•„ì´ë”” ì¤‘ë³µ í™•ì¸ì„ í•´ì£¼ì„¸ìš”.");
+            setError("¾ÆÀÌµğ Áßº¹ È®ÀÎÀ» ÇØÁÖ¼¼¿ä.");
             return;
         }
         if (formData.password !== confirmPassword) {
-            setError("ë¹„ë°€ë²ˆí˜¸ê°€ ì¼ì¹˜í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            setError("ºñ¹Ğ¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
             return;
         }
 
@@ -114,45 +111,45 @@ export function Signup() {
             const response = Signup_api(formData);
         }
         catch (err) {
-            alert("íšŒì›ê°€ì… ì‹¤íŒ¨")
+            alert("È¸¿ø°¡ÀÔ ½ÇÆĞ")
             return;
         }
 
 
 
-        alert("íšŒì›ê°€ì… ì„±ê³µ")
+        alert("È¸¿ø°¡ÀÔ ¼º°ø")
         handlePrev();
     };
 
     return (
         <div className="signup-body">
             <div className="signup-container">
-                <h2>íšŒì›ê°€ì…</h2>
+                <h2>È¸¿ø°¡ÀÔ</h2>
                 <form className="signup-container-input">
                     <div className="signup-input-group">
-                        <label>ê´€ë¦¬ì ì½”ë“œ</label>
+                        <label>°ü¸®ÀÚ ÄÚµå</label>
                         <input
                             type="text"
                             name="adminCode"
                             value={formData.adminCode}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ê´€ë¦¬ì ì½”ë“œë¥¼ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="°ü¸®ÀÚ ÄÚµå¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ì‚¬ë²ˆ</label>
+                        <label>»ç¹ø</label>
                         <input
                             type="text"
                             value={formData.employeeNumber}
                             name="employeeNumber"
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ì‚¬ë²ˆì„ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="»ç¹øÀ» ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ì•„ì´ë””</label>
+                        <label>¾ÆÀÌµğ</label>
                         <div className="signup-id-row">
                             <input
                                 type="text"
@@ -160,7 +157,7 @@ export function Signup() {
                                 value={formData.loginId}
                                 onChange={handleChange}
                                 className="signup-input"
-                                placeholder="ì•„ì´ë””ë¥¼ ì…ë ¥í•˜ì„¸ìš”."
+                                placeholder="¾ÆÀÌµğ¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
                                 disabled={isIdChecked && !formData.loginId.trim()}
                             />
                             <button
@@ -169,84 +166,84 @@ export function Signup() {
                                 onClick={handleIdCheck}
                                 disabled={isIdChecked || !formData.loginId.trim()}
 
-                            >ì¤‘ë³µí™•ì¸</button>
+                            >Áßº¹È®ÀÎ</button>
                         </div>
                     </div>
 
                     <div className="signup-input-group">
-                        <label>ì´ë¦„</label>
+                        <label>ÀÌ¸§</label>
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ì´ë¦„ì„ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="ÀÌ¸§À» ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ì´ë©”ì¼</label>
+                        <label>ÀÌ¸ŞÀÏ</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ì´ë©”ì¼ì„ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="ÀÌ¸ŞÀÏÀ» ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ì—°ë½ì²˜</label>
+                        <label>¿¬¶ôÃ³</label>
                         <input
                             type="text"
                             name="phoneNumber"
                             value={formData.phoneNumber}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ì—°ë½ì²˜ë¥¼ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="¿¬¶ôÃ³¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ì£¼ì†Œ</label>
+                        <label>ÁÖ¼Ò</label>
                         <input
                             type="text"
                             name="address"
                             value={formData.address}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ì£¼ì†Œë¥¼ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="ÁÖ¼Ò¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ë¹„ë°€ë²ˆí˜¸</label>
+                        <label>ºñ¹Ğ¹øÈ£</label>
                         <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ë¹„ë°€ë²ˆí˜¸ë¥¼ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="ºñ¹Ğ¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ë¹„ë°€ë²ˆí˜¸ ì¬ì…ë ¥</label>
+                        <label>ºñ¹Ğ¹øÈ£ ÀçÀÔ·Â</label>
                         <input
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             className="signup-input"
-                            placeholder="ë¹„ë°€ë²ˆí˜¸ë¥¼ ë‹¤ì‹œ ì…ë ¥í•˜ì„¸ìš”."
+                            placeholder="ºñ¹Ğ¹øÈ£¸¦ ´Ù½Ã ÀÔ·ÂÇÏ¼¼¿ä."
                         />
                     </div>
                     <div>
-                        <button type="button" className="prev-button" onClick={handlePrev}>ì´ì „</button>
+                        <button type="button" className="prev-button" onClick={handlePrev}>ÀÌÀü</button>
                         <button
                             type="submit"
                             className={`signup-button ${isButtonEnabled ? "enabled" : "disabled"}`}
                             onClick={handleSubmit}
                             disabled={!isButtonEnabled}
                         >
-                            íšŒì›ê°€ì…
+                            È¸¿ø°¡ÀÔ
                         </button>
                     </div>
 
