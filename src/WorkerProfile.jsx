@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReportSection from './ReportSection';
 import './WorkerProfile.css';
+import { getUserInfo } from './api';
 
 function WorkerProfile() {
     const navigate = useNavigate();
-
+    const [isError, setIsError] = useState(false);
     const [userInfo, setUserInfo] = useState({
         name: '',
         employeeId: '',
@@ -19,26 +20,25 @@ function WorkerProfile() {
         loadUserData();
     }, []);
 
+
     // 사용자 정보 로드
     const loadUserData = async () => {
         try {
             // API 호출 시뮬레이션
-            // const response = await fetch('/api/user/profile');
-            // const data = await response.json();
+            const token = sessionStorage.getItem('accessToken');
+            const response = getUserInfo(token);
+            const data = await response;
 
+            if (!token) throw new Error('Access token not found in sessionStorage.');
+            console.log(data)
             setUserInfo({
-                name: data.name || '홍길동',
-                employeeId: data.employeeId || 'EMP001',
-                email: data.email || 'hong@company.com'
+                name: data.name,
+                employeeId: data.employeeNumber,
+                email: data.email
             });
         } catch (error) {
             console.error('사용자 정보 로드 실패:', error);
-            // 기본값 설정
-            setUserInfo({
-                name: '홍길동',
-                employeeId: 'EMP001',
-                email: 'hong@company.com'
-            });
+            setIsError(true);
         } finally {
             setIsLoading(false);
         }
@@ -54,6 +54,18 @@ function WorkerProfile() {
                 로딩 중...
             </div>
         );
+    }
+    if (isError) {
+        return (
+            <div style={{
+                width: "100vw",
+                textAlign: "center"
+            }}>
+                <h1>404</h1>
+                <h2>Not Found</h2>
+                작업자를 찾을 수 없습니다.
+            </div>
+        )
     }
 
     return (
