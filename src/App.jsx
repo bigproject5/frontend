@@ -15,14 +15,20 @@ const Layout = ({ children }) => {
         <div style={{ 
           flex: 1,
           marginLeft: '240px',
-          padding: '24px', 
+          padding: '32px', 
           backgroundColor: '#f9fafb', 
           minHeight: 'calc(100vh - 72px)',
           boxSizing: 'border-box',
-          width: '100%',
-          maxWidth: '100vw'
+          width: 'calc(100vw - 240px)', 
+          overflow: 'hidden' 
         }}>
-          {children}
+          <div style={{
+            maxWidth: '1400px', 
+            margin: '0 auto', 
+            width: '100%'
+          }}>
+            {children}
+          </div>
         </div>
       </div>
     </div>
