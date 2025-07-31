@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,6 +14,8 @@ import {
   IconButton,
   Badge,
   Divider,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import {
   DirectionsCar,
@@ -26,45 +29,17 @@ import {
   Visibility,
 } from "@mui/icons-material";
 
-const sampleDetailData = {
-  carId: "0231-123",
-  type: "승용",
-  model: "SONATA",
-  line: "A2",
-  date: "2025-07-18",
-  inspectionCount: 2,
-  statusCounts: {
-    불량발생: 1,
-    조치완료: 1,
-    이상없음: 7,
-  },
-  parts: [
-    { name: "와이퍼", time: "14:25:08", worker: "김작업", status: "불량발생", id: "wiper" },
-    { name: "엔진", time: "14:25:08", worker: "이정비", status: "이상없음", id: "engine" },
-    { name: "전조등", time: "14:25:08", worker: "박엔지", status: "이상없음", id: "headlight" },
-    { name: "도장면A", time: "14:25:08", worker: "최페인트", status: "이상없음", id: "paint" },
-    { name: "후미등", time: "14:26:42", worker: "정라이트", status: "조치완료", id: "taillight" },
-    { name: "범퍼", time: "14:25:48", worker: "유정비", status: "조치완료", id: "bumper" },
-    { name: "실내등", time: "14:26:11", worker: "박실내", status: "이상없음", id: "interior" },
-  ],
-};
+const API_BASE_URL = "http://localhost:8080/api/vehicleaudit";
 
 const statusConfig = {
-  불량발생: {
+  불량: {
     color: "#ef4444",
     bgColor: "#fef2f2",
     borderColor: "#fecaca",
     icon: Error,
-    label: "불량발생"
+    label: "불량"
   },
-  조치완료: {
-    color: "#22c55e",
-    bgColor: "#f0fdf4",
-    borderColor: "#bbf7d0",
-    icon: CheckCircle,
-    label: "조치완료"
-  },
-  이상없음: {
+  "이상없음": {
     color: "#3b82f6",
     bgColor: "#eff6ff",
     borderColor: "#bfdbfe",
@@ -76,19 +51,113 @@ const statusConfig = {
 const Detail = () => {
   const { carId } = useParams();
   const navigate = useNavigate();
-  const data = sampleDetailData;
 
-  const handlePartClick = (partId) => {
-    navigate(`/admin/inspection/${carId}-${partId}`);
+  const [vehicleData, setVehicleData] = useState(null);
+  const [inspectionsData, setInspectionsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // API 호출 함수들
+  const fetchVehicleDetail = async (auditId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/audits/${auditId}`);
+      if (response.data.code === "200") {
+        setVehicleData(response.data.data);
+      } else {
+        throw new Error(response.data.message || "차량 정보를 불러올 수 없습니다.");
+      }
+    } catch (err) {
+      console.error("차량 상세 조회 실패:", err);
+      throw err;
+    }
+  };
+
+  const fetchInspectionsList = async (auditId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/audits/${auditId}/inspections`);
+      if (response.data.code === "200") {
+        setInspectionsData(response.data.data || []);
+      } else {
+        throw new Error(response.data.message || "검사 목록을 불러올 수 없습니다.");
+      }
+    } catch (err) {
+      console.error("검사 목록 조회 실패:", err);
+      throw err;
+    }
+  };
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // carId를 auditId로 사용 (실제로는 carId -> auditId 매핑 필요할 수 있음)
+      const auditId = carId;
+
+      await Promise.all([
+        fetchVehicleDetail(auditId),
+        fetchInspectionsList(auditId)
+      ]);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || "데이터를 불러오는데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (carId) {
+      loadData();
+    }
+  }, [carId]);
+
+  const handlePartClick = (inspectionId) => {
+    navigate(`/admin/inspection/${carId}-${inspectionId}`);
   };
 
   const getStatusIcon = (status) => {
     const IconComponent = statusConfig[status]?.icon || CheckCircle;
-    return <IconComponent sx={{ color: statusConfig[status]?.color, fontSize: 20 }} />;
+    return <IconComponent sx={{ color: statusConfig[status]?.color || "#3b82f6", fontSize: 20 }} />;
   };
 
-  const totalParts = data.parts.length;
-  const completionRate = Math.round(((totalParts - data.statusCounts.불량발생) / totalParts) * 100);
+  // 통계 계산
+  const statusCounts = inspectionsData.reduce((acc, item) => {
+    const status = item.status || "이상없음";
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
+
+  const totalParts = inspectionsData.length;
+  const defectCount = statusCounts["불량"] || 0;
+  const completionRate = totalParts > 0 ? Math.round(((totalParts - defectCount) / totalParts) * 100) : 100;
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      </Box>
+    );
+  }
+
+  if (!vehicleData) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">
+          차량 정보를 찾을 수 없습니다.
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ backgroundColor: "#f8fafc", minHeight: "100vh", p: 3 }}>
@@ -131,23 +200,23 @@ const Detail = () => {
               <Stack spacing={1.5}>
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">차량 ID</Typography>
-                  <Typography variant="body2" fontWeight={600}>{data.carId}</Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between">
-                  <Typography variant="body2" color="text.secondary">분류</Typography>
-                  <Typography variant="body2" fontWeight={600}>{data.type}</Typography>
+                  <Typography variant="body2" fontWeight={600}>{vehicleData.vehicleId}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">모델</Typography>
-                  <Typography variant="body2" fontWeight={600}>{data.model}</Typography>
+                  <Typography variant="body2" fontWeight={600}>{vehicleData.model}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography variant="body2" color="text.secondary">상태</Typography>
+                  <Typography variant="body2" fontWeight={600}>{vehicleData.status}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">작업라인</Typography>
-                  <Typography variant="body2" fontWeight={600}>{data.line}</Typography>
+                  <Typography variant="body2" fontWeight={600}>{vehicleData.line}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between">
                   <Typography variant="body2" color="text.secondary">검사일자</Typography>
-                  <Typography variant="body2" fontWeight={600}>{data.date}</Typography>
+                  <Typography variant="body2" fontWeight={600}>{vehicleData.inspectionDate}</Typography>
                 </Box>
               </Stack>
             </CardContent>
@@ -174,7 +243,7 @@ const Detail = () => {
 
               {/* 상태별 통계 */}
               <Stack spacing={2}>
-                {Object.entries(data.statusCounts).map(([status, count]) => (
+                {Object.entries(statusCounts).map(([status, count]) => (
                   <Box key={status} display="flex" alignItems="center" justifyContent="space-between">
                     <Stack direction="row" alignItems="center" spacing={1}>
                       {getStatusIcon(status)}
@@ -186,7 +255,7 @@ const Detail = () => {
                       badgeContent={count}
                       sx={{
                         "& .MuiBadge-badge": {
-                          bgcolor: statusConfig[status]?.color,
+                          bgcolor: statusConfig[status]?.color || "#3b82f6",
                           color: "white",
                           fontWeight: 600
                         }
@@ -209,70 +278,78 @@ const Detail = () => {
             검사 항목 상세 ({totalParts}개)
           </Typography>
 
-          <Grid container spacing={2}>
-            {data.parts.map((part, idx) => {
-              const config = statusConfig[part.status];
-              return (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={idx}>
-                  <Card
-                    elevation={0}
-                    sx={{
-                      border: `2px solid ${config.borderColor}`,
-                      borderRadius: 2,
-                      bgcolor: config.bgColor,
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
-                        borderColor: config.color,
-                      }
-                    }}
-                    onClick={() => handlePartClick(part.id)}
-                  >
-                    <CardContent sx={{ p: 2.5 }}>
-                      <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-                        <Typography variant="subtitle1" fontWeight={600}>
-                          {part.name}
-                        </Typography>
-                        <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,0.8)" }}>
-                          <Visibility fontSize="small" />
-                        </IconButton>
-                      </Stack>
+          {inspectionsData.length === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="text.secondary">
+                검사 항목이 없습니다.
+              </Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={2}>
+              {inspectionsData.map((part, idx) => {
+                const config = statusConfig[part.status] || statusConfig["이상없음"];
+                return (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={part.inspectionId}>
+                    <Card
+                      elevation={0}
+                      sx={{
+                        border: `2px solid ${config.borderColor}`,
+                        borderRadius: 2,
+                        bgcolor: config.bgColor,
+                        cursor: "pointer",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          transform: "translateY(-2px)",
+                          boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
+                          borderColor: config.color,
+                        }
+                      }}
+                      onClick={() => handlePartClick(part.inspectionId)}
+                    >
+                      <CardContent sx={{ p: 2.5 }}>
+                        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
+                          <Typography variant="subtitle1" fontWeight={600}>
+                            {part.part}
+                          </Typography>
+                          <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,0.8)" }}>
+                            <Visibility fontSize="small" />
+                          </IconButton>
+                        </Stack>
 
-                      <Stack spacing={1}>
+                        <Stack spacing={1}>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <Schedule sx={{ fontSize: 16, color: "text.secondary" }} />
+                            <Typography variant="body2" color="text.secondary">
+                              {part.inspectionTime || "-"}
+                            </Typography>
+                          </Stack>
+                          <Stack direction="row" alignItems="center" spacing={1}>
+                            <Person sx={{ fontSize: 16, color: "text.secondary" }} />
+                            <Typography variant="body2" color="text.secondary">
+                              {part.worker || "-"}
+                            </Typography>
+                          </Stack>
+                        </Stack>
+
+                        <Divider sx={{ my: 1.5 }} />
+
                         <Stack direction="row" alignItems="center" spacing={1}>
-                          <Schedule sx={{ fontSize: 16, color: "text.secondary" }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {part.time || "-"}
+                          {getStatusIcon(part.status)}
+                          <Typography
+                            variant="body2"
+                            fontWeight={600}
+                            sx={{ color: config.color }}
+                          >
+                            {part.status}
                           </Typography>
                         </Stack>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Person sx={{ fontSize: 16, color: "text.secondary" }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {part.worker || "-"}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-
-                      <Divider sx={{ my: 1.5 }} />
-
-                      <Stack direction="row" alignItems="center" spacing={1}>
-                        {getStatusIcon(part.status)}
-                        <Typography
-                          variant="body2"
-                          fontWeight={600}
-                          sx={{ color: config.color }}
-                        >
-                          {part.status}
-                        </Typography>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          )}
         </CardContent>
       </Card>
     </Box>

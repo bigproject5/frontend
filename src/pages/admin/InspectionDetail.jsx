@@ -1,5 +1,6 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -13,6 +14,8 @@ import {
   CardContent,
   Avatar,
   Stack,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import {
   PlayCircleOutline,
@@ -20,11 +23,132 @@ import {
   Assignment,
   SmartToy,
   AccessTime,
+  ArrowBack,
 } from "@mui/icons-material";
+
+const API_BASE_URL = "http://localhost:8080/api/vehicleaudit";
 
 const InspectionDetail = () => {
   const { inspectionId } = useParams();
-  const [vehicleId, part] = inspectionId?.split("-") || ["", ""];
+  const navigate = useNavigate();
+
+  const [inspectionData, setInspectionData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // URL에서 auditId와 inspectionId 추출
+  const [auditId, realInspectionId] = inspectionId?.split("-") || ["", ""];
+
+  // API 호출 함수
+  const fetchInspectionDetail = async (auditId, inspectionId) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await axios.get(`${API_BASE_URL}/audits/${auditId}/inspections/${inspectionId}`);
+
+      if (response.data.code === "200") {
+        setInspectionData(response.data.data);
+      } else {
+        throw new Error(response.data.message || "검사 상세 정보를 불러올 수 없습니다.");
+      }
+    } catch (err) {
+      console.error("검사 상세 조회 실패:", err);
+      setError(err.response?.data?.message || err.message || "데이터를 불러오는데 실패했습니다.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (auditId && realInspectionId) {
+      fetchInspectionDetail(auditId, realInspectionId);
+    } else {
+      setError("유효하지 않은 검사 ID입니다.");
+      setLoading(false);
+    }
+  }, [auditId, realInspectionId]);
+
+  // 시간 포맷팅 함수
+  const formatDateTime = (dateTimeString) => {
+    if (!dateTimeString) return "-";
+    return new Date(dateTimeString).toLocaleString('ko-KR');
+  };
+
+  // 작업 시간 계산 함수
+  const calculateWorkDuration = (startTime, endTime) => {
+    if (!startTime || !endTime) return "-";
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    const diffMs = end - start;
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const hours = Math.floor(diffMins / 60);
+    const minutes = diffMins % 60;
+
+    if (hours > 0) {
+      return `${hours}시간 ${minutes}분`;
+    }
+    return `${minutes}분`;
+  };
+
+  // 상태에 따른 칩 색상
+  const getStatusChipProps = (status) => {
+    switch (status) {
+      case "불량":
+        return { color: "error", label: "불량 발견" };
+      case "이상없음":
+        return { color: "success", label: "정상" };
+      case "조치완료":
+        return { color: "primary", label: "조치 완료" };
+      default:
+        return { color: "default", label: status || "진행 중" };
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="error" onClose={() => setError(null)}>
+          {error}
+        </Alert>
+        <Button
+          startIcon={<ArrowBack />}
+          onClick={() => navigate(-1)}
+          sx={{ mt: 2 }}
+        >
+          돌아가기
+        </Button>
+      </Box>
+    );
+  }
+
+  if (!inspectionData) {
+    return (
+      <Box sx={{ p: 3 }}>
+        <Alert severity="warning">
+          검사 상세 정보를 찾을 수 없습니다.
+        </Alert>
+        <Button
+          startIcon={<ArrowBack />}
+          onClick={() => navigate(-1)}
+          sx={{ mt: 2 }}
+        >
+          돌아가기
+        </Button>
+      </Box>
+    );
+  }
+
+  const statusChipProps = getStatusChipProps(inspectionData.status);
+  const workDuration = calculateWorkDuration(inspectionData.startTime, inspectionData.endTime);
 
   return (
     <Box
@@ -52,17 +176,19 @@ const InspectionDetail = () => {
           </Avatar>
           <Box>
             <Typography variant="h5" fontWeight={700}>
-              차량 {vehicleId}
+              검사 ID: {inspectionData.inspectionId}
             </Typography>
             <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-              검사 파츠: {part}
+              검사 파트: {inspectionData.part}
             </Typography>
           </Box>
           <Box sx={{ ml: "auto" }}>
             <Chip
-              label="진행 중"
+              label={statusChipProps.label}
+              color={statusChipProps.color}
               sx={{
-                bgcolor: "#22c55e",
+                bgcolor: statusChipProps.color === "error" ? "#ef4444" :
+                         statusChipProps.color === "success" ? "#22c55e" : "#3b82f6",
                 color: "white",
                 fontWeight: 600,
                 px: 2
@@ -112,6 +238,9 @@ const InspectionDetail = () => {
                   <Typography variant="body1" color="text.secondary" fontWeight={500}>
                     검사 영상을 불러오는 중...
                   </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    검사 ID: {inspectionData.inspectionId}
+                  </Typography>
                 </Stack>
               </Box>
             </CardContent>
@@ -138,9 +267,9 @@ const InspectionDetail = () => {
               <Box
                 sx={{
                   p: 3,
-                  backgroundColor: "#fef7f0",
+                  backgroundColor: inspectionData.status === "불량" ? "#fef7f0" : "#f0fdf4",
                   borderRadius: 2,
-                  border: "1px solid #fed7aa"
+                  border: `1px solid ${inspectionData.status === "불량" ? "#fed7aa" : "#bbf7d0"}`
                 }}
               >
                 <Typography
@@ -148,10 +277,10 @@ const InspectionDetail = () => {
                   sx={{
                     lineHeight: 1.6,
                     fontWeight: 500,
-                    color: "#ea580c"
+                    color: inspectionData.status === "불량" ? "#ea580c" : "#16a34a"
                   }}
                 >
-                  🚨 와이퍼 작동 불량 감지
+                  {inspectionData.status === "불량" ? "🚨" : "✅"} {inspectionData.part} 검사 결과
                 </Typography>
                 <Typography
                   variant="body2"
@@ -159,8 +288,10 @@ const InspectionDetail = () => {
                   mt={1}
                   sx={{ lineHeight: 1.5 }}
                 >
-                  우측 와이퍼가 정상적으로 작동하지 않습니다.
-                  모터 연결부 점검이 필요합니다.
+                  {inspectionData.status === "불량"
+                    ? `${inspectionData.part}에서 문제가 감지되었습니다. 상세한 조치가 필요합니다.`
+                    : `${inspectionData.part} 검사가 정상적으로 완료되었습니다.`
+                  }
                 </Typography>
               </Box>
             </CardContent>
@@ -189,7 +320,7 @@ const InspectionDetail = () => {
                   label="담당 작업자"
                   fullWidth
                   size="small"
-                  value="김작업"
+                  value={inspectionData.worker || "-"}
                   InputProps={{ readOnly: true }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -202,7 +333,7 @@ const InspectionDetail = () => {
                   label="조치 시작 시간"
                   fullWidth
                   size="small"
-                  value="2025-07-30 14:25:08"
+                  value={formatDateTime(inspectionData.startTime)}
                   InputProps={{ readOnly: true }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -215,7 +346,20 @@ const InspectionDetail = () => {
                   label="조치 완료 시간"
                   fullWidth
                   size="small"
-                  value="2025-07-30 15:30:22"
+                  value={formatDateTime(inspectionData.endTime)}
+                  InputProps={{ readOnly: true }}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      borderRadius: 2,
+                      backgroundColor: "#f8fafc"
+                    }
+                  }}
+                />
+                <TextField
+                  label="작업 소요 시간"
+                  fullWidth
+                  size="small"
+                  value={workDuration}
                   InputProps={{ readOnly: true }}
                   sx={{
                     "& .MuiOutlinedInput-root": {
@@ -250,7 +394,7 @@ const InspectionDetail = () => {
                 multiline
                 rows={8}
                 fullWidth
-                value="우측 와이퍼 모터 교체 완료. 연결부 점검 후 정상 작동 확인. 방수 처리도 재시행하였음. 향후 정기 점검 시 재확인 필요."
+                value={inspectionData.actionDetails || "조치 내용이 기록되지 않았습니다."}
                 InputProps={{ readOnly: true }}
                 sx={{
                   "& .MuiOutlinedInput-root": {
@@ -269,7 +413,8 @@ const InspectionDetail = () => {
         <Button
           variant="outlined"
           size="large"
-          onClick={() => window.history.back()}
+          startIcon={<ArrowBack />}
+          onClick={() => navigate(-1)}
           sx={{
             borderRadius: 2,
             px: 4,
@@ -282,17 +427,20 @@ const InspectionDetail = () => {
 
         <Box display="flex" alignItems="center" gap={2}>
           <Chip
-            label="조치 완료"
-            color="success"
+            label={statusChipProps.label}
+            color={statusChipProps.color}
             sx={{
               px: 2,
               py: 1,
               fontWeight: 600,
-              fontSize: "0.875rem"
+              fontSize: "0.875rem",
+              bgcolor: statusChipProps.color === "error" ? "#ef4444" :
+                       statusChipProps.color === "success" ? "#22c55e" : "#3b82f6",
+              color: "white"
             }}
           />
           <Typography variant="body2" color="text.secondary">
-            최종 업데이트: 2025-07-30 15:35:10
+            최종 업데이트: {formatDateTime(inspectionData.endTime) || formatDateTime(inspectionData.startTime)}
           </Typography>
         </Box>
       </Box>

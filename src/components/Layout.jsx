@@ -18,10 +18,10 @@ const Layout = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          ml: `${SIDEBAR_WIDTH}px`, // 사이드바 너비만큼 왼쪽 마진
+          ml: `${SIDEBAR_WIDTH}px`,
           minHeight: "100vh",
           bgcolor: "#f8fafc",
-          overflow: "auto", // 스크롤 처리
+          overflow: "auto",
         }}
       >
         <Outlet />
