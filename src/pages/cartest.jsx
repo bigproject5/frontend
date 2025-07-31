@@ -1,55 +1,64 @@
-import React from "react";
-import "./cartest.css";
+import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import { fetch_audit_detail } from "../api/vehicleAuditApi";
+import "./cartest.css";
 
-const parts = [
-  { name: "와이퍼", status: "불량발생", time: "14:25:08" },
-  { name: "엔진", status: "이상없음", time: "14:25:08" },
-  { name: "전조등", status: "이상없음", time: "14:25:08" },
-  { name: "도장면A", status: "이상없음", time: "14:25:08" },
-  { name: "후미등", status: "대기", time: "14:28:42" },
-  { name: "범퍼", status: "조치완료", time: "14:25:48" },
-  { name: "실내등", status: "대기", time: "" },
-];
+const inspectionTypeKor = {
+  PAINT: "도장면",
+  LAMP: "전조등",
+  WIPER: "와이퍼",
+  ENGINE: "엔진",
+  EM_WAVE: "전자파",
+  WASHER_FLUID: "워셔액"
+};
 
-function getColor(status) {
-  switch (status) {
-    case "불량발생":
-      return "part-bad";
-    case "조치완료":
-      return "part-done";
-    case "이상없음":
-      return "part-ok";
-    default:
-      return "part-default";
-  }
+function getColor(isDefect, status) {
+  if (isDefect) return "part-bad";
+  if (status === "IN_PROGRESS" || status === "IN_DIAGNOSIS") return "part-working";
+  if (status === "DONE") return "part-ok";
+  return "part-default";
 }
 
 export default function Cartest() {
+  const [car, setCar] = useState(null);
+  const auditId = "1"; // 실전에서는 useParams() 등으로 받기
+
+  useEffect(() => {
+    fetch_audit_detail(auditId)
+      .then(res => setCar(res.data))
+      .catch(err => console.error(err));
+  }, [auditId]);
+
+  if (!car) return <div>로딩중...</div>;
+
   return (
     <div style={{ display: "flex" }}>
-          <Sidebar />
-        <main style={{ marginLeft: "260px", width: "100%" }}>{
-    <div className="cartest-container">
-      <div className="cartest-header">
-        <span className="cartest-title">car 0231-123</span>
-      </div>
-      <div className="cartest-tab">
-        <button className="tab-btn active">상태</button>
-        <button className="tab-btn">검사중</button>
-      </div>
-      <div className="cartest-grid">
-        {parts.map((part, idx) => (
-          <div key={idx} className={`part-card ${getColor(part.status)}`}>
-            <div className="part-name">{part.name}</div>
-            <div className="part-time">시간: {part.time}</div>
-            <div className="part-worker">작업자: </div>
+      <Sidebar />
+      <main style={{ marginLeft: "260px", width: "100%" }}>
+        <div className="cartest-container">
+          <div className="cartest-header">
+            <span className="cartest-title">{car.model} (ID: {car.auditId})</span>
+            <span className="cartest-status">{car.status}</span>
           </div>
-        ))}
-      </div>
-    </div>
-  }
-  </main>
+          <div className="cartest-info">
+            <span>라인코드: {car.lineCode}</span>
+            <span>검사시각: {car.testAt?.slice(0, 19).replace("T", " ")}</span>
+          </div>
+          <div className="cartest-grid">
+            {car.inspections.map(part => (
+              <div
+                key={part.inspectionId}
+                className={`part-card ${getColor(part.isDefect, part.status)}`}
+                // 상세 페이지 이동 추가 가능
+              >
+                <div className="part-name">{inspectionTypeKor[part.inspectionType] || part.inspectionType}</div>
+                <div className="part-status">상태: {part.status}</div>
+                <div className="part-defect">{part.isDefect ? "불량발생" : "정상"}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
