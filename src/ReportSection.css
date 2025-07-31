@@ -1,0 +1,416 @@
+/* 보고서 섹션 전체 */
+.report-section {
+    width: 100%;
+}
+
+/* 헤더 */
+.report-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.report-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.menu-icon {
+    font-size: 20px;
+    color: #6c757d;
+}
+
+.report-title {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+/* 새로고침 버튼 */
+.refresh-button {
+    padding: 10px 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.refresh-button:hover {
+    background-color: #2980b9;
+    transform: translateY(-1px);
+}
+
+.refresh-button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.refresh-button.loading {
+    background-color: #95a5a6;
+}
+
+/* 스피너 애니메이션 */
+.spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* 보고서 목록 */
+.report-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    justify-items: center;
+    gap: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.report-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.report-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.report-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.report-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+@media (max-width: 768px) {
+    .report-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .report-list {
+        grid-template-columns: 1fr;
+        max-height: 250px;
+    }
+}
+
+/* 보고서 카드 */
+.report-card {
+    transition: all 0.3s ease;
+}
+
+.report-card:hover {
+    transform: translateY(-2px);
+}
+
+.report-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.report-simple-card {
+    height: 150px;
+    width: 100px;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.report-simple-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.report-card-title {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 16px;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.report-card-date {
+    color: #6c757d;
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+/* 상태 배지 */
+.report-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.status-approved {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.status-writing {
+    background-color: #cce7ff;
+    color: #004085;
+}
+
+.status-default {
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+}
+
+.modal-title {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #6c757d;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.close-button:hover {
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+.modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.report-meta {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.meta-value {
+    color: #2c3e50;
+}
+
+.report-content {
+    line-height: 1.6;
+    color: #2c3e50;
+}
+
+.report-content p {
+    margin-bottom: 12px;
+}
+
+.report-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* 빈 상태 */
+.no-reports {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.no-reports-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.no-reports-text {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.no-reports-subtext {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+/* 푸터 - 제거됨 */
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .report-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .report-card-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .report-card-title {
+        margin-right: 0;
+    }
+
+    .report-card-footer {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .report-actions {
+        width: 100%;
+        justify-content: flex-end;
+    }
+
+    .refresh-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-content {
+        margin: 10px;
+        max-height: 90vh;
+    }
+
+    .modal-header {
+        padding: 20px 20px 12px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .report-meta {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .report-card-content {
+        padding: 16px;
+    }
+
+    .action-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+    }
+
+    .no-reports {
+        padding: 40px 16px;
+    }
+
+    .no-reports-icon {
+        font-size: 36px;
+    }
+
+    .modal-overlay {
+        padding: 10px;
+    }
+
+    .modal-header {
+        padding: 16px;
+    }
+
+    .modal-body {
+        padding: 16px;
+    }
+
+    .modal-title {
+        font-size: 18px;
+    }
+}
