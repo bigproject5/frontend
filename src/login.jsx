@@ -12,8 +12,14 @@ export function Login() {
         "password": ""
     })
 
-    async function handleAdminLogin(formData) {
-        const data = await admin_login_api(formData);
+    async function handleLogin(formData) {
+        let data;
+        if (role === "admin") {
+            data = await admin_login_api(formData);
+        }
+        else if (role === "worker") {
+            data = await worker_login_api(formData);
+        }
 
         if (data.token) {
             sessionStorage.setItem('accessToken', data.token);
@@ -23,16 +29,6 @@ export function Login() {
         }
     }
 
-    async function handleWorkerLogin(formData) {
-        const data = await worker_login_api(formData);
-
-        if (data.token) {
-            sessionStorage.setItem('accessToken', data.token);
-        }
-        else {
-            alert("로그인 실패")
-        }
-    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
