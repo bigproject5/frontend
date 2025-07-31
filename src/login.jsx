@@ -16,7 +16,18 @@ export function Login() {
         const data = await admin_login_api(formData);
 
         if (data.token) {
-            sessionStorage.setItem('accessToken', token);
+            sessionStorage.setItem('accessToken', data.token);
+        }
+        else {
+            alert("로그인 실패")
+        }
+    }
+
+    async function handleWorkerLogin(formData) {
+        const data = await worker_login_api(formData);
+
+        if (data.token) {
+            sessionStorage.setItem('accessToken', data.token);
         }
         else {
             alert("로그인 실패")
@@ -35,11 +46,8 @@ export function Login() {
                 handleAdminLogin(formData)
             }
             else if (role === "worker") {
-
+                handleWorkerLogin(formData)
             }
-
-            const token = response.data.token;
-            sessionStorage.setItem('accessToken', token);
             console.log(response);
         }
         catch (error) {

@@ -12,12 +12,12 @@ export async function admin_login_api(postData) {
 }
 
 export async function worker_login_api(postData) {
-    return response = await fetch(`${Base_URL}/api/operation/worker/login`, {
+    const response = await fetch(`${Base_URL}/api/operation/workers/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),
     })
-
+    return response.json();
 }
 
 export async function Signup_api(postData) {
@@ -26,4 +26,12 @@ export async function Signup_api(postData) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),
     })
+}
+
+export async function getUserInfo(accessToken) {
+    const response = await fetch(`${Base_URL}/api/operation/workers/profile`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    })
+    return await response.json();
 }
