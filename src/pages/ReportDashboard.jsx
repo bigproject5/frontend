@@ -16,16 +16,19 @@ export default function ReportDashboard() {
   ];
 
   useEffect(() => {
-    const loadReports = async () => {
-      try {
-        const data = await fetchReports();
-        setReports(data.reports);
-      } catch (error) {
-        console.error("리포트 불러오기 실패:", error);
-      }
-    };
-    loadReports();
-  }, []);
+  const loadReports = async () => {
+    try {
+      const data = await fetchReports();
+      console.log("불러온 데이터 확인:", data);
+
+      setReports(data);
+    } catch (error) {
+      console.error("리포트 불러오기 실패:", error);
+      setReports([]); 
+    }
+  };
+  loadReports();
+}, []);
 
   return (
     <div className="container">
@@ -66,7 +69,7 @@ export default function ReportDashboard() {
               <ReportRow
                 key={report.reportId}
                 id={report.reportId}
-                workerId={report.companyNumber}
+                workerId={report.workerId}
                 carId={report.carId}
                 type={report.type}
                 createdAt={report.createdAt}
@@ -114,28 +117,18 @@ function SummaryCard({ title, value, diff }) {
   );
 }
 
-function ReportRow({ id, workerId, title, type, period, status, total, fail, pass, author, navigate }) {
+function ReportRow({ id, workerId, carId, type, createdAt, navigate }) {
   const handleView = () => {
-    // "RPT-001" → 숫자만 추출해서 상세 페이지로 연결
-    const numericId = id.replace("RPT-", "");
-    navigate(`/reports/${numericId}`);
+    navigate(`/reports/${id}`);
   };
 
   return (
     <tr>
-      <td>
-        {id}
-        <br />
-        <span style={{ fontSize: "12px", color: "#6b7280" }}>사번: {workerId ?? "-"}</span>
-      </td>
-      <td>{title}</td>
-      <td><span className="badge">{type}</span></td>
-      <td>{period}</td>
-      <td><span className="status-badge">{status}</span></td>
-      <td>{total}</td>
-      <td>{fail}</td>
-      <td>{pass}</td>
-      <td>{author}</td>
+      <td>{id}</td>
+      <td>{workerId ?? "-"}</td>
+      <td><span className="badge">{carId}</span></td>
+      <td>{type ?? "-"}</td>
+      <td>{createdAt ? new Date(createdAt).toLocaleDateString() : "-"}</td>
       <td>
         <button className="icon-btn" onClick={handleView}>
           <span className="icon">👁️</span> 보기
@@ -144,6 +137,8 @@ function ReportRow({ id, workerId, title, type, period, status, total, fail, pas
     </tr>
   );
 }
+
+
 
 function ScheduleRow({ title, time, active }) {
   return (

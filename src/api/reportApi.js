@@ -16,6 +16,22 @@ export async function fetchReportDetail(reportId) {
   return json.data;
 }
 
+// 요약 다시 요청 (GPT 재요약)
+export async function resummarizeReport(reportId) {
+  const res = await fetch(`${BASE_URL}/${reportId}/resummarize`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) throw new Error("요약 재요청 실패");
+
+  const json = await res.json();
+  return json.data;
+}
+
+
 // 리포트 생성(임시)
 export async function createReport(reportData) {
   const res = await fetch(BASE_URL, {
