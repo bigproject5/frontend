@@ -13,7 +13,7 @@ const InspectionDetail = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`/api/vehicleaudit/inspections/${inspectionId}`);
+        const response = await axios.get(`http://localhost:8080/api/vehicleaudit/inspections/${inspectionId}`);
 
         // Enhanced Debugging
         if (!response.data || !response.data.code) {
@@ -62,6 +62,23 @@ const InspectionDetail = () => {
       'FAILED': { color: '#ef4444', text: '실패', bgcolor: '#fee2e2' }
     };
     return statusMap[status] || statusMap['PENDING'];
+  };
+
+  const formatDateTime = (dateString) => {
+    if (!dateString) return '-';
+
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+
+      return `${year}년 ${month}월 ${day}일 ${hours}:${minutes}`;
+    } catch (error) {
+      return dateString;
+    }
   };
 
   if (loading) {
@@ -164,7 +181,7 @@ const InspectionDetail = () => {
             color: '#111827',
             letterSpacing: '-0.025em'
           }}>
-            차량 {inspectionData.audit?.model} / 검사 파츠: {inspectionData.partName}
+            검사 ID: {inspectionData.inspectionId} / 검사 타입: {inspectionData.inspectionType}
           </h1>
 
           {/* 상태 표시 */}
@@ -228,16 +245,26 @@ const InspectionDetail = () => {
               border: '2px dashed #d1d5db',
               overflow: 'hidden'
             }}>
-              <video
-                width="100%"
-                height="100%"
-                controls
-                key={inspectionData.imageUrl}
-                style={{ borderRadius: '12px' }}
-              >
-                <source src={inspectionData.imageUrl} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              {inspectionData.collectDataPath ? (
+                <video
+                  width="100%"
+                  height="100%"
+                  controls
+                  key={inspectionData.collectDataPath}
+                  style={{ borderRadius: '12px' }}
+                >
+                  <source src={inspectionData.collectDataPath} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <div style={{
+                  color: '#6b7280',
+                  fontSize: '14px',
+                  textAlign: 'center'
+                }}>
+                  검사 영상이 없습니다.
+                </div>
+              )}
             </div>
           </div>
 
@@ -283,7 +310,7 @@ const InspectionDetail = () => {
                 color: '#374151',
                 fontStyle: 'italic'
               }}>
-                "{inspectionData.description}"
+                "{inspectionData.aiSuggestion || inspectionData.diagnosisResult || 'AI 분석 결과가 없습니다.'}"
               </p>
             </div>
           </div>
@@ -335,7 +362,7 @@ const InspectionDetail = () => {
                   color: '#374151',
                   border: '1px solid #e5e7eb'
                 }}>
-                  {inspectionData.workerName || '-'}
+                  {inspectionData.task?.workerName || '-'}
                 </div>
               </div>
               <div>
@@ -358,7 +385,7 @@ const InspectionDetail = () => {
                   color: '#374151',
                   border: '1px solid #e5e7eb'
                 }}>
-                  {inspectionData.startedAt || '-'}
+                  {formatDateTime(inspectionData.task?.startedAt)}
                 </div>
               </div>
               <div>
@@ -381,7 +408,7 @@ const InspectionDetail = () => {
                   color: '#374151',
                   border: '1px solid #e5e7eb'
                 }}>
-                  {inspectionData.finishedAt || '-'}
+                  {formatDateTime(inspectionData.task?.finishedAt)}
                 </div>
               </div>
             </div>
@@ -427,7 +454,7 @@ const InspectionDetail = () => {
           whiteSpace: 'pre-wrap',
           fontFamily: 'inherit'
         }}>
-          {inspectionData.resolve || '조치 내용이 없습니다.'}
+          {inspectionData.task?.resolve || '조치 내용이 없습니다.'}
         </div>
       </div>
     </div>
