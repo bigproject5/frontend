@@ -15,17 +15,6 @@ import {
 } from '@mui/icons-material';
 
 const NoticeOverview = () => {
-  // 현대차 스타일 색상 팔레트 (심플하고 깔끔하게)
-  const colors = {
-    primary: '#002c5f',      // 현대차 진한 남색
-    secondary: '#6c757d',    // 회색
-    background: '#f8f9fa',   // 연한 회색 배경
-    surface: '#ffffff',      // 흰색
-    border: '#dee2e6',       // 연한 회색 테두리
-    text: '#212529',         // 진한 회색 텍스트
-    textSecondary: '#6c757d' // 보조 텍스트
-  };
-
   // 새로운 데이터 구조에 맞는 샘플 공지사항 데이터
   const notices = [
     {
@@ -88,20 +77,6 @@ const NoticeOverview = () => {
     }
   };
 
-  // 최근 공지사항인지 확인 (3일 이내)
-  const isRecentNotice = (dateString) => {
-    try {
-      const noticeDate = new Date(dateString);
-      const today = new Date();
-      const diffTime = Math.abs(today - noticeDate);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays <= 3;
-    } catch (error) {
-      console.error('Date comparison error:', error);
-      return false;
-    }
-  };
-
   // 더보기 클릭 핸들러 (나중에 라우팅 연결 예정)
   const handleViewMore = () => {
     try {
@@ -114,134 +89,98 @@ const NoticeOverview = () => {
 
   return (
     <Card
-      elevation={0}
+      elevation={2}
       sx={{
-        borderRadius: 1,
-        background: colors.surface,
-        border: `1px solid ${colors.border}`,
-        mb: 2,
-        overflow: 'visible'
+        borderRadius: 2,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        mb: 2
       }}
     >
-      <CardContent sx={{ p: 3 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 2,
-            pb: 1,
-            borderBottom: `2px solid ${colors.primary}`
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <NotificationsIcon sx={{ color: colors.primary, fontSize: 20 }} />
-            <Typography
-              variant="h6"
+      <CardContent sx={{ p: 0 }}>
+        {/* 헤더 */}
+        <Box sx={{
+          p: 3,
+          background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <NotificationsIcon sx={{ fontSize: 24 }} />
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                최근 공지사항
+              </Typography>
+            </Box>
+            <Button
+              size="small"
+              onClick={handleViewMore}
               sx={{
-                fontWeight: 600,
-                color: colors.text,
-                fontSize: '16px'
+                color: 'white',
+                fontSize: '12px',
+                fontWeight: 500,
+                textTransform: 'none',
+                padding: '4px 8px',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)'
+                }
               }}
+              endIcon={<ArrowRightIcon sx={{ fontSize: 14 }} />}
             >
-              최근 공지사항
-            </Typography>
+              더보기
+            </Button>
           </Box>
-          <Button
-            size="small"
-            onClick={handleViewMore}
-            sx={{
-              color: colors.primary,
-              fontSize: '12px',
-              fontWeight: 500,
-              textTransform: 'none',
-              padding: '4px 8px',
-              '&:hover': {
-                backgroundColor: colors.background
-              }
-            }}
-            endIcon={<ArrowRightIcon sx={{ fontSize: 14 }} />}
-          >
-            더보기
-          </Button>
         </Box>
 
-        <List
-          sx={{
-            p: 0,
-            border: `1px solid ${colors.border}`,
-            borderRadius: 2,
-            backgroundColor: colors.surface,
-            boxShadow: '0 2px 8px rgba(0, 44, 95, 0.1)',
-            overflow: 'hidden'
-          }}
-        >
-          {notices.map((notice, index) => (
-            <ListItem
-              key={notice.notificationId}
-              sx={{
-                p: 1.2,
-                mb: 0,
-                backgroundColor: colors.surface,
-                cursor: 'pointer',
-                transition: 'background-color 0.2s ease',
-                borderBottom: index < notices.length - 1 ? 'none' : 'none',
-                '&:hover': {
-                  backgroundColor: colors.background
-                },
-                '&:not(:last-child)::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: 0,
-                  left: '16px',
-                  right: '16px',
-                  height: '1px',
-                  backgroundColor: colors.border
-                },
-                position: 'relative'
-              }}
-            >
-              <ListItemText
-                primary={
-                  <Typography
-                    variant="subtitle2"
-                    sx={{
-                      fontWeight: 500,
-                      color: colors.text,
-                      fontSize: '14px',
-                      mb: 0.3
-                    }}
-                  >
-                    {notice.title}
-                  </Typography>
-                }
-                secondary={
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ p: 3 }}>
+          <List sx={{ p: 0 }}>
+            {notices.map((notice, index) => (
+              <ListItem
+                key={notice.notificationId}
+                sx={{
+                  py: 1.2,
+                  px: 0,
+                  cursor: 'pointer',
+                  transition: 'background-color 0.2s ease',
+                  borderBottom: index < notices.length - 1 ? '1px solid #dee2e6' : 'none',
+                  '&:hover': {
+                    backgroundColor: 'rgba(0, 44, 95, 0.04)'
+                  }
+                }}
+              >
+                <ListItemText
+                  primary={
                     <Typography
-                      variant="caption"
+                      variant="body2"
                       sx={{
-                        color: colors.textSecondary,
-                        fontSize: '12px'
+                        fontWeight: 500,
+                        color: '#212529',
+                        fontSize: '14px',
+                        mb: 0.5
                       }}
                     >
-                      {notice.author}
+                      {notice.title}
                     </Typography>
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        color: colors.textSecondary,
-                        fontSize: '12px'
-                      }}
-                    >
-                      {formatDate(notice.createdAt)}
-                    </Typography>
-                  </Box>
-                }
-                sx={{ m: 0 }}
-              />
-            </ListItem>
-          ))}
-        </List>
+                  }
+                  secondary={
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: '#6c757d', fontSize: '12px' }}
+                      >
+                        {notice.author}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: '#6c757d', fontSize: '12px' }}
+                      >
+                        {formatDate(notice.createdAt)}
+                      </Typography>
+                    </Box>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Box>
       </CardContent>
     </Card>
   );
