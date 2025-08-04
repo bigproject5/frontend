@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://localhost:8080/api/vehicleaudit';
+const API_BASE_URL = '/api/vehicleaudit';
+const NOTICE_API_BASE_URL = '/api/operation';
 
 // 가짜 작업자 데이터 (실제로는 Redux에서 관리될 예정)
 const MOCK_WORKER = {
@@ -158,6 +159,142 @@ const getMockData = (params = {}) => {
     number: page,
     sort: { sorted: false, unsorted: true },
     empty: content.length === 0
+  };
+};
+
+/**
+ * 공지사항 목록 조회 API
+ * @param {Object} params - 조회 파라미터
+ * @param {number} params.page - 페이지 번호 (0부터 시작)
+ * @param {number} params.size - 페이지 크기 (기본값: 5)
+ * @returns {Promise} API 응답
+ */
+export const getNotices = async (params = {}) => {
+  try {
+    const { page = 0, size = 5 } = params;
+
+    const queryParams = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString()
+    });
+
+    const response = await fetch(`${NOTICE_API_BASE_URL}/notices?${queryParams}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('공지사항 API 응답:', data);
+
+    return {
+      data: data,
+      status: 'success'
+    };
+  } catch (error) {
+    console.error('공지사항 조회 실패:', error);
+
+    // API 호출 실패 시 목업 데이터로 폴백
+    console.log('API 호출 실패로 목업 데이터 사용');
+    return getMockNotices(params);
+  }
+};
+
+// 공지사항 목업 데이터 반환 함수
+const getMockNotices = (params = {}) => {
+  const { page = 0, size = 5 } = params;
+
+  // 목업 공지사항 데이터
+  const MOCK_NOTICES = [
+    {
+      "id": 1,
+      "title": "시스템 점검 안내",
+      "adminId": 1,
+      "name": "김관리자",
+      "fileUrl": null,
+      "viewCount": 5,
+      "createdAt": "2025-01-10T13:18:58.554331",
+      "updatedAt": "2025-01-10T13:18:58.554331"
+    },
+    {
+      "id": 2,
+      "title": "검사 프로세스 업데이트",
+      "adminId": 2,
+      "name": "박매니저",
+      "fileUrl": null,
+      "viewCount": 12,
+      "createdAt": "2025-01-08T09:30:15.123456",
+      "updatedAt": "2025-01-08T09:30:15.123456"
+    },
+    {
+      "id": 3,
+      "title": "품질관리 교육 완료",
+      "adminId": 1,
+      "name": "김관리자",
+      "fileUrl": null,
+      "viewCount": 8,
+      "createdAt": "2025-01-05T16:45:30.789012",
+      "updatedAt": "2025-01-05T16:45:30.789012"
+    },
+    {
+      "id": 4,
+      "title": "새로운 검사 장비 도입",
+      "adminId": 3,
+      "name": "이팀장",
+      "fileUrl": null,
+      "viewCount": 15,
+      "createdAt": "2025-01-03T14:22:45.321654",
+      "updatedAt": "2025-01-03T14:22:45.321654"
+    },
+    {
+      "id": 5,
+      "title": "안전 수칙 개정 안내",
+      "adminId": 2,
+      "name": "박매니저",
+      "fileUrl": null,
+      "viewCount": 20,
+      "createdAt": "2025-01-01T11:15:20.987654",
+      "updatedAt": "2025-01-01T11:15:20.987654"
+    }
+  ];
+
+  // 페이징 처리
+  const totalElements = MOCK_NOTICES.length;
+  const totalPages = Math.ceil(totalElements / size);
+  const startIndex = page * size;
+  const endIndex = startIndex + size;
+  const content = MOCK_NOTICES.slice(startIndex, endIndex);
+
+  // Spring Data JPA Page 형식으로 응답 생성
+  const mockResponse = {
+    content,
+    pageable: {
+      sort: { sorted: false, unsorted: true },
+      pageNumber: page,
+      pageSize: size,
+      offset: startIndex,
+      paged: true,
+      unpaged: false
+    },
+    totalElements,
+    totalPages,
+    last: page >= totalPages - 1,
+    first: page === 0,
+    numberOfElements: content.length,
+    size,
+    number: page,
+    sort: { sorted: false, unsorted: true },
+    empty: content.length === 0
+  };
+
+  return {
+    data: mockResponse,
+    status: 'success'
   };
 };
 
