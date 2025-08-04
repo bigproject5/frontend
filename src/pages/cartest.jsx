@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { fetch_audit_detail } from "../api/vehicleAuditApi";
+import { fetch_audit_detail } from "./vehicleAuditApi";
 import "./cartest.css";
 
 const inspectionTypeKor = {

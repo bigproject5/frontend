@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { fetch_inspection_detail } from "../api/vehicleAuditApi";
+import { useParams } from "react-router-dom";  
+import { fetch_inspection_detail } from "./vehicleAuditApi";
 import "./workerpartdetail.css";
 
 const inspectionTypeKor = {
@@ -11,10 +12,12 @@ const inspectionTypeKor = {
   WASHER_FLUID: "워셔액"
 };
 
-export default function Workerpartdetail({ inspectionId }) {
+export default function Workerpartdetail() {
+  const { inspectionId } = useParams(); // 라우터에서 파라미터 받음
   const [detail, setDetail] = useState(null);
 
   useEffect(() => {
+    if (!inspectionId) return; // undefined 방지
     fetch_inspection_detail(inspectionId)
       .then(res => setDetail(res.data))
       .catch(err => console.error(err));
