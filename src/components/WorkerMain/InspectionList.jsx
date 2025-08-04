@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardContent,
@@ -7,345 +7,306 @@ import {
   List,
   ListItem,
   ListItemText,
+  Pagination,
   Chip,
-  Pagination
+  CircularProgress,
+  Divider,
+  Avatar
 } from '@mui/material';
 import {
-  Assignment as AssignmentIcon,
-  Circle as CircleIcon
+  PendingActions,
+  PlayArrow,
+  CheckCircle,
+  Search,
+  Build as BuildIcon,
+  Schedule as ScheduleIcon,
+  Person as PersonIcon,
+  Assignment as AssignmentIcon
 } from '@mui/icons-material';
 
-const InspectionList = () => {
-  // 현대차 스타일 색상 팔레트 (심플하고 깔끔하게)
-  const colors = {
-    primary: '#002c5f',      // 현대차 진한 남색
-    secondary: '#6c757d',    // 회색
-    background: '#f8f9fa',   // 연한 회색 배경
-    surface: '#ffffff',      // 흰색
-    border: '#dee2e6',       // 연한 회색 테두리
-    text: '#212529',         // 진한 회색 텍스트
-    textSecondary: '#6c757d', // 보조 텍스트
-    // 상태별 색상 (현대차 스타일에 맞게 단순화)
-    pending: '#007bff',      // 파란색 (대기중)
-    inProgress: '#ffc107',   // 노란색 (진행중)
-    completed: '#28a745',    // 초록색 (완료)
-    defect: '#dc3545'        // 빨간색 (불량)
-  };
-
-  // 페이징 상태
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(10); // 한 페이지당 10개
-
-  // 샘플 검사 데이터 (실제로는 API에서 받아올 데이터)
-  const sampleInspections = [
-    {
-      inspectionId: "1",
-      inspectionType: "PAINT",
-      status: "IN_ACTION",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T14:02:09.711515"
-    },
-    {
-      inspectionId: "2",
-      inspectionType: "WELD",
-      status: "PENDING",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T13:30:15.123456"
-    },
-    {
-      inspectionId: "3",
-      inspectionType: "ASSEMBLY",
-      status: "COMPLETED",
-      isDefect: true,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T12:45:30.789012"
-    },
-    {
-      inspectionId: "4",
-      inspectionType: "PAINT",
-      status: "IN_ACTION",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T11:20:45.321654"
-    },
-    {
-      inspectionId: "5",
-      inspectionType: "QUALITY_CHECK",
-      status: "PENDING",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T10:15:20.987654"
-    },
-    {
-      inspectionId: "6",
-      inspectionType: "WELD",
-      status: "COMPLETED",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T09:45:12.456789"
-    },
-    {
-      inspectionId: "7",
-      inspectionType: "ASSEMBLY",
-      status: "PENDING",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T08:30:25.654321"
-    },
-    {
-      inspectionId: "8",
-      inspectionType: "QUALITY_CHECK",
-      status: "IN_ACTION",
-      isDefect: false,
-      workerId: 1,
-      workerName: "ekek54",
-      taskStartedAt: "2025-07-30T07:15:38.789456"
-    }
-  ];
-
-  // 검사 상태별 색상 및 텍스트 매핑
+const InspectionList = ({
+  inspections,
+  loading,
+  currentPage,
+  totalPages,
+  onPageChange,
+  onInspectionClick
+}) => {
+  // 상태별 색상 및 라벨 매핑 (아이콘 통일)
   const getStatusInfo = (status) => {
     switch (status) {
+      case 'ABNORMAL':
+        return {
+          label: '대기중',
+          color: '#ff9800',
+          bgColor: '#fff8e1',
+          icon: <PendingActions sx={{ fontSize: 20 }} />
+        };
       case 'IN_ACTION':
         return {
-          color: colors.inProgress,
-          text: '진행중',
-          bgColor: `${colors.inProgress}20`
+          label: '진행중',
+          color: '#2196f3',
+          bgColor: '#e3f2fd',
+          icon: <PlayArrow sx={{ fontSize: 20 }} />
         };
-      case 'PENDING':
+      case 'IN_DIAGNOSIS':
         return {
-          color: colors.pending,
-          text: '대기중',
-          bgColor: `${colors.pending}20`
+          label: '진단중',
+          color: '#9c27b0',
+          bgColor: '#f3e5f5',
+          icon: <Search sx={{ fontSize: 20 }} />
         };
       case 'COMPLETED':
         return {
-          color: colors.completed,
-          text: '완료',
-          bgColor: `${colors.completed}20`
+          label: '완료',
+          color: '#4caf50',
+          bgColor: '#e8f5e8',
+          icon: <CheckCircle sx={{ fontSize: 20 }} />
         };
       default:
         return {
-          color: colors.secondary,
-          text: '알 수 없음',
-          bgColor: `${colors.secondary}20`
+          label: '알 수 없음',
+          color: '#9e9e9e',
+          bgColor: '#f5f5f5',
+          icon: <BuildIcon sx={{ fontSize: 20 }} />
         };
     }
   };
 
   // 검사 타입 한글 변환
-  const getInspectionTypeText = (type) => {
+  const getInspectionTypeLabel = (type) => {
     switch (type) {
-      case 'PAINT': return '도장 검사';
-      case 'WELD': return '용접 검사';
-      case 'ASSEMBLY': return '조립 검사';
-      case 'QUALITY_CHECK': return '품질 검사';
-      default: return type;
+      case 'PAINT':
+        return '도장';
+      case 'BODY':
+        return '차체';
+      case 'ENGINE':
+        return '엔진';
+      default:
+        return type;
     }
   };
 
   // 날짜 포맷팅
-  const formatDateTime = (dateString) => {
-    try {
-      const date = new Date(dateString);
-      if (isNaN(date.getTime())) {
-        return '날짜 없음';
-      }
-      return date.toLocaleString('ko-KR', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    } catch (error) {
-      console.error('DateTime formatting error:', error);
-      return '날짜 오류';
-    }
-  };
-
-  // 검사 아이템 클릭 핸들러
-  const handleInspectionClick = (inspectionId) => {
-    try {
-      console.log(`검사 상세 페이지로 이동: ${inspectionId}`);
-      // 나중에 navigate(`/inspection/${inspectionId}`) 등으로 변경
-    } catch (error) {
-      console.error('Navigation error:', error);
-    }
-  };
-
-  // 페이지 변경 핸들러
-  const handlePageChange = (event, value) => {
-    try {
-      setCurrentPage(value);
-      console.log(`페이지 변경: ${value}`);
-      // 나중에 API 호출
-    } catch (error) {
-      console.error('Pagination error:', error);
-    }
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
 
   return (
     <Card
-      elevation={0}
+      elevation={2}
       sx={{
-        borderRadius: 1,
-        background: colors.surface,
-        border: `1px solid ${colors.border}`,
-        overflow: 'visible'
+        borderRadius: 2,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        border: '1px solid #e9ecef',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          boxShadow: '0 8px 25px rgba(0,44,95,0.15)'
+        }
       }}
     >
-      <CardContent sx={{ p: 3 }}>
+      <CardContent sx={{ p: 0 }}>
         {/* 헤더 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, pb: 1, borderBottom: `2px solid ${colors.primary}` }}>
-          <AssignmentIcon sx={{ color: colors.primary, fontSize: 20 }} />
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 600,
-              color: colors.text,
-              fontSize: '16px'
-            }}
-          >
-            검사 목록
-          </Typography>
+        <Box sx={{
+          p: 3,
+          background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <BuildIcon sx={{ fontSize: 24 }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              검사 목록
+            </Typography>
+            {inspections.length > 0 && (
+              <Chip
+                label={`${inspections.length}건`}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  fontWeight: 600
+                }}
+              />
+            )}
+          </Box>
         </Box>
 
-        {/* 검사 목록 */}
-        <List sx={{ p: 0 }}>
-          {sampleInspections.map((inspection, index) => {
-            const statusInfo = getStatusInfo(inspection.status);
-            return (
-              <ListItem
-                key={inspection.inspectionId}
-                sx={{
-                  p: 2,
-                  mb: 1,
-                  borderRadius: 1,
-                  border: `1px solid ${colors.border}`,
-                  backgroundColor: colors.surface,
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s ease',
-                  '&:hover': {
-                    backgroundColor: colors.background
-                  },
-                  '&:last-child': {
-                    mb: 0
-                  }
-                }}
-                onClick={() => handleInspectionClick(inspection.inspectionId)}
-              >
-                <ListItemText
-                  primary={
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{
-                          fontWeight: 500,
-                          color: colors.text,
-                          fontSize: '14px'
-                        }}
-                      >
-                        {getInspectionTypeText(inspection.inspectionType)}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {inspection.isDefect && (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                            <CircleIcon sx={{ fontSize: 8, color: colors.defect }} />
-                            <Typography
-                              variant="caption"
-                              sx={{
-                                color: colors.defect,
-                                fontSize: '11px',
-                                fontWeight: 500
-                              }}
-                            >
-                              불량
-                            </Typography>
-                          </Box>
-                        )}
-                        <Chip
-                          size="small"
-                          label={statusInfo.text}
-                          sx={{
-                            backgroundColor: statusInfo.bgColor,
-                            color: statusInfo.color,
-                            fontSize: '11px',
-                            height: '20px'
-                          }}
-                        />
-                      </Box>
-                    </Box>
-                  }
-                  secondary={
-                    <Box>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: colors.textSecondary,
-                            fontSize: '12px'
-                          }}
-                        >
-                          검사 ID: {inspection.inspectionId}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{
-                            color: colors.textSecondary,
-                            fontSize: '12px'
-                          }}
-                        >
-                          작업자: {inspection.workerName}
-                        </Typography>
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        sx={{
-                          color: colors.textSecondary,
-                          fontSize: '12px'
-                        }}
-                      >
-                        시작일: {formatDateTime(inspection.taskStartedAt)}
-                      </Typography>
-                    </Box>
-                  }
-                  sx={{ m: 0 }}
-                />
-              </ListItem>
-            );
-          })}
-        </List>
+        <Box sx={{ p: 3 }}>
+          {/* 로딩 상태 */}
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <CircularProgress size={40} sx={{ color: '#1976d2' }} />
+                <Typography variant="body2" sx={{ mt: 2, color: '#666' }}>
+                  검사 목록을 불러오는 중...
+                </Typography>
+              </Box>
+            </Box>
+          ) : (
+            <>
+              {/* 검사 목록 */}
+              {inspections.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 6 }}>
+                  <AssignmentIcon sx={{ fontSize: 48, color: '#ccc', mb: 2 }} />
+                  <Typography variant="h6" color="textSecondary" sx={{ mb: 1 }}>
+                    검사 목록이 없습니다
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    현재 조건에 맞는 검사 항목이 없습니다.
+                  </Typography>
+                </Box>
+              ) : (
+                <List sx={{ p: 0 }}>
+                  {inspections.map((inspection, index) => {
+                    const statusInfo = getStatusInfo(inspection.status);
 
-        {/* 페이지네이션 */}
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, pt: 2, borderTop: `1px solid ${colors.border}` }}>
-          <Pagination
-            count={5}
-            page={currentPage}
-            onChange={handlePageChange}
-            color="primary"
-            sx={{
-              '& .MuiPaginationItem-root': {
-                color: colors.textSecondary,
-                '&.Mui-selected': {
-                  backgroundColor: colors.primary,
-                  color: colors.surface
-                },
-                '&:hover': {
-                  backgroundColor: colors.background
-                }
-              }
-            }}
-          />
+                    return (
+                      <React.Fragment key={inspection.inspectionId}>
+                        <ListItem
+                          onClick={() => onInspectionClick(inspection.inspectionId)}
+                          sx={{
+                            cursor: 'pointer',
+                            borderRadius: 2,
+                            transition: 'all 0.3s ease',
+                            mb: 2,
+                            border: '1px solid #e0e0e0',
+                            backgroundColor: '#ffffff',
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                            '&:hover': {
+                              backgroundColor: statusInfo.bgColor,
+                              border: `2px solid ${statusInfo.color}`,
+                              transform: 'translateX(8px)',
+                              boxShadow: `0 6px 20px ${statusInfo.color}25`
+                            },
+                            px: 3,
+                            py: 2.5
+                          }}
+                        >
+                          <Avatar
+                            sx={{
+                              backgroundColor: statusInfo.bgColor,
+                              color: statusInfo.color,
+                              mr: 2,
+                              width: 48,
+                              height: 48
+                            }}
+                          >
+                            {statusInfo.icon}
+                          </Avatar>
+
+                          <ListItemText
+                            primary={
+                              <Box sx={{ mb: 1 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                  <Typography
+                                    variant="h6"
+                                    sx={{
+                                      fontWeight: 700,
+                                      color: '#212529',
+                                      fontSize: '18px'
+                                    }}
+                                  >
+                                    검사 ID: {inspection.inspectionId}
+                                  </Typography>
+                                  <Chip
+                                    label={getInspectionTypeLabel(inspection.inspectionType)}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: '#002c5f',
+                                      color: 'white',
+                                      fontSize: '12px',
+                                      fontWeight: 600
+                                    }}
+                                  />
+                                  <Chip
+                                    label={statusInfo.label}
+                                    size="small"
+                                    sx={{
+                                      backgroundColor: statusInfo.color,
+                                      color: 'white',
+                                      fontSize: '12px',
+                                      fontWeight: 600
+                                    }}
+                                  />
+                                  {inspection.isDefect && (
+                                    <Chip
+                                      label="불량"
+                                      size="small"
+                                      sx={{
+                                        backgroundColor: '#f44336',
+                                        color: 'white',
+                                        fontSize: '12px',
+                                        fontWeight: 600,
+                                        animation: 'pulse 2s infinite'
+                                      }}
+                                    />
+                                  )}
+                                </Box>
+                              </Box>
+                            }
+                            secondary={
+                              <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                  <PersonIcon sx={{ fontSize: 16, color: '#666' }} />
+                                  <Typography variant="body2" color="textSecondary" sx={{ fontWeight: 500 }}>
+                                    {inspection.workerName}
+                                  </Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                  <ScheduleIcon sx={{ fontSize: 16, color: '#666' }} />
+                                  <Typography variant="body2" color="textSecondary">
+                                    {formatDate(inspection.taskStartedAt)}
+                                  </Typography>
+                                </Box>
+                              </Box>
+                            }
+                          />
+                        </ListItem>
+
+                        {index < inspections.length - 1 && (
+                          <Divider sx={{ mx: 3, opacity: 0.2 }} />
+                        )}
+                      </React.Fragment>
+                    );
+                  })}
+                </List>
+              )}
+
+              {/* 페이징 */}
+              {totalPages > 1 && (
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  mt: 4,
+                  pt: 3,
+                  borderTop: '1px solid #e9ecef'
+                }}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage + 1}
+                    onChange={(event, page) => onPageChange(page - 1)}
+                    color="primary"
+                    size="large"
+                    sx={{
+                      '& .MuiPaginationItem-root': {
+                        fontSize: '16px',
+                        fontWeight: 500
+                      }
+                    }}
+                  />
+                </Box>
+              )}
+            </>
+          )}
         </Box>
       </CardContent>
     </Card>

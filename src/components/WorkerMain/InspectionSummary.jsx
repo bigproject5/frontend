@@ -1,152 +1,195 @@
 import React from 'react';
-import {
-  Card,
-  CardContent,
-  Typography,
-  Box,
-  Grid
-} from '@mui/material';
-import {
-  Assessment as AssessmentIcon,
-  Schedule as ScheduleIcon,
-  PlayArrow as PlayArrowIcon,
-  CheckCircle as CheckCircleIcon
-} from '@mui/icons-material';
+import { Box, Card, CardContent, Typography } from '@mui/material';
+import { PendingActions, PlayArrow, CheckCircle, Search, Assessment } from '@mui/icons-material';
 
-const InspectionSummary = () => {
-  // 현대차 스타일 색상 팔레트 (심플하고 깔끔하게)
-  const colors = {
-    primary: '#002c5f',      // 현대차 진한 남색
-    secondary: '#6c757d',    // 회색
-    background: '#f8f9fa',   // 연한 회색 배경
-    surface: '#ffffff',      // 흰색
-    border: '#dee2e6',       // 연한 회색 테두리
-    text: '#212529',         // 진한 회색 텍스트
-    textSecondary: '#6c757d' // 보조 텍스트
-  };
-
-  // 샘플 집계 데이터 (실제로는 API에서 받아올 데이터)
-  const summaryData = {
-    pending: 12,
-    inAction: 8,
-    completed: 25
-  };
-
-  const totalCount = summaryData.pending + summaryData.inAction + summaryData.completed;
-
-  // 상태별 정보 매핑
-  const statusCards = [
+const InspectionSummary = ({ summaryData, onStatusClick, selectedStatus }) => {
+  const statusItems = [
     {
-      title: '대기중',
-      count: summaryData.pending,
-      icon: <ScheduleIcon sx={{ fontSize: 24, color: colors.primary }} />
+      label: '진단중',
+      value: summaryData.inDiagnosis,
+      status: 'IN_DIAGNOSIS',
+      icon: <Search sx={{ fontSize: 32, color: '#9c27b0' }} />,
+      color: '#9c27b0',
+      bgColor: '#f3e5f5' // 더 연한 보라색 배경
     },
     {
-      title: '진행중',
-      count: summaryData.inAction,
-      icon: <PlayArrowIcon sx={{ fontSize: 24, color: colors.primary }} />
+      label: '대기중',
+      value: summaryData.abnormal,
+      status: 'ABNORMAL',
+      icon: <PendingActions sx={{ fontSize: 32, color: '#ff9800' }} />,
+      color: '#ff9800',
+      bgColor: '#fff8e1', // 더 연한 오렌지 배경
+      accentColor: '#ffcc02'
     },
     {
-      title: '완료',
-      count: summaryData.completed,
-      icon: <CheckCircleIcon sx={{ fontSize: 24, color: colors.primary }} />
+      label: '진행중',
+      value: summaryData.inAction,
+      status: 'IN_ACTION',
+      icon: <PlayArrow sx={{ fontSize: 32, color: '#2196f3' }} />,
+      color: '#2196f3',
+      bgColor: '#e3f2fd' // 더 연한 파란색 배경
+    },
+    {
+      label: '완료',
+      value: summaryData.completed,
+      status: 'COMPLETED',
+      icon: <CheckCircle sx={{ fontSize: 32, color: '#4caf50' }} />,
+      color: '#4caf50',
+      bgColor: '#e8f5e8', // 더 연한 초록색 배경
+      accentColor: '#66bb6a'
     }
   ];
 
+  const handleCardClick = (status) => {
+    const newStatus = selectedStatus === status ? null : status;
+    onStatusClick(newStatus);
+  };
+
   return (
     <Card
-      elevation={0}
+      elevation={2}
       sx={{
-        borderRadius: 1,
-        background: colors.surface,
-        border: `1px solid ${colors.border}`,
-        mb: 2,
-        overflow: 'visible'
+        borderRadius: 2,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        border: '1px solid #e9ecef',
+        overflow: 'hidden',
+        transition: 'all 0.3s ease',
+        '&:hover': {
+          boxShadow: '0 8px 25px rgba(0,44,95,0.15)'
+        }
       }}
     >
-      <CardContent sx={{ p: 3 }}>
+      <CardContent sx={{ p: 0 }}>
         {/* 헤더 */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, pb: 1, borderBottom: `2px solid ${colors.primary}` }}>
-          <AssessmentIcon sx={{ color: colors.primary, fontSize: 20 }} />
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 600,
-              color: colors.text,
-              fontSize: '16px'
-            }}
-          >
-            검사 집계
-          </Typography>
+        <Box sx={{
+          p: 3,
+          background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Assessment sx={{ fontSize: 24 }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              검사 집계
+            </Typography>
+          </Box>
         </Box>
 
-        {/* 총 검사 항목 */}
-        <Box sx={{ mb: 2 }}>
-          <Typography
-            variant="body2"
-            sx={{
-              color: colors.textSecondary,
-              fontSize: '14px',
-              textAlign: 'left'
-            }}
-          >
-            총 검사 항목: <strong>{totalCount}개</strong>
-          </Typography>
-        </Box>
+        <Box sx={{ p: 3 }}>
+          {/* 총 검사 항목 */}
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                color: '#002c5f',
+                fontWeight: 700,
+                fontSize: '18px',
+                textAlign: 'left'
+              }}
+            >
+              총 검사 항목: <span style={{color: '#1976d2'}}>{summaryData.total}개</span>
+            </Typography>
+          </Box>
 
-        {/* 상태별 카드들 */}
-        <Grid container spacing={2}>
-          {statusCards.map((card, index) => (
-            <Grid item xs={4} key={index}>
+          {/* 상태별 카드들 */}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            {statusItems.map((item) => (
               <Card
-                elevation={0}
+                key={item.status}
+                onClick={() => handleCardClick(item.status)}
                 sx={{
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: 1,
-                  backgroundColor: colors.surface,
+                  flex: 1,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  border: selectedStatus === item.status ? `3px solid ${item.color}` : '1px solid #e0e0e0',
+                  background: selectedStatus === item.status
+                    ? `linear-gradient(135deg, ${item.bgColor} 0%, ${item.color}15 100%)`
+                    : `linear-gradient(135deg, ${item.bgColor} 0%, #ffffff 100%)`,
+                  boxShadow: selectedStatus === item.status
+                    ? `0 8px 25px ${item.color}25`
+                    : '0 2px 10px rgba(0,0,0,0.08)',
                   '&:hover': {
-                    backgroundColor: colors.background
-                  },
-                  transition: 'background-color 0.2s ease'
+                    transform: 'translateY(-4px) scale(1.02)',
+                    boxShadow: `0 12px 30px ${item.color}30`,
+                    background: `linear-gradient(135deg, ${item.bgColor} 0%, ${item.color}20 100%)`
+                  }
                 }}
               >
-                <CardContent
-                  sx={{
-                    p: 2,
+                <CardContent sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  py: 3,
+                  px: 2.5,
+                  '&:last-child': { pb: 3 }
+                }}>
+                  {/* 왼쪽 1/3: 아이콘과 라벨 */}
+                  <Box sx={{
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
-                    '&:last-child': { pb: 2 }
-                  }}
-                >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    {card.icon}
+                    gap: 1,
+                    flex: '0 0 33.33%'
+                  }}>
+                    <Box sx={{
+                      p: 1,
+                      borderRadius: '50%',
+                      backgroundColor: `${item.color}15`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      {item.icon}
+                    </Box>
                     <Typography
-                      variant="body2"
+                      variant="subtitle1"
                       sx={{
-                        fontWeight: 500,
-                        color: colors.text,
-                        fontSize: '14px'
+                        fontWeight: 700,
+                        color: item.color,
+                        fontSize: '16px',
+                        whiteSpace: 'nowrap'
                       }}
                     >
-                      {card.title}
+                      {item.label}
                     </Typography>
                   </Box>
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      fontWeight: 600,
-                      color: colors.primary,
-                      fontSize: '18px'
-                    }}
-                  >
-                    {card.count}
-                  </Typography>
+
+                  {/* 오른쪽 2/3: 숫자와 "건" */}
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 0.5,
+                    flex: '0 0 66.67%'
+                  }}>
+                    <Typography
+                      variant="h3"
+                      sx={{
+                        fontWeight: 800,
+                        color: item.color,
+                        fontSize: '2.5rem',
+                        lineHeight: 1,
+                        textShadow: `0 2px 4px ${item.color}25`
+                      }}
+                    >
+                      {item.value}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: item.color,
+                        fontSize: '18px',
+                        fontWeight: 600,
+                        alignSelf: 'flex-end',
+                        mb: 0.5
+                      }}
+                    >
+                      건
+                    </Typography>
+                  </Box>
                 </CardContent>
               </Card>
-            </Grid>
-          ))}
-        </Grid>
+            ))}
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
