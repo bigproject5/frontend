@@ -4,7 +4,7 @@
 //========================================================
 
 // 공지사항 API의 기본 URL
-const API_BASE = "http://localhost:8080/api/notices";
+const API_BASE = "http://localhost:8080/api/operation/notices";
 
 // 헤더 설정 (필요에 따라 변경 가능)
 const getCommonHeaders = () => {
@@ -94,7 +94,7 @@ export async function getNoticeDetail(id) {
 /**
  * 새로운 공지사항을 생성합니다. (파일 첨부 가능)
  * @param {object} noticeData - { title, content }
- * @param {File} [file] - 첨부할 파일 객체 (선택 사항)
+ * @param {*[]} [file] - 첨부할 파일 객체 (선택 사항)
  */
 export async function createNotice(noticeData, file) {
   try {
@@ -108,7 +108,7 @@ export async function createNotice(noticeData, file) {
     if (file) {
       formData.append('file', file);
     }
-    
+
     const response = await fetch(API_BASE, {
       method: 'POST',
       headers: getCommonHeaders(),
