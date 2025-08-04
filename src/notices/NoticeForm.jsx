@@ -1,6 +1,7 @@
 // src/notices/NoticeForm.jsx - 파일 첨부 기능 포함
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { createNotice} from "./NoticeAPI.js";
 import {
   Paper,
   Typography,
@@ -104,8 +105,11 @@ function NoticeForm() {
     // 실제로는 API 호출 (파일 업로드 포함)
     console.log('저장할 데이터:', formData)
     console.log('첨부파일:', attachedFiles)
-    setShowSuccess(true)
 
+    const Response = createNotice(formData, attachedFiles)
+    console.log(Response)
+
+    setShowSuccess(true)
     // 성공 후 관리자 대시보드로 이동
     setTimeout(() => {
       navigate('/admin')
