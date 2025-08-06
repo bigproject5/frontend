@@ -1,13 +1,17 @@
 import React from 'react';
 import { AppBar, Toolbar, Box, Typography, Button, Chip, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useUserRole } from '../../hooks/useUserRole';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../store/authSlice';
 import LogoutIcon from '@mui/icons-material/Logout';
 import logo from '../../assets/icons8-현대-480.svg';
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user, isAdmin, logout } = useUserRole();
+  const dispatch = useDispatch();
+  const { user, role } = useSelector(state => state.auth);
+
+  const isAdmin = () => role === 'admin';
 
   const handleLogoClick = () => {
     // 역할에 따라 메인 페이지로 이동
@@ -15,18 +19,19 @@ const Header = () => {
     console.log('관리자 여부:', isAdmin());
 
     if (isAdmin()) {
-      console.log('관리자 메인으로 이동: /admin');
-      navigate('/admin');
+      console.log('관리자 메인으로 이동: /admin/dashboard');
+      navigate('/admin/dashboard');
     } else {
-      console.log('작업자 메인으로 이동: /worker');
-      navigate('/worker');
+      console.log('작업자 메인으로 이동: /worker/main');
+      navigate('/worker/main');
     }
   };
 
   const handleLogout = () => {
-    // 나중에 로그아웃 기능 구현
+    // 로그아웃 기능 구현
     console.log('로그아웃 버튼 클릭됨');
-    // logout(); // 실제 로그아웃 기능은 나중에 구현
+    dispatch(logout());
+    navigate('/login');
   };
 
   return (

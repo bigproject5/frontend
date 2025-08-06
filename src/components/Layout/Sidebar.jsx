@@ -10,7 +10,7 @@ import {
   Divider
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useUserRole } from '../../hooks/useUserRole';
+import { useSelector } from 'react-redux';
 import {
   Dashboard as DashboardIcon,
   People as PeopleIcon,
@@ -25,14 +25,16 @@ import {
 const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAdmin } = useUserRole();
+  const { role } = useSelector(state => state.auth);
+
+  const isAdmin = () => role === 'admin';
 
   // 관리자 메뉴
   const adminMenuItems = [
     {
       text: '대시보드',
       icon: <DashboardIcon />,
-      path: '/admin',
+      path: '/admin/dashboard',
       description: '메인페이지'
     },
     {
