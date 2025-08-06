@@ -26,7 +26,7 @@ export async function getNotices(page = 0, size = 10) {
     url.searchParams.append('size', size);
 
     const response = await fetch(url.toString());
-    
+
     if (!response.ok) {
       throw new Error(`공지사항 조회 실패: ${response.status}`);
     }
@@ -80,7 +80,7 @@ export async function getNotices(page = 0, size = 10) {
 export async function getNoticeDetail(id) {
   try {
     const response = await fetch(`${API_BASE}/${id}`);
-    
+
     if (!response.ok) {
       throw new Error(`공지사항 상세 조회 실패: ${response.status}`);
     }
@@ -114,7 +114,7 @@ export async function createNotice(noticeData, file) {
       headers: getCommonHeaders(),
       body: formData, // FormData를 사용하면 Content-Type은 자동으로 multipart/form-data로 설정됩니다.
     });
-    
+
     if (!response.ok) {
       const errorData = await response.text();
       throw new Error(`공지사항 생성 실패: ${response.status}, ${errorData}`);
@@ -142,13 +142,13 @@ export async function updateNotice(id, noticeData, file) {
     if (file) {
       formData.append('file', file);
     }
-    
+
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
       headers: getCommonHeaders(),
       body: formData,
     });
-    
+
     if (!response.ok) {
       const errorData = await response.text();
       throw new Error(`공지사항 수정 실패: ${response.status}, ${errorData}`);
@@ -170,7 +170,7 @@ export async function deleteNotice(id) {
       method: 'DELETE',
       headers: getCommonHeaders(),
     });
-    
+
     if (!response.ok) {
       throw new Error(`공지사항 삭제 실패: ${response.status}`);
     }
@@ -214,3 +214,4 @@ export const getDepartmentColor = (department) => {
   const dept = departments.find(d => d.value === department);
   return dept ? dept.color : "default";
 };
+
