@@ -75,7 +75,7 @@ function NoticeList() {
   }
 
   const handleRowClick = (noticeId) => {
-    navigate(`/notice/${noticeId}`)
+    navigate(`/notices/${noticeId}`)
   }
 
   return (
