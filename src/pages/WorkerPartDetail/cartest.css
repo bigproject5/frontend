@@ -1,9 +1,8 @@
 .cartest-container {
   width: 100%;
   min-height: 100vh;
-  background: #fff;
-  padding: 40px 0 0 340px; 
-  padding: 32px;
+  background: #f8f9fa;
+  padding: 24px;
   box-sizing: border-box;
 }
 
@@ -11,47 +10,213 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
-.cartest-title {
-  font-size: 24px;
-  font-weight: 600;
-}
-.cartest-tab {
+
+.title-section {
   display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 8px;
 }
-.tab-btn {
-  padding: 12px 24px;
-  border-radius: 8px;
-  background: #f3f3f3;
-  border: none;
+
+.cartest-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #002c5f;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.audit-id {
+  font-size: 14px;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.status-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
   font-weight: 600;
-  cursor: pointer;
+  font-size: 14px;
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 2px solid #bbdefb;
 }
-.tab-btn.active {
-  background: #e5e5e5;
+
+.cartest-info {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  font-size: 16px;
+  color: #212529;
+  font-weight: 600;
+}
+
+.inspections-section {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #002c5f;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e9ecef;
+}
+
 .cartest-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
 }
+
 .part-card {
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
-  background: #f8f8f8;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
 }
-.part-bad { background: #fff8cb; }
-.part-done { background: #c6f7e2; }
-.part-ok { background: #e0f2fe; }
-.part-default { background: #f3f3f3; }
+
+.part-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.part-bad {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-left-color: #f39c12;
+}
+
+.part-working {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-left-color: #2196f3;
+}
+
+.part-done {
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-left-color: #28a745;
+}
+
+.part-default {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-left-color: #6c757d;
+}
+
+.part-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
 .part-name {
+  font-weight: 700;
+  font-size: 18px;
+  color: #002c5f;
+}
+
+.status-indicator {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-indicator.normal {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-indicator.defect {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.part-details {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.part-status {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* 상태별 화면 스타일 */
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.loading-state h3 {
+  color: #002c5f;
+  font-size: 24px;
+  margin: 0;
+}
+
+.error-state {
+  color: #dc3545;
+}
+
+.error-state button {
+  margin-top: 16px;
+  padding: 10px 20px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
   font-weight: 600;
 }
-.part-time, .part-worker {
-  margin-top: 8px;
-  font-size: 14px;
+
+.error-state button:hover {
+  background: #c82333;
+}
+
+.no-data {
+  grid-column: span 4;
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
 }
