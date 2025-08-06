@@ -10,8 +10,6 @@ import NoticeDetail from './pages/Notice/NoticeDetail.jsx'  // 관리자용 - �
 import NoticeForm from './pages/Notice/NoticeForm.jsx'      // 관리자용 - 등록/수정
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
       <CssBaseline />
