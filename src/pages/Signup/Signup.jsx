@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import './signup.css'
-import { useNavigate } from "react-router-dom"
-import { Signup_api } from "../Api/phm_api";
+import {useNavigate} from "react-router-dom"
+import {Signup_api} from "../Api/phm_api";
 
 export function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -26,7 +26,7 @@ export function Signup() {
     }
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value,
@@ -101,11 +101,9 @@ export function Signup() {
 
         try {
             const response = Signup_api(formData);
-        }
-        catch (err) {
+        } catch (err) {
             return;
         }
-
 
 
         handlePrev();
@@ -148,7 +146,7 @@ export function Signup() {
                                 className="id-check-btn"
                                 onClick={handleIdCheck}
                                 disabled={isIdChecked || !formData.loginId.trim()}
-
+                            ></button>
                         </div>
                     </div>
 
