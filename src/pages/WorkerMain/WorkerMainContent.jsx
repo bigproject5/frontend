@@ -94,11 +94,11 @@ const WorkerMainContent = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-        sx={{
+      <Typography 
+        variant="h4" 
+        component="h1" 
+        gutterBottom 
+        sx={{ 
           fontWeight: 'bold',
           color: '#002c5f',
           mb: 4
@@ -106,19 +106,19 @@ const WorkerMainContent = () => {
       >
         작업자 메인
       </Typography>
-
+      
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* 공지사항 개요 */}
         <NoticeOverview />
-
+        
         {/* 검사 집계 */}
-        <InspectionSummary
+        <InspectionSummary 
           summaryData={summaryData}
           onStatusFilter={handleStatusFilter}
         />
-
+        
         {/* 검사 목록 */}
-        <InspectionList
+        <InspectionList 
           inspections={inspections}
           loading={loading}
           currentPage={currentPage}
