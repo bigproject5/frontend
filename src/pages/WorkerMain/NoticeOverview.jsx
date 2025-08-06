@@ -15,7 +15,7 @@ import {
   Notifications as NotificationsIcon,
   KeyboardArrowRight as ArrowRightIcon
 } from '@mui/icons-material';
-import { getNotices } from '../../api/workerMainApi';
+import { getNotices } from '../../api/workerMainApi.js';
 
 const NoticeOverview = () => {
   const [notices, setNotices] = useState([]);

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, ThemeProvider, createTheme } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import NoticeOverview from './NoticeOverview';
-import InspectionSummary from './InspectionSummary';
-import InspectionList from './InspectionList';
-import { getInspections, getCurrentWorker } from '../../api/workerMainApi';
+import NoticeOverview from './NoticeOverview.jsx';
+import InspectionSummary from './InspectionSummary.jsx';
+import InspectionList from './InspectionList.jsx';
+import { getInspections, getCurrentWorker } from '../../api/workerMainApi.js';
 
 // 현대차 스타일 테마 생성 (WorkerMain 전용)
 const workerMainTheme = createTheme({
