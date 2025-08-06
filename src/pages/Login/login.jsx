@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '../../store/authSlice';
 import './login.css'
 import { admin_login_api, worker_login_api } from "../Api/phm_api.jsx";
 
 export function Login() {
     const [role, setRole] = useState("admin");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({
         "loginId": "",
@@ -13,6 +16,8 @@ export function Login() {
     })
 
     async function handleLogin(formData) {
+        sessionStorage.removeItem('accessToken');
+
         let data;
         if (role === "admin") {
             data = await admin_login_api(formData);
@@ -20,9 +25,19 @@ export function Login() {
         else if (role === "worker") {
             data = await worker_login_api(formData);
         }
-
+        console.log(data)
         if (data.token) {
             sessionStorage.setItem('accessToken', data.token);
+            dispatch(loginSuccess({ user: data.user, role: data.user.role.toLowerCase() })); // Redux 스토어에 저장
+
+            console.log("리덕트 저장 완료")
+            const role_ = data.user.role;
+            console.log(role_);
+            if (role_ === "ADMIN") {
+                navigate("/admin/dashboard"); // 관리자 대시보드로 이동
+            } else if (role_ === "WORKER") {
+                navigate("/worker/main"); // 작업자 메인 페이지로 이동
+            }
         }
         else {
             alert("로그인 실패")
@@ -39,10 +54,10 @@ export function Login() {
         try {
             let response;
             if (role === "admin") {
-                handleLogin(formData)
+               response = handleLogin(formData)
             }
             else if (role === "worker") {
-                handleLogin(formData)
+               response = handleLogin(formData)
             }
             console.log(response);
         }

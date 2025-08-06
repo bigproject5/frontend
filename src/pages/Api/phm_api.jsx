@@ -34,3 +34,11 @@ export async function getUserInfo(accessToken) {
     })
     return await response.json();
 }
+
+export async function fetchCurrentUser(accessToken) {
+    const response = await fetch(`${Base_URL}/api/operation/me`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    })
+    return await response.json();
+}

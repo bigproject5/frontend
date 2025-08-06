@@ -1,6 +1,8 @@
 // src/App.jsx
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ProtectedRoute from './components/ProtectedRoute';
+import AppInitializer from './components/AppInitializer';
 import { Login } from "./pages/Login/login.jsx";
 import { Signup } from "./pages/Signup/Signup.jsx";
 import WorkerProfile from "./pages/WokerProfile/WorkerProfile.jsx";
@@ -14,32 +16,48 @@ import Workerpartdetail from "./pages/WorkerPartDetail/workerpartdetail.jsx";
 import Cartest from "./pages/WorkerPartDetail/cartest.jsx";
 import InspectionDetail from "./pages/admin/InspectionDetail.jsx";
 import Dashboard from "./pages/admin/Dashboard";
+import Layout from "./pages/admin/Layout.jsx";
+import WorkerMainContent from "./pages/WorkerMain/WorkerMainContent.jsx";
 
 function App() {
+
   return (
     <Router>
+      <AppInitializer />
       <Routes>
         <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/worker" element={<WorkerProfile />} />
 
-        <Route path="/admin" element={<AdminNotice />} />
-        <Route path="/notice" element={<AdminNotice />} />
-        <Route path="/admin/write" element={<NoticeForm />} />
-        <Route path="/admin/edit/:id" element={<NoticeForm />} />
-        <Route path="/admin/notice/:id" element={<NoticeDetail />} />
+        {/* 로그인된 사용자라면 모두 접근 가능한 라우트 */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/NoticeList" element={<NoticeList />} />
+          <Route path="/notice/:id" element={<NoticeDetail />} />
+        </Route>
 
-        <Route path="/NoticeList" element={<NoticeList />} />
-        <Route path="/notice/:id" element={<NoticeDetail />} />
+        {/* 관리자 전용 라우트 */}
+        <Route element={<ProtectedRoute requiredRole="admin" />}>
+          <Route path="/admin" element={<Layout />}>
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="inspections/:inspectionId" element={<InspectionDetail />} />
+            <Route path="notice" element={<AdminNotice />} />
+            <Route path="write" element={<NoticeForm />} />
+            <Route path="edit/:id" element={<NoticeForm />} />
+            <Route path="notice/:id" element={<NoticeDetail />} />
+            <Route path="workers" element={<WorkerList />} />
+            <Route path="workers/register" element={<WorkerForm />} />
+          </Route>
+        </Route>
 
-        <Route path="/workers" element={<WorkerList />} />
-        <Route path="/workers/register" element={<WorkerForm />} />
+        {/* 작업자 전용 라우트 */}
+        <Route element={<ProtectedRoute requiredRole="worker" />}>
 
-        <Route path="/Worker-partdetail/:inspectionId" element={<Workerpartdetail />} />
-        <Route path="/Car-test" element={<Cartest />} />
+            <Route path="/worker" element={<WorkerProfile />} />
+            <Route path="/worker/main" element={<WorkerMainContent />} />
+            <Route path="/Worker-partdetail/:inspectionId" element={<Workerpartdetail />} />
+            <Route path="/Car-test" element={<Cartest />} />
 
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/inspections/:inspectionId" element={<InspectionDetail />} />
+        </Route>
       </Routes>
     </Router>
   );

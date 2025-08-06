@@ -7,7 +7,7 @@ const SIDEBAR_WIDTH = 280;
 
 const Layout = () => {
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", minHeight: "100vh" , minWidth: "100vw"}}>
       <CssBaseline />
 
       {/* 사이드바 */}
