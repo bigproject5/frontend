@@ -3,18 +3,14 @@
   min-height: 100vh;
   background: #f8f9fa;
   padding: 24px;
-  box-sizing: border-box;
 }
 
-.cartest-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  padding: 24px;
+.cartest-content {
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 24px;
+  margin-bottom: 24px;
 }
 
 .title-section {
@@ -40,7 +36,6 @@
 .status-badge {
   padding: 8px 16px;
   border-radius: 20px;
-  font-weight: 600;
   font-size: 14px;
   background: #e3f2fd;
   color: #1976d2;
@@ -149,7 +144,6 @@
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
-  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -171,7 +165,6 @@
 }
 
 .part-status {
-  margin-top: 8px;
   padding: 8px 12px;
   background: rgba(255,255,255,0.8);
   border-radius: 8px;
@@ -219,4 +212,17 @@
   padding: 40px;
   color: #6c757d;
   font-style: italic;
+}
+
+.tab-btn.active {
+  background: #e5e5e5;
+}
+
+.part-ok {
+  background: #e0f2fe;
+}
+
+.part-time, .part-worker {
+  margin-top: 8px;
+  font-size: 14px;
 }

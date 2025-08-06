@@ -27,7 +27,7 @@ export default function Cartest() {
   useEffect(() => {
     setLoading(true);
     setError(null);
-
+    
     fetch_audit_detail(auditId)
       .then(res => {
         if (res.code === 'SUCCESS' && res.data) {
@@ -88,7 +88,7 @@ export default function Cartest() {
           {car.status === 'IN_PROGRESS' ? '진행중' : car.status}
         </div>
       </div>
-
+      
       <div className="cartest-info">
         <div className="info-item">
           <span className="info-label">라인코드</span>
