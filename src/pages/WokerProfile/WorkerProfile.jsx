@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useUserRole } from '../../hooks/useUserRole';
 import ReportSection from './ReportSection.jsx';
 import './WorkerProfile.css';
 import { getUserInfo } from '../../api/phm_api.jsx';
 
 function WorkerProfile() {
     const navigate = useNavigate();
+    const { workerId } = useParams(); // URL에서 workerId 파라미터 추출
+    const { isAdmin, getWorkerId } = useUserRole();
     const [isError, setIsError] = useState(false);
     const [userInfo, setUserInfo] = useState({
         name: '',
@@ -16,25 +19,31 @@ function WorkerProfile() {
 
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        loadUserData();
-    }, []);
-
-
-    // 사용자 정보 로드
-    const loadUserData = async () => {
+    // useCallback으로 감싸서 의존성 문제 해결
+    const loadUserData = useCallback(async () => {
         try {
-            // API 호출 시뮬레이션
-            const token = sessionStorage.getItem('accessToken');
-            const response = getUserInfo(token);
-            const data = await response;
+            let targetWorkerId;
 
-            if (!token) throw new Error('Access token not found in sessionStorage.');
-            console.log(data)
+            // 관리자인 경우 URL의 workerId 사용, 작업자인 경우 자신의 ID 사용
+            if (isAdmin()) {
+                targetWorkerId = workerId;
+            } else {
+                targetWorkerId = getWorkerId();
+            }
+
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                console.error('Access token not found in sessionStorage.');
+                throw new Error('인증 토큰이 없습니다.');
+            }
+
+            // 실제 API 호출 시에는 targetWorkerId를 사용하여 해당 작업자 정보 조회
+            const response = await getUserInfo(token, targetWorkerId);
+
             setUserInfo({
-                name: data.name,
-                employeeId: data.employeeNumber,
-                email: data.email
+                name: response.name,
+                employeeId: response.employeeNumber,
+                email: response.email
             });
         } catch (error) {
             console.error('사용자 정보 로드 실패:', error);
@@ -42,115 +51,117 @@ function WorkerProfile() {
         } finally {
             setIsLoading(false);
         }
+    }, [workerId, isAdmin, getWorkerId]);
+
+    useEffect(() => {
+        loadUserData();
+    }, [loadUserData]);
+
+    const handleEditProfile = () => {
+        if (isAdmin()) {
+            // 관리자인 경우 작업자 편집 페이지로 이동
+            navigate(`/admin/workers/${workerId}/edit`);
+        } else {
+            // 작업자인 경우 프로필 편집 페이지로 이동
+            navigate("/worker/profile/edit");
+        }
     };
 
-    const handleEditProfiled = () => {
-        navigate("/")
-    }
+    const handleGoBack = () => {
+        if (isAdmin()) {
+            navigate("/admin/workers");
+        } else {
+            navigate("/worker");
+        }
+    };
 
     if (isLoading) {
         return (
             <div className="loading-container">
-                로딩 중...
+                <div className="loading-spinner"></div>
+                <p>사용자 정보를 불러오는 중...</p>
             </div>
         );
     }
+
     if (isError) {
         return (
-            <div style={{
-                width: "100vw",
-                textAlign: "center"
-            }}>
-                <h1>404</h1>
-                <h2>Not Found</h2>
-                작업자를 찾을 수 없습니다.
+            <div className="error-container">
+                <h3>오류가 발생했습니다</h3>
+                <p>사용자 정보를 불러올 수 없습니다.</p>
+                <button onClick={loadUserData} className="retry-button">
+                    다시 시도
+                </button>
             </div>
-        )
+        );
     }
 
     return (
-        <div className="worker-profile-page">
-            <div className="profile-container">
-                <div className="profile-layout">
-                    {/* 왼쪽 프로필 */}
-                    <div className="profile-sidebar">
-                        <div className="avatar">
-                            👤
-                            {/* 작업자 프로필 이미지 */}
-                        </div>
-                        <div className="user-name">
-                            {userInfo.name}
-                        </div>
-                        <div className="employee-id">
-                            {userInfo.employeeId}
-                        </div>
-                    </div>
-
-                    {/* 오른쪽 정보 */}
-                    <div className="profile-content">
-                        {/* 내 정보 */}
-                        <div className="info-section">
-                            <h2 className="section-title">내 정보</h2>
-
-                            <div className="info-form">
-                                {/* 이름 */}
-                                <div className="info-row">
-                                    <div className="info-label">이름</div>
-                                    <input
-                                        type="text"
-                                        value={userInfo.name}
-                                        disabled
-                                        className="info-input info-input-disabled"
-                                    />
-                                </div>
-
-                                {/* 사번 */}
-                                <div className="info-row">
-                                    <div className="info-label">사번</div>
-                                    <input
-                                        type="text"
-                                        value={userInfo.employeeId}
-                                        disabled
-                                        className="info-input info-input-disabled"
-                                    />
-                                </div>
-
-                                {/* 이메일 */}
-                                <div className="info-row">
-                                    <div className="info-label">이메일</div>
-                                    <input
-                                        type="text"
-                                        value={userInfo.email}
-                                        disabled
-                                        className="info-input info-input-disabled"
-                                    />
-                                </div>
-
-                                {/* 비밀번호 */}
-                                <div className="info-row">
-                                    <div className="info-label">비밀번호</div>
-                                    <input
-                                        type="password"
-                                        value={"••••••••"}
-                                        disabled
-                                        className="info-input info-input-disabled"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="button-group">
-                                <button onClick={handleEditProfiled} className="btn btn-edit">
-                                    정보 수정
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* 내 보고서 컴포넌트 */}
-                        <div className="report-wrapper">
-                            <ReportSection />
-                        </div>
+        <div className="worker-profile-container">
+            <div className="profile-header">
+                <div className="header-content">
+                    <h1>{isAdmin() ? '작업자 정보' : '내 프로필'}</h1>
+                    <div className="header-actions">
+                        {isAdmin() && (
+                            <button onClick={handleGoBack} className="back-button">
+                                목록으로
+                            </button>
+                        )}
+                        <button onClick={handleEditProfile} className="edit-button">
+                            {isAdmin() ? '정보 수정' : '프로필 편집'}
+                        </button>
                     </div>
                 </div>
+            </div>
+
+            <div className="profile-content">
+                <div className="profile-info-section">
+                    <h2>기본 정보</h2>
+                    <div className="info-grid">
+                        <div className="info-item">
+                            <label>이름</label>
+                            <span>{userInfo.name}</span>
+                        </div>
+                        <div className="info-item">
+                            <label>사원번호</label>
+                            <span>{userInfo.employeeId}</span>
+                        </div>
+                        <div className="info-item">
+                            <label>이메일</label>
+                            <span>{userInfo.email}</span>
+                        </div>
+                        {!isAdmin() && (
+                            <div className="info-item">
+                                <label>비밀번호</label>
+                                <span>{userInfo.password}</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* 작업자 전용 리포트 섹션 */}
+                {!isAdmin() && <ReportSection />}
+
+                {/* 관리자가 작업자 정보를 볼 때의 추가 정보 */}
+                {isAdmin() && (
+                    <div className="admin-view-section">
+                        <h2>작업 현황</h2>
+                        <div className="work-status-grid">
+                            <div className="status-card">
+                                <h3>진행 중인 검사</h3>
+                                <span className="status-number">5</span>
+                            </div>
+                            <div className="status-card">
+                                <h3>완료된 검사</h3>
+                                <span className="status-number">23</span>
+                            </div>
+                            <div className="status-card">
+                                <h3>이번 달 성과</h3>
+                                <span className="status-number">95%</span>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
