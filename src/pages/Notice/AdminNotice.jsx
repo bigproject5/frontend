@@ -28,6 +28,7 @@ import {
   AttachFile as AttachFileIcon
 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import { getNotices, deleteNotice } from '../../api/NoticeAPI.js' // API import 추가
 
 function AdminNotice() {
   const [allNotices, setAllNotices] = useState([])
@@ -35,64 +36,41 @@ function AdminNotice() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [deleteDialog, setDeleteDialog] = useState({ open: false, noticeId: null, noticeTitle: '' })
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const itemsPerPage = 5
+  const itemsPerPage = 10
 
   useEffect(() => {
-    // 샘플 데이터
-    const sampleNotices = [
-      {
-        id: 1,
-        title: '시스템 점검 안내',
-        author: '김기자',
-        date: '2024-01-15 09:00',
-        views: 145,
-        hasAttachment: true,
-        isPinned: true
-      },
-      {
-        id: 2,
-        title: '작업 절차 감시 시스템 도입 안내',
-        author: '이실장',
-        date: '2024-01-14 16:30',
-        views: 89,
-        hasAttachment: false,
-        isPinned: false
-      },
-      {
-        id: 3,
-        title: '도입 부품 시스템 지원 변경',
-        author: '박팀장',
-        date: '2024-01-13 14:20',
-        views: 67,
-        hasAttachment: true,
-        isPinned: true
-      },
-      {
-        id: 4,
-        title: '새로운 보안 정책 시행 안내',
-        author: '최보안',
-        date: '2024-01-12 11:15',
-        views: 156,
-        hasAttachment: false,
-        isPinned: false
-      },
-      {
-        id: 5,
-        title: '정기 교육 일정 공지',
-        author: '정교육',
-        date: '2024-01-11 14:30',
-        views: 78,
-        hasAttachment: true,
-        isPinned: false
-      }
-    ]
+    fetchNotices()
+  }, [page])
 
-    setAllNotices(sampleNotices)
-    setTotalPages(Math.ceil(sampleNotices.length / itemsPerPage))
-    updatePageData(1, sampleNotices)
-  }, [])
+  const fetchNotices = async () => {
+    try {
+      setLoading(true)
+      const response = await getNotices(page - 1, itemsPerPage) // 페이지는 0부터 시작
+
+      if (response && response.content) {
+        // 스프링 페이지네이션 응답 형식
+        setAllNotices(response.content)
+        setNotices(response.content)
+        setTotalPages(response.totalPages)
+      } else if (Array.isArray(response)) {
+        // 배열 형식 응답 (기존 형식)
+        setAllNotices(response)
+        setNotices(response)
+        setTotalPages(Math.ceil(response.length / itemsPerPage))
+      }
+    } catch (error) {
+      console.error('공지사항 목록 조회 실패:', error)
+      // API 실패 시 빈 배열로 설정
+      setAllNotices([])
+      setNotices([])
+      setTotalPages(1)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const updatePageData = (pageNumber, data = allNotices) => {
     const startIndex = (pageNumber - 1) * itemsPerPage
@@ -110,18 +88,18 @@ function AdminNotice() {
     setDeleteDialog({ open: true, noticeId, noticeTitle })
   }
 
-  const confirmDelete = () => {
-    const updatedData = allNotices.filter(notice => notice.id !== deleteDialog.noticeId)
-    setAllNotices(updatedData)
+  const confirmDelete = async () => {
+    try {
+      await deleteNotice(deleteDialog.noticeId)
 
-    const newTotalPages = Math.ceil(updatedData.length / itemsPerPage)
-    setTotalPages(newTotalPages)
+      // 삭제 성공 후 목록 새로고침
+      await fetchNotices()
 
-    const adjustedPage = page > newTotalPages ? newTotalPages : page
-    setPage(adjustedPage)
-
-    updatePageData(adjustedPage, updatedData)
-    setDeleteDialog({ open: false, noticeId: null, noticeTitle: '' })
+      setDeleteDialog({ open: false, noticeId: null, noticeTitle: '' })
+    } catch (error) {
+      console.error('공지사항 삭제 실패:', error)
+      alert('공지사항 삭제에 실패했습니다.')
+    }
   }
 
   return (
@@ -133,7 +111,7 @@ function AdminNotice() {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => navigate('/admin/write')}
+          onClick={() => navigate('/admin/notices/new')}
           sx={{
             backgroundColor: '#002c5f',
             '&:hover': { backgroundColor: '#001a3e' }
@@ -209,14 +187,14 @@ function AdminNotice() {
                     <Button
                       size="small"
                       startIcon={<VisibilityIcon />}
-                      onClick={() => navigate(`/admin/notice/${notice.id}`)}
+                      onClick={() => navigate(`/admin/notices/${notice.id}`)}
                     >
                       보기
                     </Button>
                     <Button
                       size="small"
                       startIcon={<EditIcon />}
-                      onClick={() => navigate(`/admin/edit/${notice.id}`)}
+                      onClick={() => navigate(`/admin/notices/${notice.id}/edit`)}
                     >
                       수정
                     </Button>

@@ -6,11 +6,26 @@
 // 공지사항 API의 기본 URL
 const API_BASE = "http://localhost:8080/api/operation/notices";
 
-// 헤더 설정 (필요에 따라 변경 가능)
-const getCommonHeaders = () => {
+// Bearer 토큰 헤더 설정 (멀티파트용)
+const getAuthHeadersForMultipart = () => {
+  const token = sessionStorage.getItem('accessToken');
+  console.log('현재 토큰:', token);
+
   return {
-    'X-User-Id': '1', // 예시: 관리자 ID
-    'X-User-Name': '관리자' // 예시: 관리자 이름
+    'Authorization': `Bearer ${token}`
+    // Content-Type은 FormData 사용시 브라우저가 자동으로 설정하므로 제외
+    // X-User-Id, X-User-Name은 Gateway에서 토큰 인증 후 자동으로 설정됨
+  };
+};
+
+// JSON 요청용 헤더 설정
+const getAuthHeadersForJSON = () => {
+  const token = sessionStorage.getItem('accessToken');
+  console.log('현재 토큰:', token);
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+    // X-User-Id, X-User-Name은 Gateway에서 토큰 인증 후 자동으로 설정됨
   };
 };
 
@@ -33,43 +48,7 @@ export async function getNotices(page = 0, size = 10) {
     return await response.json();
   } catch (error) {
     console.error('공지사항 조회 중 오류:', error);
-
-    // 백엔드 연동 전까지 임시 데이터 반환
-    return [
-      {
-        id: 1,
-        title: "새로운 AI 검사 시스템 도입 안내",
-        content: "비전 검사 시스템의 정확도가 향상되었습니다.",
-        author: "김관리자",
-        department: "전체",
-        isPinned: true,
-        views: 145,
-        createdAt: "2024-01-15 09:00",
-        attachments: []
-      },
-      {
-        id: 2,
-        title: "정기 점검 일정 안내",
-        content: "매월 첫째 주 일요일 정기 점검이 있습니다.",
-        author: "이팀장",
-        department: "전체",
-        isPinned: false,
-        views: 89,
-        createdAt: "2024-01-14 16:30",
-        attachments: []
-      },
-      {
-        id: 3,
-        title: "도장 부서 작업 지침 변경",
-        content: "도장 검사 프로세스가 일부 변경되었습니다.",
-        author: "박팀장",
-        department: "도장",
-        isPinned: false,
-        views: 67,
-        createdAt: "2024-01-13 14:20",
-        attachments: []
-      }
-    ];
+    throw error; // 모킹 데이터 대신 오류를 던져서 실제 API 문제를 확인할 수 있도록 함
   }
 }
 
@@ -93,26 +72,44 @@ export async function getNoticeDetail(id) {
 
 /**
  * 새로운 공지사항을 생성합니다. (파일 첨부 가능)
- * @param {object} noticeData - { title, content }
- * @param {*[]} [file] - 첨부할 파일 객체 (선택 사항)
+ * @param {object} noticeData - { title, content, fileUrl }
+ * @param {File} [file] - 첨부할 파일 객체 (선택 사항)
  */
 export async function createNotice(noticeData, file) {
   try {
     const formData = new FormData();
-    // 백엔드 @RequestPart("notice")에 매핑될 JSON 데이터
+
+    // @RequestPart("notice")에 매핑될 JSON 데이터
     formData.append(
       'notice',
       new Blob([JSON.stringify(noticeData)], { type: 'application/json' })
     );
-    // 백엔드 @RequestPart("file")에 매핑될 파일
+
+    // @RequestPart("file")에 매핑될 파일
     if (file) {
       formData.append('file', file);
+    } else {
+      // 파일이 없는 경우 빈 파일을 제대로 생성
+      const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' });
+      formData.append('file', emptyFile);
     }
+
+    console.log('FormData 내용 확인:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ': ', pair[1]);
+    }
+
+    const token = sessionStorage.getItem('accessToken');
+    console.log('현재 토큰:', token);
 
     const response = await fetch(API_BASE, {
       method: 'POST',
-      headers: getCommonHeaders(),
-      body: formData, // FormData를 사용하면 Content-Type은 자동으로 multipart/form-data로 설정됩니다.
+      headers: {
+        'Authorization': `Bearer ${token}`
+        // Content-Type은 FormData 사용시 브라우저가 자동 설정하므로 제외
+        // 다른 헤더도 제외하여 브라우저가 multipart 경계를 올바르게 설정하도록 함
+      },
+      body: formData
     });
 
     if (!response.ok) {
@@ -127,26 +124,16 @@ export async function createNotice(noticeData, file) {
 }
 
 /**
- * 기존 공지사항을 수정합니다. (파일 첨부 가능)
+ * 기존 공지사항을 수정합니다.
  * @param {number} id - 공지사항 ID
- * @param {object} noticeData - { title, content }
- * @param {File} [file] - 첨부할 파일 객체 (선택 사항)
+ * @param {object} noticeData - { title, content, fileUrl }
  */
-export async function updateNotice(id, noticeData, file) {
+export async function updateNotice(id, noticeData) {
   try {
-    const formData = new FormData();
-    formData.append(
-      'notice',
-      new Blob([JSON.stringify(noticeData)], { type: 'application/json' })
-    );
-    if (file) {
-      formData.append('file', file);
-    }
-
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
-      headers: getCommonHeaders(),
-      body: formData,
+      headers: getAuthHeadersForJSON(),
+      body: JSON.stringify(noticeData)
     });
 
     if (!response.ok) {
@@ -168,7 +155,7 @@ export async function deleteNotice(id) {
   try {
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'DELETE',
-      headers: getCommonHeaders(),
+      headers: getAuthHeadersForJSON(),
     });
 
     if (!response.ok) {
@@ -189,7 +176,7 @@ export async function increaseViews(id) {
   try {
     const response = await fetch(`${API_BASE}/${id}/views`, {
       method: 'POST',
-      headers: getCommonHeaders(),
+      headers: getAuthHeadersForJSON(),
     });
     if (!response.ok) {
       throw new Error('조회수 증가 실패');
