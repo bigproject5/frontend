@@ -1,19 +1,23 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { loginSuccess, setInitializing } from '../store/authSlice';
-import { fetchCurrentUser } from '../pages/Api/phm_api.jsx';
+import { fetchCurrentUser } from '../Api/phm_api.jsx';
 
 const AppInitializer = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     async function loadUser() {
       // 초기화 시작을 Redux에 알림
+      if(location.pathname === "/login" || location.pathname === "/signup") return;
       dispatch(setInitializing(true));
 
       try {
+
+
         const token = sessionStorage.getItem("accessToken");
         if (!token) {
           dispatch(setInitializing(false));
@@ -37,7 +41,7 @@ const AppInitializer = () => {
     }
 
     loadUser();
-  }, [dispatch, navigate]);
+  }, [dispatch, navigate, location]);
 
   return null;
 };

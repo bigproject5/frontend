@@ -54,7 +54,7 @@ const Sidebar = () => {
     {
       text: '작업자 메인',
       icon: <HomeIcon />,
-      path: '/worker',
+      path: '/worker/main',
       description: '메인페이지'
     },
     {

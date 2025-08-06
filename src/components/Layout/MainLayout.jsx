@@ -1,9 +1,10 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
-const MainLayout = ({ children }) => {
+const MainLayout = () => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* 헤더 영역 - Header 컴포넌트 사용 */}
@@ -15,7 +16,9 @@ const MainLayout = ({ children }) => {
         <Sidebar />
 
         {/* 페이지 컨텐츠 */}
-        <Box sx={{ flex: 1, p: 3, bgcolor: '#fafafa' }}>{children}</Box>
+        <Box component="main" sx={{ flex: 1, p: 3, bgcolor: '#fafafa' }}>
+          <Outlet />
+        </Box>
       </Box>
     </Box>
   );
