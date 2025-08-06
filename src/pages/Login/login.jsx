@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom"
 import './login.css'
 import { admin_login_api, worker_login_api } from "../../api/phm_api.jsx";
 
-export function Login() {
+function Login() {
     const [role, setRole] = useState("admin");
     const navigate = useNavigate();
 
@@ -133,3 +133,5 @@ export function Login() {
         </div>
     );
 }
+
+export default Login;
