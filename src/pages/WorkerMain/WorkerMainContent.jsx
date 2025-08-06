@@ -1,35 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Box, ThemeProvider, createTheme } from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
+import { Container, Typography, Box } from '@mui/material';
 import NoticeOverview from './NoticeOverview.jsx';
 import InspectionSummary from './InspectionSummary.jsx';
 import InspectionList from './InspectionList.jsx';
 import { getInspections, getCurrentWorker } from '../../api/workerMainApi.js';
-
-// 현대차 스타일 테마 생성 (WorkerMain 전용)
-const workerMainTheme = createTheme({
-  palette: {
-    primary: {
-      main: '#002c5f', // 현대차 진한 남색
-      light: '#1976d2',
-      dark: '#001a3e',
-    },
-    secondary: {
-      main: '#6c757d',
-    },
-    background: {
-      default: '#f8f9fa',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#212529',
-      secondary: '#6c757d',
-    },
-  },
-  typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-  },
-});
 
 const WorkerMainContent = () => {
   const [inspections, setInspections] = useState([]);
@@ -119,47 +93,40 @@ const WorkerMainContent = () => {
   };
 
   return (
-    <ThemeProvider theme={workerMainTheme}>
-      <CssBaseline />
-      <Container maxWidth={false} sx={{ py: 3, px: 2 }}>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          sx={{
-            color: '#002c5f',
-            fontWeight: 'bold',
-            mb: 3,
-            textAlign: 'center',
-            textShadow: '0 2px 4px rgba(0,44,95,0.1)'
-          }}
-        >
-          작업자 메인 - {worker.workerName}
-        </Typography>
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        sx={{
+          fontWeight: 'bold',
+          color: '#002c5f',
+          mb: 4
+        }}
+      >
+        작업자 메인
+      </Typography>
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {/* 공지사항 개요 */}
-          <NoticeOverview />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {/* 공지사항 개요 */}
+        <NoticeOverview />
 
-          {/* 검사 요약 */}
-          <InspectionSummary
-            summaryData={summaryData}
-            onStatusClick={handleStatusFilter}
-            selectedStatus={selectedStatus}
-          />
+        {/* 검사 집계 */}
+        <InspectionSummary
+          summaryData={summaryData}
+          onStatusFilter={handleStatusFilter}
+        />
 
-          {/* 검사 목록 */}
-          <InspectionList
-            inspections={inspections}
-            loading={loading}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={handlePageChange}
-            onInspectionClick={handleInspectionClick}
-          />
-        </Box>
-      </Container>
-    </ThemeProvider>
+        {/* 검사 목록 */}
+        <InspectionList
+          inspections={inspections}
+          loading={loading}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      </Box>
+    </Container>
   );
 };
 
