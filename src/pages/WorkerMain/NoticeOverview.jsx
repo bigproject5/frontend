@@ -15,12 +15,14 @@ import {
   Notifications as NotificationsIcon,
   KeyboardArrowRight as ArrowRightIcon
 } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom'; // useNavigate import 추가
 import { getNotices } from '../../api/workerMainApi.js';
 
 const NoticeOverview = () => {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 공지사항 목록 조회
   const fetchNotices = async () => {
@@ -72,7 +74,7 @@ const NoticeOverview = () => {
   const handleViewMore = () => {
     try {
       console.log('전체 공지사항 목록으로 이동');
-      // 나중에 navigate('/notifications') 등으로 변경
+      navigate('/notices'); // App.jsx의 라우팅에 맞게 /notices로 수정
     } catch (error) {
       console.error('Navigation error:', error);
     }
