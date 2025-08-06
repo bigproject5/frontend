@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";  
-import { fetch_inspection_detail } from "./vehicleAuditApi";
+import { fetch_inspection_detail } from "../../api/vehicleAuditApi.jsx";
 import "./workerpartdetail.css";
 
 const inspectionTypeKor = {

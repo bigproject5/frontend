@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Workerpartdetail from "./pages/workerpartdetail";
-import Cartest from "./pages/cartest";
+import Workerpartdetail from "./pages/WorkerPartDetail/workerpartdetail.jsx";
+import Cartest from "./pages/WorkerPartDetail/cartest.jsx";
 
 function App() {
   return (
