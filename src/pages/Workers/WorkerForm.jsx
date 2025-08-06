@@ -109,7 +109,7 @@ const WorkerForm = () => {
   try {
     console.log('🔍 전송할 데이터:', submitData);
 
-    const response = await fetch('http://localhost:8081/api/operation/workers', {
+    const response = await fetch('http://localhost:8080/api/operation/workers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(submitData),
@@ -136,7 +136,7 @@ const WorkerForm = () => {
       }
 
       alert('✅ 작업자 등록이 완료되었습니다!');
-      navigate('/workers');
+      navigate('/admin/workers');
 
     } else {
       let errorMessage = `등록 실패 (HTTP ${response.status})`;

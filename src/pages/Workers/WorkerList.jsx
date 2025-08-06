@@ -6,7 +6,7 @@ const WorkerList = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8081/api/operation/workers')
+    fetch('http://localhost:8080/api/operation/workers')
       .then((response) => response.json())
       .then((data) => {
         console.log('🔍 작업자 목록 응답:', data);
@@ -28,7 +28,7 @@ const WorkerList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8081/api/operation/workers/${id}`, {
+      const response = await fetch(`http://localhost:8080/api/operation/workers/${id}`, {
         method: 'DELETE',
       });
 
@@ -146,7 +146,7 @@ const WorkerList = () => {
           }}>검사 작업자 등록 및 관리</p>
         </div>
         <Link 
-          to="/workers/register"
+          to="/admin/workers/register"
           style={{
             backgroundColor: '#1e40af',
             color: 'white',
@@ -400,7 +400,7 @@ const WorkerList = () => {
               <div>
                 <p>등록된 작업자가 없습니다.</p>
                 <Link
-                  to="/workers/register"
+                  to="/admin/workers/register"
                   style={{
                     backgroundColor: '#1e40af',
                     color: 'white',
