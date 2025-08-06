@@ -214,4 +214,3 @@ export const getDepartmentColor = (department) => {
   const dept = departments.find(d => d.value === department);
   return dept ? dept.color : "default";
 };
-
