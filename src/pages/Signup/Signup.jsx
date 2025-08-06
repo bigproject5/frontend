@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
-import { Signup_api } from "./api";
+import { Signup_api } from "../phm_api.jsx";
 
 export function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -36,7 +36,7 @@ export function Signup() {
     const handleIdCheck = () => {
         const loginId = formData.loginId.trim();
         if (!loginId) {
-            setError("¾ÆÀÌµð¸¦ ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+            setError("ï¿½ï¿½ï¿½Ìµï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.");
             return;
         }
 
@@ -44,17 +44,17 @@ export function Signup() {
             let data = false;
             if (loginId == "admin") data = true;
             if (data.exists) {
-                setError("ÀÌ¹Ì »ç¿ë ÁßÀÎ ¾ÆÀÌµðÀÔ´Ï´Ù.");
+                setError("ï¿½Ì¹ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ï¿½Ô´Ï´ï¿½.");
                 setIsIdChecked(false);
             } else {
                 setError("");
-                alert("»ç¿ë °¡´ÉÇÑ ¾ÆÀÌµðÀÔ´Ï´Ù.");
+                alert("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ï¿½Ô´Ï´ï¿½.");
                 setIsIdChecked(true);
                 setLastCheckedId(loginId);
             }
         } catch (err) {
             console.error(err);
-            setError("Áßº¹ È®ÀÎ Áß ¿À·ù°¡ ¹ß»ýÇß½À´Ï´Ù.");
+            setError("ï¿½ßºï¿½ È®ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
         }
     };
     useEffect(() => {
@@ -95,15 +95,15 @@ export function Signup() {
             !formData.password.trim() ||
             !confirmPassword.trim()
         ) {
-            setError("¸ðµç Ç×¸ñÀ» ÀÔ·ÂÇØÁÖ¼¼¿ä.");
+            setError("ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.");
             return;
         }
         if (!isIdChecked) {
-            setError("¾ÆÀÌµð Áßº¹ È®ÀÎÀ» ÇØÁÖ¼¼¿ä.");
+            setError("ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ßºï¿½ È®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½.");
             return;
         }
         if (formData.password !== confirmPassword) {
-            setError("ºñ¹Ð¹øÈ£°¡ ÀÏÄ¡ÇÏÁö ¾Ê½À´Ï´Ù.");
+            setError("ï¿½ï¿½Ð¹ï¿½È£ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½.");
             return;
         }
 
@@ -111,45 +111,45 @@ export function Signup() {
             const response = Signup_api(formData);
         }
         catch (err) {
-            alert("È¸¿ø°¡ÀÔ ½ÇÆÐ")
+            alert("È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")
             return;
         }
 
 
 
-        alert("È¸¿ø°¡ÀÔ ¼º°ø")
+        alert("È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")
         handlePrev();
     };
 
     return (
         <div className="signup-body">
             <div className="signup-container">
-                <h2>È¸¿ø°¡ÀÔ</h2>
+                <h2>È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½</h2>
                 <form className="signup-container-input">
                     <div className="signup-input-group">
-                        <label>°ü¸®ÀÚ ÄÚµå</label>
+                        <label>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµï¿½</label>
                         <input
                             type="text"
                             name="adminCode"
                             value={formData.adminCode}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="°ü¸®ÀÚ ÄÚµå¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Úµå¸¦ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>»ç¹ø</label>
+                        <label>ï¿½ï¿½ï¿½</label>
                         <input
                             type="text"
                             value={formData.employeeNumber}
                             name="employeeNumber"
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="»ç¹øÀ» ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>¾ÆÀÌµð</label>
+                        <label>ï¿½ï¿½ï¿½Ìµï¿½</label>
                         <div className="signup-id-row">
                             <input
                                 type="text"
@@ -157,7 +157,7 @@ export function Signup() {
                                 value={formData.loginId}
                                 onChange={handleChange}
                                 className="signup-input"
-                                placeholder="¾ÆÀÌµð¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
+                                placeholder="ï¿½ï¿½ï¿½Ìµï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                                 disabled={isIdChecked && !formData.loginId.trim()}
                             />
                             <button
@@ -166,84 +166,84 @@ export function Signup() {
                                 onClick={handleIdCheck}
                                 disabled={isIdChecked || !formData.loginId.trim()}
 
-                            >Áßº¹È®ÀÎ</button>
+                            >ï¿½ßºï¿½È®ï¿½ï¿½</button>
                         </div>
                     </div>
 
                     <div className="signup-input-group">
-                        <label>ÀÌ¸§</label>
+                        <label>ï¿½Ì¸ï¿½</label>
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ÀÌ¸§À» ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½Ì¸ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ÀÌ¸ÞÀÏ</label>
+                        <label>ï¿½Ì¸ï¿½ï¿½ï¿½</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ÀÌ¸ÞÀÏÀ» ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½Ì¸ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>¿¬¶ôÃ³</label>
+                        <label>ï¿½ï¿½ï¿½ï¿½Ã³</label>
                         <input
                             type="text"
                             name="phoneNumber"
                             value={formData.phoneNumber}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="¿¬¶ôÃ³¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ÁÖ¼Ò</label>
+                        <label>ï¿½Ö¼ï¿½</label>
                         <input
                             type="text"
                             name="address"
                             value={formData.address}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ÁÖ¼Ò¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½Ö¼Ò¸ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ºñ¹Ð¹øÈ£</label>
+                        <label>ï¿½ï¿½Ð¹ï¿½È£</label>
                         <input
                             type="password"
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
                             className="signup-input"
-                            placeholder="ºñ¹Ð¹øÈ£¸¦ ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½ï¿½Ð¹ï¿½È£ï¿½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div className="signup-input-group">
-                        <label>ºñ¹Ð¹øÈ£ ÀçÀÔ·Â</label>
+                        <label>ï¿½ï¿½Ð¹ï¿½È£ ï¿½ï¿½ï¿½Ô·ï¿½</label>
                         <input
                             type="password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                             className="signup-input"
-                            placeholder="ºñ¹Ð¹øÈ£¸¦ ´Ù½Ã ÀÔ·ÂÇÏ¼¼¿ä."
+                            placeholder="ï¿½ï¿½Ð¹ï¿½È£ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼ï¿½ï¿½ï¿½."
                         />
                     </div>
                     <div>
-                        <button type="button" className="prev-button" onClick={handlePrev}>ÀÌÀü</button>
+                        <button type="button" className="prev-button" onClick={handlePrev}>ï¿½ï¿½ï¿½ï¿½</button>
                         <button
                             type="submit"
                             className={`signup-button ${isButtonEnabled ? "enabled" : "disabled"}`}
                             onClick={handleSubmit}
                             disabled={!isButtonEnabled}
                         >
-                            È¸¿ø°¡ÀÔ
+                            È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                         </button>
                     </div>
 
