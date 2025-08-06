@@ -1,7 +1,7 @@
 // src/notices/NoticeForm.jsx - 파일 첨부 기능 포함
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createNotice} from "../Api/NoticeAPI.js";
+import { createNotice} from "../../api/NoticeAPI.js";
 import {
   Paper,
   Typography,
