@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ReportSection from './ReportSection';
+import ReportSection from './ReportSection.jsx';
 import './WorkerProfile.css';
-import { getUserInfo } from './api';
+import { getUserInfo } from '../phm_api.jsx';
 
 function WorkerProfile() {
     const navigate = useNavigate();

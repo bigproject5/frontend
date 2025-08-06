@@ -1,7 +1,5 @@
 const Base_URL = 'http://localhost:8080';
 
-
-
 export async function admin_login_api(postData) {
     const response = await fetch(`${Base_URL}/api/operation/admin/login`, {
         method: 'POST',
@@ -21,11 +19,12 @@ export async function worker_login_api(postData) {
 }
 
 export async function Signup_api(postData) {
-    return response = await fetch(`${Base_URL}/api/operation/admin/signup`, {
+    const response = await fetch(`${Base_URL}/api/operation/admin/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),
     })
+    return response.json();
 }
 
 export async function getUserInfo(accessToken) {
