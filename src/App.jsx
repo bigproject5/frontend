@@ -4,8 +4,8 @@ import viteLogo from '/vite.svg'
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import './App.css'
-import ReportDashboard from './pages/ReportDashboard'
-import ReportDetail from './pages/ReportDetail'
+import ReportDashboard from './pages/Report/ReportDashboard.jsx'
+import ReportDetail from './pages/Report/ReportDetail.jsx'
 
 function App() {
   const [count, setCount] = useState(0)

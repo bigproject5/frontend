@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchReports } from "../api/reportApi";
+import { fetchReports } from "../Api/reportApi.js";
 import "./ReportDashboard.css";
 
 export default function ReportDashboard() {
