@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"
 import './login.css'
-import { admin_login_api, worker_login_api } from "../phm_api.jsx";
+import { admin_login_api, worker_login_api } from "../Api/phm_api.jsx";
 
 export function Login() {
     const [role, setRole] = useState("admin");
@@ -39,10 +39,10 @@ export function Login() {
         try {
             let response;
             if (role === "admin") {
-                handleAdminLogin(formData)
+                handleLogin(formData)
             }
             else if (role === "worker") {
-                handleWorkerLogin(formData)
+                handleLogin(formData)
             }
             console.log(response);
         }
