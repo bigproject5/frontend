@@ -1,6 +1,6 @@
 // src/notices/NoticeDetail.jsx - 하이브리드 라우팅 적용
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import {
   Paper,
   Typography,
@@ -11,10 +11,6 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -26,16 +22,16 @@ import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   ArrowBack as ArrowBackIcon,
-  AttachFile as AttachFileIcon,
   Download as DownloadIcon
 } from '@mui/icons-material'
-import { useUserRole } from '../../hooks/useUserRole'
+import { useSelector } from 'react-redux'
 
 function NoticeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const location = useLocation()
-  const { user, isAdmin, canEdit, canDelete } = useUserRole()
+  const { user, role } = useSelector((state) => state.auth)
+
+  const isAdmin = role === 'admin'
 
   const [notice, setNotice] = useState(null)
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -59,7 +55,7 @@ function NoticeDetail() {
   }, [id])
 
   const handleEdit = () => {
-    navigate(`/notices/${id}/edit`)
+    navigate(`/admin/notices/${id}/edit`)
   }
 
   const handleDelete = () => {

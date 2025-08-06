@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useUserRole } from '../../hooks/useUserRole';
+import { useSelector } from 'react-redux';
 import ReportSection from './ReportSection.jsx';
 import './WorkerProfile.css';
 import { getUserInfo } from '../../api/phm_api.jsx';
@@ -8,7 +8,11 @@ import { getUserInfo } from '../../api/phm_api.jsx';
 function WorkerProfile() {
     const navigate = useNavigate();
     const { workerId } = useParams(); // URL에서 workerId 파라미터 추출
-    const { isAdmin, getWorkerId } = useUserRole();
+    const { user, role } = useSelector(state => state.auth);
+
+    const isAdmin = () => role === 'admin';
+    const getWorkerId = () => user?.id || 1;
+
     const [isError, setIsError] = useState(false);
     const [userInfo, setUserInfo] = useState({
         name: '',
@@ -71,7 +75,7 @@ function WorkerProfile() {
         if (isAdmin()) {
             navigate("/admin/workers");
         } else {
-            navigate("/worker");
+            navigate("/worker/main");
         }
     };
 
