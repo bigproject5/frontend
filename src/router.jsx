@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { Login } from "./Login";
-import { Signup } from "./Signup";
-import WorkerProfile from "./workerProfile";
+import { Login } from "./pages/Login/login.jsx";
+import { Signup } from "./pages/Signup/Signup.jsx";
+import WorkerProfile from "./pages/WokerProfile/WorkerProfile.jsx";
 
 export function AppRouter() {
     return (
