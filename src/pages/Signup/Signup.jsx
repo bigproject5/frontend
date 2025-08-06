@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
-import { Signup_api } from "../Api/phm_api";
+import { Signup_api } from "../../api/phm_api.jsx";
 
 export function Signup() {
     const [confirmPassword, setConfirmPassword] = useState("");
