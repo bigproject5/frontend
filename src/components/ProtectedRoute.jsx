@@ -1,44 +1,37 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useUserRole } from '../hooks/useUserRole';
+import { useSelector } from 'react-redux';
+import { Navigate, Outlet } from 'react-router-dom';
 
-// 관리자만 접근 가능한 라우트
-export const AdminRoute = ({ children }) => {
-  const { isAuthenticated, isAdmin } = useUserRole();
+const ProtectedRoute = ({ requiredRole }) => {
+  const { isAuthenticated, role, isInitializing } = useSelector((state) => state.auth);
+
+  console.log("ProtectedRoute - isAuthenticated:", isAuthenticated, "role:", role, "isInitializing:", isInitializing);
+
+  // 초기화 중이면 로딩 화면 표시
+  if (isInitializing) {
+    return (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh'
+        }}>
+          <div>로딩 중...</div>
+        </div>
+    );
+  }
 
   if (!isAuthenticated) {
+    console.log("로그인이 필요합니다.");
     return <Navigate to="/login" replace />;
   }
 
-  if (!isAdmin()) {
-    return <Navigate to="/worker" replace />;
-  }
-
-  return children;
-};
-
-// 작업자만 접근 가능한 라우트
-export const WorkerRoute = ({ children }) => {
-  const { isAuthenticated, isWorker } = useUserRole();
-
-  if (!isAuthenticated) {
+  if (requiredRole && role?.toLowerCase() !== requiredRole.toLowerCase()) {
+    console.log("접근 거부.");
     return <Navigate to="/login" replace />;
   }
 
-  if (!isWorker()) {
-    return <Navigate to="/admin" replace />;
-  }
-
-  return children;
+  return <Outlet />;
 };
 
-// 인증된 사용자만 접근 가능한 라우트
-export const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useUserRole();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
+export default ProtectedRoute;
