@@ -25,6 +25,7 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
+import { getNoticeDetail, deleteNotice, increaseViews } from '../../api/NoticeAPI.js' // API import 추가
 
 function NoticeDetail() {
   const { id } = useParams()
@@ -37,32 +38,50 @@ function NoticeDetail() {
   const [deleteDialog, setDeleteDialog] = useState(false)
 
   useEffect(() => {
-    // 샘플 공지사항 데이터
-    const sampleNotice = {
-      id: parseInt(id),
-      title: '시스템 점검 안내',
-      content: '안녕하세요. 2024년 1월 20일 오후 6시부터 8시까지 시스템 점검을 실시합니다...',
-      author: '김관리자',
-      adminId: 1,
-      viewCount: 245,
-      createdAt: '2024-01-15T09:00:00',
-      updatedAt: '2024-01-15T09:00:00',
-      hasAttachment: true,
-      fileUrl: 'https://example.com/attachment.pdf',
-      fileName: '점검계획서.pdf'
+    // 공지사항 상세 조회 API 호출
+    const fetchNoticeDetail = async () => {
+      try {
+        const response = await getNoticeDetail(id)
+        console.log('공지사항 상세 응답:', response) // 디버깅용
+
+        // API 응답 구조에 맞게 데이터 설정
+        if (response && response.data) {
+          setNotice(response.data)
+        } else if (response) {
+          // 직접 응답이 데이터인 경우
+          setNotice(response)
+        }
+
+        // 조회수 증가 API 호출 (관리자 접근 시에는 조회수 증가 안 함)
+        if (!isAdmin) {
+          await increaseViews(id)
+        }
+      } catch (error) {
+        console.error('공지사항 상세 조회 실패:', error)
+        // 에러 발생 시 사용자에게 알림
+        alert('공지사항을 불러오는데 실패했습니다.')
+        navigate('/admin/dashboard') // 에러 시 대시보드로 이동
+      }
     }
-    setNotice(sampleNotice)
-  }, [id])
+
+    fetchNoticeDetail()
+  }, [id, isAdmin, navigate])
 
   const handleEdit = () => {
     navigate(`/admin/notices/${id}/edit`)
   }
 
-  const handleDelete = () => {
-    // 삭제 로직
-    console.log('공지사항 삭제:', id)
-    setDeleteDialog(false)
-    navigate('/admin/notices') // 관리자는 관리 페이지로
+  const handleDelete = async () => {
+    try {
+      // 삭제 API 호출
+      await deleteNotice(id)
+      setDeleteDialog(false)
+
+      // 삭제 후 목록 페이지로 이동
+      navigate('/admin/notices') // 관리자는 관리 페이지로
+    } catch (error) {
+      console.error('공지사항 삭제 실패:', error)
+    }
   }
 
   const handleBack = () => {
@@ -143,7 +162,7 @@ function NoticeDetail() {
               <TableCell sx={{ fontWeight: 'bold', width: '120px', borderBottom: 'none' }}>
                 작성자
               </TableCell>
-              <TableCell sx={{ borderBottom: 'none' }}>{notice.author}</TableCell>
+              <TableCell sx={{ borderBottom: 'none' }}>{notice.name}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none' }}>
@@ -153,13 +172,23 @@ function NoticeDetail() {
                 {new Date(notice.createdAt).toLocaleString()}
               </TableCell>
             </TableRow>
+            {notice.updatedAt !== notice.createdAt && (
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none' }}>
+                  수정일
+                </TableCell>
+                <TableCell sx={{ borderBottom: 'none' }}>
+                  {new Date(notice.updatedAt).toLocaleString()}
+                </TableCell>
+              </TableRow>
+            )}
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none' }}>
                 조회수
               </TableCell>
               <TableCell sx={{ borderBottom: 'none' }}>{notice.viewCount}</TableCell>
             </TableRow>
-            {notice.hasAttachment && (
+            {notice.fileUrl && (
               <TableRow>
                 <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none' }}>
                   첨부파일
@@ -171,7 +200,7 @@ function NoticeDetail() {
                     target="_blank"
                     sx={{ color: '#002c5f' }}
                   >
-                    {notice.fileName}
+                    첨부파일 다운로드
                   </Button>
                 </TableCell>
               </TableRow>

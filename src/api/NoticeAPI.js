@@ -66,7 +66,7 @@ export async function getNoticeDetail(id) {
     return await response.json();
   } catch (error) {
     console.error('공지사항 상세 조회 중 오류:', error);
-    return null;
+    throw error; // null 반환 대신 에러를 던져서 NoticeDetail에서 에러 처리할 수 있도록 함
   }
 }
 
