@@ -302,3 +302,66 @@ const getMockNotices = (params = {}) => {
 export const getCurrentWorker = () => {
   return MOCK_WORKER;
 };
+
+/**
+ * 수동 테스트 생성 API
+ * @param {Object} auditData - { model: string, lineCode: string }
+ * @param {Object} files - { PAINT: File, LAMP: File, ... }
+ * @returns {Promise} API 응답
+ */
+export const createManualAudit = async (auditData, files) => {
+  try {
+    const formData = new FormData();
+
+    const auditJsonString = JSON.stringify(auditData);
+    formData.append('audit', auditJsonString);
+
+    // 각 검사 유형별 파일 추가
+    Object.entries(files).forEach(([inspectionType, file]) => {
+      if (file) {
+        formData.append(inspectionType, file);
+      }
+    });
+
+    console.log('수동 테스트 생성 API 호출');
+    console.log('=== Audit 데이터 상세 ===');
+    console.log('auditData 객체:', auditData);
+    console.log('auditData JSON 문자열:', auditJsonString);
+    console.log('auditData 타입:', typeof auditData);
+    console.log('auditData 키 목록:', Object.keys(auditData));
+    console.log('model 값:', auditData.model);
+    console.log('lineCode 값:', auditData.lineCode);
+    console.log('파일 목록:', Object.keys(files));
+
+    // FormData에 추가된 파트명들 확인
+    console.log('=== FormData 파트명 확인 ===');
+    for (let [key, value] of formData.entries()) {
+      if (value instanceof File) {
+        console.log(`파트명: ${key}, 파일명: ${value.name}, 타입: ${value.type}, 크기: ${value.size}bytes`);
+      } else {
+        console.log(`파트명: ${key}, 값: ${value}, 타입: ${typeof value}`);
+      }
+    }
+    console.log('========================');
+
+    const response = await fetch(`${API_BASE_URL}/audits/manual`, {
+      method: 'POST',
+      body: formData
+      // FormData 사용 시 헤더를 명시적으로 설정하지 않음
+      // 브라우저가 자동으로 multipart/form-data와 boundary를 설정
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API 응답 오류:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+    }
+
+    const data = await response.json();
+    console.log('수동 테스트 생성 성공:', data);
+    return data;
+  } catch (error) {
+    console.error('수동 테스트 생성 실패:', error);
+    throw error;
+  }
+};

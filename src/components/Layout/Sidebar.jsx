@@ -75,8 +75,7 @@ const Sidebar = () => {
       text: '수동 테스트',
       icon: <BuildIcon />,
       path: '/worker/manual-test',
-      description: '개발 예정',
-      disabled: true
+      description: '수동 테스트 생성'
     }
   ];
 

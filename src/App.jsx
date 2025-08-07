@@ -17,6 +17,7 @@ import Cartest from "./pages/WorkerPartDetail/cartest.jsx";
 import InspectionDetail from "./pages/admin/InspectionDetail.jsx";
 import Dashboard from "./pages/admin/Dashboard";
 import WorkerMainContent from "./pages/WorkerMain/WorkerMainContent.jsx";
+import ManualTestContent from "./pages/ManualTest/ManualTestContent.jsx";
 import MainLayout from "./components/Layout/MainLayout.jsx";
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
                   <Route element={<MainLayout />}>
                       <Route path="/worker/profile" element={<WorkerProfile />} />
                       <Route path="/worker/main" element={<WorkerMainContent />} />
+                      <Route path="/worker/manual-test" element={<ManualTestContent />} />
                       <Route path="/worker-partdetail/:inspectionId" element={<Workerpartdetail />} />
                       <Route path="/car-test" element={<Cartest />} />
                   </Route>
