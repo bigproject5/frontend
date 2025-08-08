@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { AppBar, Toolbar, Box, Typography, Button, Chip, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -14,7 +14,6 @@ const Header = () => {
   const isAdmin = () => role === 'admin';
   const userName = decodeURIComponent(user?.name || "");
 
-  console.log(userName);
   const handleLogoClick = () => {
     // 역할에 따라 메인 페이지로 이동
     console.log('로고 클릭됨 - 현재 사용자:', userName);
