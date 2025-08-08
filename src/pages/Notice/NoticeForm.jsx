@@ -1,7 +1,7 @@
 // src/notices/NoticeForm.jsx - 파일 첨부 기능 포함
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { createNotice} from "../../api/NoticeAPI.js";
+import {createNotice, getNoticeDetail, increaseViews, updateNotice} from "../../api/NoticeAPI.js";
 import {
   Paper,
   Typography,
@@ -45,13 +45,24 @@ function NoticeForm() {
 
   useEffect(() => {
     if (isEdit) {
-      // 편집 모드일 때 기존 데이터 로드
-      const existingNotice = {
-        title: '기존 공지사항 제목',
-        content: '기존 공지사항 내용입니다.',
-        status: 'published'
+      const fetchNoticeDetail = async () => {
+        try {
+          const response = await getNoticeDetail(id)
+          // API 응답 구조에 맞게 데이터 설정
+          if (response && response.data) {
+            setFormData(response.data)
+          } else if (response) {
+            // 직접 응답이 데이터인 경우
+            setFormData(response)
+          }
+        } catch (error) {
+          console.error('공지사항 상세 조회 실패:', error)
+          // 에러 발생 시 사용자에게 알림
+          alert('기존 공지사항 내용을 불러오는데 실패했습니다.')
+        }
       }
-      setFormData(existingNotice)
+
+      fetchNoticeDetail()
 
       // 기존 첨부파일 로드
       setAttachedFiles([
@@ -105,11 +116,16 @@ function NoticeForm() {
     console.log('저장할 데이터:', formData)
     console.log('첨부파일:', attachedFiles)
 
-    const Response = createNotice(formData, attachedFiles)
-    console.log(Response)
-
+    let response;
+    if(isEdit){
+      response = updateNotice(id, formData);
+    }
+    else{
+      response = createNotice(formData, attachedFiles)
+    }
+    console.log(response);
     setShowSuccess(true)
-    // 성공 후 관리자 대시보드로 이동
+
     setTimeout(() => {
       navigate('/admin/notices')
     }, 2000)
