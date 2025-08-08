@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { AppBar, Toolbar, Box, Typography, Button, Chip, Avatar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -12,10 +12,12 @@ const Header = () => {
   const { user, role } = useSelector(state => state.auth);
 
   const isAdmin = () => role === 'admin';
+  const userName = decodeURIComponent(user?.name || "");
 
+  console.log(userName);
   const handleLogoClick = () => {
     // 역할에 따라 메인 페이지로 이동
-    console.log('로고 클릭됨 - 현재 사용자:', user);
+    console.log('로고 클릭됨 - 현재 사용자:', userName);
     console.log('관리자 여부:', isAdmin());
 
     if (isAdmin()) {
@@ -122,7 +124,7 @@ const Header = () => {
                 border: '2px solid rgba(255, 255, 255, 0.3)'
               }}
             >
-              {user?.name?.charAt(0) || 'U'}
+                {userName.charAt(0) || 'U'}
             </Avatar>
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
               <Typography
@@ -135,7 +137,7 @@ const Header = () => {
                   textShadow: '0 1px 2px rgba(0,0,0,0.2)'
                 }}
               >
-                {user?.name || 'Unknown User'}
+                  {userName || 'Unknown User'}
               </Typography>
               <Chip
                 label={isAdmin() ? '관리자' : '작업자'}
