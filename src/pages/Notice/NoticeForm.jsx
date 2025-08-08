@@ -111,17 +111,17 @@ function NoticeForm() {
     setShowSuccess(true)
     // 성공 후 관리자 대시보드로 이동
     setTimeout(() => {
-      navigate('/admin/dashboard')
+      navigate('/admin/notices')
     }, 2000)
   }
 
   const handleCancel = () => {
     if (formData.title || formData.content || attachedFiles.length > 0) {
       if (window.confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
-        navigate('/admin/dashboard')
+        navigate('/admin/notices')
       }
     } else {
-      navigate('/admin/dashboard')
+      navigate('/admin/notices')
     }
   }
 
