@@ -29,6 +29,52 @@ const Sidebar = () => {
 
   const isAdmin = () => role === 'admin';
 
+  const devMenuItems = [
+    {
+      text: '대시보드',
+      icon: <DashboardIcon />,
+      path: '/admin/dashboard',
+      description: '메인페이지'
+    },
+    {
+      text: '작업자 관리',
+      icon: <PeopleIcon />,
+      path: '/admin/workers',
+      description: '작업자 목록'
+    },
+    {
+      text: '공지사항',
+      icon: <NotificationsIcon />,
+      path: '/admin/notices',
+      description: '공지 목록'
+    },
+    {
+      text: '작업자 메인',
+      icon: <HomeIcon />,
+      path: '/worker/main',
+      description: '메인페이지'
+    },
+    {
+      text: '마이페이지',
+      icon: <PersonIcon />,
+      path: '/worker/profile',
+      description: '내 정보'
+    },
+    {
+      text: '공지사항',
+      icon: <NotificationsIcon />,
+      path: '/notices',
+      description: '공지 목록'
+    },
+    {
+      text: '수동 테스트',
+      icon: <BuildIcon />,
+      path: '/worker/manual-test',
+      description: '수동 테스트 생성'
+    }
+  ];
+
+
   // 관리자 메뉴
   const adminMenuItems = [
     {
@@ -79,7 +125,9 @@ const Sidebar = () => {
     }
   ];
 
-  const menuItems = isAdmin() ? adminMenuItems : workerMenuItems;
+  let menuItems;
+  if(role === "DEV") menuItems = devMenuItems;
+  else menuItems = isAdmin() ? adminMenuItems : workerMenuItems;
 
   const handleMenuClick = (path, disabled) => {
     if (!disabled) {
