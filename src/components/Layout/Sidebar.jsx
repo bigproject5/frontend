@@ -27,7 +27,7 @@ const Sidebar = () => {
   const location = useLocation();
   const { role } = useSelector(state => state.auth);
 
-  const isAdmin = () => role === 'admin';
+  const isAdmin = () => role === 'ADMIN';
 
   const devMenuItems = [
     {
