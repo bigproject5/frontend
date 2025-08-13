@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
 import { Signup_api } from "../../api/phm_api.jsx";
+import {GoogleReCaptchaProvider, useGoogleReCaptcha} from "react-google-recaptcha-v3";
 
-export function Signup() {
+function SignupForm() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
-
+    const { executeRecaptcha } = useGoogleReCaptcha();
     const [isIdChecked, setIsIdChecked] = useState(false);
     const [lastCheckedId, setLastCheckedId] = useState('');
     const [formData, setFormData] = useState({
@@ -17,7 +18,7 @@ export function Signup() {
         "email": "",
         "phoneNumber": "",
         "address": "",
-        "password": ""
+        "password": "",
     });
     const navigate = useNavigate();
 
@@ -61,6 +62,21 @@ export function Signup() {
         if (isIdChecked && formData.loginId !== lastCheckedId) {
             setIsIdChecked(false);
         }
+
+        // const script = document.createElement("script");
+        // script.src = `https://www.google.com/recaptcha/api.js?render=6LexfqQrAAAAAB74EWP7GNCePpS60kzv2a9tWXif`;
+        // script.async = true;
+        // document.body.appendChild(script);
+        //
+        // return () => {
+        //     document.body.removeChild(script);
+        //
+        //     const recaptchaBadge = document.querySelector(".grecaptcha-badge");
+        //     if (recaptchaBadge) {
+        //         recaptchaBadge.remove();
+        //     }
+        // };
+
     }, [formData.loginId, lastCheckedId, isIdChecked])
 
 
@@ -81,7 +97,7 @@ export function Signup() {
 
     const isButtonEnabled = isFormComplete() && isIdChecked;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
 
@@ -107,8 +123,14 @@ export function Signup() {
             return;
         }
 
+        if (!executeRecaptcha) {
+            console.log("reCAPTCHA 실행 함수가 준비되지 않았습니다.");
+            return;
+        }
+        const token = await executeRecaptcha("signup");
+
         try {
-            const response = Signup_api(formData);
+            const response = Signup_api(formData, token);
             console.log(response);
         }
         catch (err) {
@@ -255,4 +277,10 @@ export function Signup() {
     );
 }
 
-export default Signup;
+export default function Signup() {
+    return (
+        <GoogleReCaptchaProvider reCaptchaKey="6LexfqQrAAAAAB74EWP7GNCePpS60kzv2a9tWXif">
+            <SignupForm />
+        </GoogleReCaptchaProvider>
+    );
+}

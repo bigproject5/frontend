@@ -18,11 +18,14 @@ export async function worker_login_api(postData) {
     return response.json();
 }
 
-export async function Signup_api(postData) {
+export async function Signup_api(postData, reCaptchaToken) {
     const response = await fetch(`${Base_URL}/api/operation/admin/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(postData),
+        body: JSON.stringify({
+            ...postData,
+            reCaptchaToken: reCaptchaToken
+        }),
     })
     return response.json();
 }
