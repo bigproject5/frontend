@@ -12,6 +12,7 @@ const AppInitializer = () => {
   useEffect(() => {
     async function loadUser() {
       // 초기화 시작을 Redux에 알림
+
       if(location.pathname === "/login" || location.pathname === "/signup") return;
       dispatch(setInitializing(true));
 
@@ -28,7 +29,7 @@ const AppInitializer = () => {
         const response = await fetchCurrentUser(token);
         if (!response) throw new Error("토큰 만료 혹은 인증 실패");
 
-        const userRole = response.role.toLowerCase();
+        const userRole = response.role;
         dispatch(loginSuccess({ user: response, role: userRole }));
 
       } catch (error) {

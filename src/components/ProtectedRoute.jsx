@@ -26,9 +26,17 @@ const ProtectedRoute = ({ requiredRole }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (requiredRole && role?.toLowerCase() !== requiredRole.toLowerCase()) {
-    console.log("접근 거부.");
-    return <Navigate to="/login" replace />;
+  if (requiredRole) {
+    const userRole = role;
+    const required = requiredRole;
+
+    if (userRole === 'DEV') {
+      // dev is allowed everywhere
+        // 개발용
+    } else if (userRole !== required) {
+        console.log("접근 거부.");
+        return <Navigate to="/login" replace />;
+    }
   }
 
   return <Outlet />;

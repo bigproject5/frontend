@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
 import './login.css'
-import { admin_login_api, worker_login_api } from "../../api/phm_api.jsx";
+import { admin_login_api, worker_login_api, dev_login_api } from "../../api/phm_api.jsx";
 
 function Login() {
-    const [role, setRole] = useState("admin");
+    const [role, setRole] = useState("ADMIN");
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -19,16 +19,16 @@ function Login() {
         sessionStorage.removeItem('accessToken');
 
         let data;
-        if (role === "admin") {
+        if (role === "ADMIN") {
             data = await admin_login_api(formData);
         }
-        else if (role === "worker") {
+        else if (role === "WORKER") {
             data = await worker_login_api(formData);
         }
         console.log(data)
         if (data.token) {
             sessionStorage.setItem('accessToken', data.token);
-            dispatch(loginSuccess({ user: data.user, role: data.user.role.toLowerCase() })); // Redux 스토어에 저장
+            dispatch(loginSuccess({ user: data.user, role: data.user.role }));
 
             console.log("리덕트 저장 완료")
             const role_ = data.user.role;
@@ -44,6 +44,23 @@ function Login() {
         }
     }
 
+    const handleDevLogin = async () => {
+        try {
+            const data = await dev_login_api();
+            if (data.token) {
+                sessionStorage.setItem('accessToken', data.token);
+                dispatch(loginSuccess({ user: data.user, role: data.user.role }));
+                alert('DEV token acquired and user role set to DEV.');
+                navigate('/dev');
+            } else {
+                alert('Failed to get DEV token.');
+            }
+        } catch (error) {
+            console.error('Error during DEV login:', error);
+            alert('An error occurred during DEV login.');
+        }
+    };
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -53,10 +70,10 @@ function Login() {
         }
         try {
             let response;
-            if (role === "admin") {
+            if (role === "ADMIN") {
                response = handleLogin(formData)
             }
-            else if (role === "worker") {
+            else if (role === "WORKER") {
                response = handleLogin(formData)
             }
             console.log(response);
@@ -89,15 +106,15 @@ function Login() {
                     <div className="login-role-btn-group">
                         <button
                             type="button"
-                            className={`login-role-btn${role === "admin" ? " selected" : ""}`}
-                            onClick={() => setRole("admin")}
+                            className={`login-role-btn${role === "ADMIN" ? " selected" : ""}`}
+                            onClick={() => setRole("ADMIN")}
                         >
                             관리자
                         </button>
                         <button
                             type="button"
-                            className={`login-role-btn${role === "worker" ? " selected" : ""}`}
-                            onClick={() => setRole("worker")}
+                            className={`login-role-btn${role === "WORKER" ? " selected" : ""}`}
+                            onClick={() => setRole("WORKER")}
                         >
                             작업자
                         </button>
@@ -136,12 +153,50 @@ function Login() {
                 </form>
 
                 <div className="signup-link">
-                    {role === "admin" ? (
+                    {role === "ADMIN" ? (
                         <button className="login-signup-btn" onClick={handleSignup}>회원가입</button>
                     ) : null}
                 </div>
 
             </div>
+            {/* 개발용 버튼  */}
+            <div style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '5px',
+            }}>
+                <button
+                    type="button"
+                    className="login-role-btn" // Reusing existing style, might need new class
+                    onClick={handleDevLogin}
+                    style={{
+                        backgroundColor: '#4CAF50', // Example style
+                        color: 'white',
+                        padding: '10px 15px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                    }}
+                >
+                    DEV Login
+                </button>
+                <Link to="/dev" style={{
+                    backgroundColor: '#008CBA', // Example style
+                    color: 'white',
+                    padding: '10px 15px',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    textDecoration: 'none',
+                    textAlign: 'center',
+                }}>
+                    /dev
+                </Link>
+            </div>
+
             <div className="footer">
                 © 2025 Hyundai Motor Company. All rights reserved.
             </div>

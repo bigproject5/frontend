@@ -19,6 +19,7 @@ import Dashboard from "./pages/admin/Dashboard";
 import WorkerMainContent from "./pages/WorkerMain/WorkerMainContent.jsx";
 import ManualTestContent from "./pages/ManualTest/ManualTestContent.jsx";
 import MainLayout from "./components/Layout/MainLayout.jsx";
+import DevPage from "./pages/devPage/devPage.jsx";
 
 function App() {
 
@@ -31,7 +32,7 @@ function App() {
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-
+              <Route path="/dev" element={<DevPage />} />
               {/* 🔐 공통 로그인 사용자 접근 가능 */}
               <Route element={<ProtectedRoute />}>
                   <Route element={<MainLayout />}>
@@ -42,7 +43,7 @@ function App() {
               </Route>
 
               {/* 🔐 관리자 전용 페이지 */}
-              <Route element={<ProtectedRoute requiredRole="admin" />}>
+              <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
                   <Route element={<MainLayout />}>
                       <Route path="/admin/dashboard" element={<Dashboard />} />
                       <Route path="/admin/inspections/:inspectionId" element={<InspectionDetail />} />
@@ -56,7 +57,7 @@ function App() {
               </Route>
 
               {/* 🔐 작업자 전용 페이지 */}
-              <Route element={<ProtectedRoute requiredRole="worker" />}>
+              <Route element={<ProtectedRoute requiredRole="WORKER" />}>
                   <Route element={<MainLayout />}>
                       <Route path="/worker/profile" element={<WorkerProfile />} />
                       <Route path="/worker/main" element={<WorkerMainContent />} />

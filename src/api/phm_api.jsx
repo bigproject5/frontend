@@ -45,3 +45,11 @@ export async function fetchCurrentUser(accessToken) {
     })
     return await response.json();
 }
+
+export async function dev_login_api() {
+    const response = await fetch(`${Base_URL}/api/operation/dev/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+    })
+    return response.json();
+}
