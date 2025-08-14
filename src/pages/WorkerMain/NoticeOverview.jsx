@@ -31,7 +31,7 @@ const NoticeOverview = () => {
       setError(null);
 
       // 최신 5개 공지사항 조회
-      const response = await getNotices({ page: 0, size: 5 });
+      const response = await getNotices({ page: 0, size: 4 });
 
       if (response.status === 'success' && response.data?.content) {
         setNotices(response.data.content);
