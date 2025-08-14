@@ -33,23 +33,9 @@ const InspectionList = ({
   onPageChange,
   onInspectionClick
 }) => {
-  // 상태별 색상 및 라벨 매핑 (아이콘 통일)
+  // 상태별 색상 및 라벨 매핑 (InspectionSummary와 통일)
   const getStatusInfo = (status) => {
     switch (status) {
-      case 'ABNORMAL':
-        return {
-          label: '대기중',
-          color: '#ff9800',
-          bgColor: '#fff8e1',
-          icon: <PendingActions sx={{ fontSize: 20 }} />
-        };
-      case 'IN_ACTION':
-        return {
-          label: '진행중',
-          color: '#2196f3',
-          bgColor: '#e3f2fd',
-          icon: <PlayArrow sx={{ fontSize: 20 }} />
-        };
       case 'IN_DIAGNOSIS':
         return {
           label: '진단중',
@@ -57,20 +43,34 @@ const InspectionList = ({
           bgColor: '#f3e5f5',
           icon: <Search sx={{ fontSize: 20 }} />
         };
-      case 'COMPLETED':
+      case 'NORMAL':
         return {
-          label: '완료',
+          label: '정상',
           color: '#4caf50',
           bgColor: '#e8f5e8',
           icon: <CheckCircle sx={{ fontSize: 20 }} />
         };
-      case 'NORMAL':
+      case 'ABNORMAL':
         return {
-            label: '정상',
-            color: '#4caf50',
-            bgColor: '#e8f5e8',
-            icon: <CheckCircle sx={{ fontSize: 20 }} />
-        }
+          label: '이상',
+          color: '#f44336',
+          bgColor: '#ffebee',
+          icon: <PendingActions sx={{ fontSize: 20 }} />
+        };
+      case 'IN_ACTION':
+        return {
+          label: '작업중',
+          color: '#ff9800',
+          bgColor: '#fff8e1',
+          icon: <PlayArrow sx={{ fontSize: 20 }} />
+        };
+      case 'COMPLETED':
+        return {
+          label: '완료',
+          color: '#2196f3',
+          bgColor: '#e3f2fd',
+          icon: <CheckCircle sx={{ fontSize: 20 }} />
+        };
       default:
         return {
           label: '알 수 없음',
