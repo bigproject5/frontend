@@ -34,6 +34,7 @@ function NoticeForm() {
   const navigate = useNavigate()
   const { id } = useParams()
   const isEdit = Boolean(id)
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -111,7 +112,7 @@ function NoticeForm() {
       alert('제목과 내용을 모두 입력해주세요.')
       return
     }
-
+    setIsSubmitting(true);
     // 실제로는 API 호출 (파일 업로드 포함)
     console.log('저장할 데이터:', formData)
     console.log('첨부파일:', attachedFiles)
@@ -273,6 +274,7 @@ function NoticeForm() {
               type="submit"
               variant="contained"
               color="primary"
+              disabled={isSubmitting}
               sx={{ px: 5, py: 1.5 }}
             >
               {isEdit ? '수정 완료' : '등록'}
