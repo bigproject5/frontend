@@ -84,7 +84,12 @@ function NoticeList() {
         공지사항
       </Typography>
 
-      <TableContainer component={Paper} sx={{ boxShadow: 2 }}>
+      <TableContainer
+        style={{
+          height: "800px"
+        }}
+        component={Paper} sx={{ boxShadow: 2 }}
+      >
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
