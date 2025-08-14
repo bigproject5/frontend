@@ -65,3 +65,20 @@ export async function checkAdminLoginId(loginId) {
     })
     return response.json();
 }
+
+export async function editWorkerProfile(accessToken, data) {
+    const response = await fetch(`${Base_URL}/api/operation/workers/edit`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` },
+        body: JSON.stringify(data)
+    })
+    return await response.json();
+}
+
+export async function getWorkerProfileByAdmin(accessToken, workerId) {
+    const response = await fetch(`${Base_URL}/api/operation/workers/${workerId}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${accessToken}` }
+    })
+    return await response.json();
+}

@@ -3,15 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ReportSection from './ReportSection.jsx';
 import './WorkerProfile.css';
-import { getUserInfo } from '../../api/phm_api.jsx';
+import {editWorkerProfile, getUserInfo, getWorkerProfileByAdmin} from '../../api/phm_api.jsx';
+import ProfileEditModal from "./ProfileEditModal.jsx";
 
 function WorkerProfile() {
     const navigate = useNavigate();
-    const { workerId } = useParams(); // URL에서 workerId 파라미터 추출
-    const { user, role } = useSelector(state => state.auth);
+    const { id } = useParams(); // URL에서 workerId 파라미터 추출
+    const { role } = useSelector(state => state.auth);
 
     const isAdmin = () => role === 'ADMIN' || role === "DEV";
-    const getWorkerId = () => user?.id || 1;
 
     const [isError, setIsError] = useState(false);
     const [userInfo, setUserInfo] = useState({
@@ -24,27 +24,25 @@ function WorkerProfile() {
     });
 
     const [isLoading, setIsLoading] = useState(true);
+    const [editModalOpen, setEditModalOpen] = useState(false);
 
     // useCallback으로 감싸서 의존성 문제 해결
     const loadUserData = useCallback(async () => {
         try {
-            let targetWorkerId;
-
-            // 관리자인 경우 URL의 workerId 사용, 작업자인 경우 자신의 ID 사용
-            if (isAdmin()) {
-                targetWorkerId = workerId;
-            } else {
-                targetWorkerId = getWorkerId();
-            }
-
             const token = sessionStorage.getItem('accessToken');
             if (!token) {
                 console.error('Access token not found in sessionStorage.');
                 throw new Error('인증 토큰이 없습니다.');
             }
 
-            // 실제 API 호출 시에는 targetWorkerId를 사용하여 해당 작업자 정보 조회
-            const response = await getUserInfo(token, targetWorkerId);
+            let response;
+
+            // 관리자인 경우 URL의 workerId 사용, 작업자인 경우 자신의 ID 사용
+            if (isAdmin()) {
+                response = await getWorkerProfileByAdmin(token, id);
+            } else {
+                response = await getUserInfo(token); // 본인 정보만
+            }
 
             setUserInfo({
                 name: response.name,
@@ -60,7 +58,7 @@ function WorkerProfile() {
         } finally {
             setIsLoading(false);
         }
-    }, [workerId, isAdmin, getWorkerId]);
+    }, [id, isAdmin]);
 
     useEffect(() => {
         loadUserData();
@@ -68,11 +66,34 @@ function WorkerProfile() {
 
     const handleEditProfile = () => {
         if (isAdmin()) {
-            // 관리자인 경우 작업자 편집 페이지로 이동
-            navigate(`/admin/workers/${workerId}/edit`);
+            // navigate(`/admin/workers/${id}/edit`);
         } else {
-            // 작업자인 경우 프로필 편집 페이지로 이동
-            navigate("/worker/profile/edit");
+            setEditModalOpen(true);
+        }
+    };
+
+    const handleSaveProfile = async (updatedData) => {
+        try {
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error('인증 토큰이 없습니다.');
+            }
+
+            // API 호출로 프로필 업데이트
+            const response = await editWorkerProfile(token, updatedData);
+
+            // 성공 시 로컬 상태 업데이트
+            setUserInfo(prev => ({
+                ...prev,
+                ...updatedData
+            }));
+
+            console.log('프로필이 성공적으로 업데이트되었습니다.');
+            console.log(response);
+
+        } catch (error) {
+            console.error('프로필 수정 실패:', error);
+            throw error; // 모달에서 에러 처리할 수 있도록 다시 throw
         }
     };
 
@@ -177,7 +198,21 @@ function WorkerProfile() {
                         </div>
                     </div>
                 )}
+                <div className="worker-profile-container">
+                    {/* 기존 컨텐츠들... */}
+
+                    {/* 프로필 편집 모달 - 작업자용만 */}
+                    {!isAdmin() && (
+                        <ProfileEditModal
+                            open={editModalOpen}
+                            onClose={() => setEditModalOpen(false)}
+                            userInfo={userInfo}
+                            onSave={handleSaveProfile}
+                        />
+                    )}
+                </div>
             </div>
+
         </div>
     );
 }

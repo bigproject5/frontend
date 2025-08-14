@@ -52,6 +52,7 @@ function App() {
                       <Route path="/admin/notices/:id/edit" element={<NoticeForm />} />
                       <Route path="/admin/workers" element={<WorkerList />} />
                       <Route path="/admin/workers/register" element={<WorkerForm />} />
+                      <Route path="/admin/workers/:id" element={<WorkerProfile />} />
                   </Route>
               </Route>
 
