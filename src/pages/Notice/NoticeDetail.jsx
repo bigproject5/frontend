@@ -53,9 +53,9 @@ function NoticeDetail() {
         }
 
         // 조회수 증가 API 호출 (관리자 접근 시에는 조회수 증가 안 함)
-        if (!isAdmin) {
-          await increaseViews(id)
-        }
+        // if (!isAdmin) {
+        //   await increaseViews(id)
+        // }
       } catch (error) {
         console.error('공지사항 상세 조회 실패:', error)
         // 에러 발생 시 사용자에게 알림

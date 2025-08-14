@@ -37,7 +37,7 @@ const Header = () => {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       sx={{
         background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
         boxShadow: '0 4px 20px rgba(0,44,95,0.15)',

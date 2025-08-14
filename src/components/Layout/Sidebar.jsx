@@ -146,12 +146,16 @@ const Sidebar = () => {
     <Box
       sx={{
         width: '360px',
-        minHeight: '100vh',
+        height: 'calc(100vh - 64px)',
+        position: 'fixed',
+        top: '64px', // Header height
+        left: 0,
         background: 'linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%)',
         borderRight: '1px solid #dee2e6',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: 'inset -1px 0 0 rgba(0,44,95,0.1)'
+        boxShadow: 'inset -1px 0 0 rgba(0,44,95,0.1)',
+        zIndex: 1000
       }}
     >
       {/* 메뉴 리스트 - 상단 여백 추가 */}
