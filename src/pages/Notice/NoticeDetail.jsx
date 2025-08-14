@@ -75,18 +75,14 @@ function NoticeDetail() {
       setDeleteDialog(false)
 
       // 삭제 후 목록 페이지로 이동
-      navigate('/admin/notices') // 관리자는 관리 페이지로
+      navigate('/notices') // 관리자는 관리 페이지로
     } catch (error) {
       console.error('공지사항 삭제 실패:', error)
     }
   }
 
   const handleBack = () => {
-    if (isAdmin) {
-      navigate('/admin/notices') // 관리자는 관리 페이지로
-    } else {
-      navigate('/notices') // 작업자는 일반 목록으로
-    }
+    navigate('/notices') // 관리자는 관리 페이지로
   }
 
   const handleDownload = (attachment) => {
@@ -112,7 +108,10 @@ function NoticeDetail() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container maxWidth="md" sx={{
+      py: 4 ,
+      width: "60%"
+    }}>
       <Paper elevation={2} sx={{ p: 4 }}>
         {/* 헤더 */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -208,7 +207,16 @@ function NoticeDetail() {
         <Divider sx={{ my: 3 }} />
 
         {/* 공지사항 내용 */}
-        <Box sx={{ lineHeight: 1.8, fontSize: '16px', minHeight: '200px' }}>
+        <Box
+            sx={{
+              lineHeight: 1.8,
+              fontSize: '16px',
+              minHeight: '200px',
+              wordBreak: 'break-word',      // 긴 단어 줄바꿈
+              overflowWrap: 'break-word',   // 추가 안전 장치
+              whiteSpace: 'pre-wrap',       // 줄바꿈 + 공백 유지
+            }}
+        >
           {notice.content}
         </Box>
 
