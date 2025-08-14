@@ -43,12 +43,6 @@ const Sidebar = () => {
       description: '작업자 목록'
     },
     {
-      text: '공지사항',
-      icon: <NotificationsIcon />,
-      path: '/admin/notices',
-      description: '공지 목록'
-    },
-    {
       text: '작업자 메인',
       icon: <HomeIcon />,
       path: '/worker/main',
@@ -92,7 +86,7 @@ const Sidebar = () => {
     {
       text: '공지사항',
       icon: <NotificationsIcon />,
-      path: '/admin/notices',
+      path: '/notices',
       description: '공지 목록'
     }
   ];

@@ -1,6 +1,7 @@
-// src/notices/NoticeList.jsx - 작업자용 (조회만 가능)
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
+  Typography,
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -8,89 +9,84 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
-  Box,
+  Button,
   Pagination,
+  Container,
   Chip
-} from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+} from '@mui/material';
+import {
+  AttachFile as AttachFileIcon
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { getNotices } from '../../api/NoticeAPI.js';
+import { useSelector } from 'react-redux';
 
 function NoticeList() {
-  const [notices, setNotices] = useState([])
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
-  const navigate = useNavigate()
+  const [notices, setNotices] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const { role } = useSelector(state => state.auth);
+
+  const isAdmin = role === 'ADMIN' || role === "DEV";
+  const itemsPerPage = 10;
 
   useEffect(() => {
-    // 샘플 데이터 (실제로는 API에서 가져옴)
-    const sampleNotices = [
-      {
-        id: 1,
-        title: '시스템 점검 안내',
-        author: '관리자',
-        date: '2025-07-31',
-        views: 125,
-        hasAttachment: true
-      },
-      {
-        id: 2,
-        title: '새로운 기능 업데이트 안내',
-        author: '관리자',
-        date: '2025-07-30',
-        views: 89,
-        hasAttachment: false
-      },
-      {
-        id: 3,
-        title: '7월 이벤트 참여 방법',
-        author: '운영자',
-        date: '2025-07-29',
-        views: 203,
-        hasAttachment: true
-      },
-      {
-        id: 4,
-        title: '개인정보처리방침 변경 안내',
-        author: '관리자',
-        date: '2025-07-28',
-        views: 67,
-        hasAttachment: false
-      },
-      {
-        id: 5,
-        title: '서비스 이용약관 개정 안내',
-        author: '관리자',
-        date: '2025-07-27',
-        views: 45,
-        hasAttachment: true
-      }
-    ]
+    fetchNotices();
+  }, [page]);
 
-    setNotices(sampleNotices)
-    setTotalPages(Math.ceil(sampleNotices.length / 10))
-  }, [])
+  const fetchNotices = async () => {
+    try {
+      setLoading(true);
+      const response = await getNotices(page - 1, itemsPerPage);
+
+      if (response && response.content) {
+        setNotices(response.content);
+        setTotalPages(response.totalPages);
+      } else if (Array.isArray(response)) {
+        setNotices(response);
+        setTotalPages(Math.ceil(response.length / itemsPerPage));
+      }
+    } catch (error) {
+      console.error('Failed to fetch notices:', error);
+      setNotices([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handlePageChange = (event, value) => {
-    setPage(value)
-  }
+    setPage(value);
+  };
 
   const handleRowClick = (noticeId) => {
-    navigate(`/notices/${noticeId}`)
-  }
+    navigate(`/notices/${noticeId}`);
+  };
 
   return (
-    <Box sx={{ maxWidth: 1200, margin: '0 auto', padding: 2 }}>
-      <Typography variant="h4" sx={{ textAlign: 'center', mb: 4, fontWeight: 'bold' }}>
-        공지사항
-      </Typography>
+    <Container maxWidth="xl" sx={{ py: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#002c5f' }}>
+          공지사항
+        </Typography>
+        {isAdmin && (
+          <Button
+            variant="contained"
+            onClick={() => navigate('/admin/notices/new')}
+            sx={{
+              backgroundColor: '#002c5f',
+              '&:hover': { backgroundColor: '#001a3e' }
+            }}
+          >
+            공지사항 작성
+          </Button>
+        )}
+      </Box>
 
-      <TableContainer
-        style={{
-          height: "800px"
-        }}
-        component={Paper} sx={{ boxShadow: 2 }}
-      >
-        <Table>
+      <TableContainer component={Paper} sx={{ boxShadow: 2, height: '800px' }}>
+        <Table stickyHeader>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
               <TableCell align="center" width="8%">번호</TableCell>
@@ -120,7 +116,7 @@ function NoticeList() {
                 <TableCell align="center">{notice.views}</TableCell>
                 <TableCell align="center">
                   {notice.hasAttachment && (
-                    <Chip label="📎" size="small" color="primary" />
+                    <Chip icon={<AttachFileIcon />} label="" size="small" />
                   )}
                 </TableCell>
               </TableRow>
@@ -139,15 +135,8 @@ function NoticeList() {
           showLastButton
         />
       </Box>
-
-      {/* 작업자는 글쓰기 버튼 없음 */}
-      <Box sx={{ textAlign: 'center', mt: 2, color: 'text.secondary' }}>
-        <Typography variant="body2">
-          공지사항 조회 전용 페이지입니다.
-        </Typography>
-      </Box>
-    </Box>
-  )
+    </Container>
+  );
 }
 
-export default NoticeList
+export default NoticeList;

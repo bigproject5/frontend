@@ -6,7 +6,6 @@ import AppInitializer from './components/AppInitializer';
 import Login from "./pages/Login/login.jsx";
 import Signup from "./pages/Signup/Signup.jsx";
 import WorkerProfile from "./pages/WokerProfile/WorkerProfile.jsx";
-import AdminNotice from './pages/Notice/AdminNotice.jsx'    // 관리자 대시보드
 import NoticeList from './pages/Notice/NoticeList.jsx'      // 작업자용 - 조회만
 import NoticeDetail from './pages/Notice/NoticeDetail.jsx'  // 관리자용 - 수정/삭제 가능
 import NoticeForm from './pages/Notice/NoticeForm.jsx'
@@ -49,10 +48,8 @@ function App() {
                   <Route element={<MainLayout />}>
                       <Route path="/admin/dashboard" element={<Dashboard />} />
                       <Route path="/admin/inspections/:inspectionId" element={<InspectionDetail />} />
-                      <Route path="/admin/notices" element={<AdminNotice />} />
                       <Route path="/admin/notices/new" element={<NoticeForm />} />
                       <Route path="/admin/notices/:id/edit" element={<NoticeForm />} />
-                      <Route path="/admin/notices/:id" element={<NoticeDetail />} />
                       <Route path="/admin/workers" element={<WorkerList />} />
                       <Route path="/admin/workers/register" element={<WorkerForm />} />
                   </Route>
