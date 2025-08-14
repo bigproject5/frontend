@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";  
 import { fetch_inspection_detail } from "../../api/vehicleAuditApi.jsx";
-import "./workerpartdetail.css";
+import "./InspectionDetail.css";
 
 const inspectionTypeKor = {
   PAINT: "도장면",
@@ -12,7 +12,7 @@ const inspectionTypeKor = {
   WASHER_FLUID: "워셔액"
 };
 
-export default function Workerpartdetail() {
+export default function InspectionDetail() {
   const { inspectionId } = useParams(); // 라우터에서 파라미터 받음
   const [detail, setDetail] = useState(null);
 
