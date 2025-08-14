@@ -27,28 +27,15 @@ import {
 const InspectionList = ({
   inspections,
   loading,
+  error,
   currentPage,
   totalPages,
   onPageChange,
   onInspectionClick
 }) => {
-  // 상태별 색상 및 라벨 매핑 (아이콘 통일)
+  // 상태별 색상 및 라벨 매핑 (InspectionSummary와 통일)
   const getStatusInfo = (status) => {
     switch (status) {
-      case 'ABNORMAL':
-        return {
-          label: '대기중',
-          color: '#ff9800',
-          bgColor: '#fff8e1',
-          icon: <PendingActions sx={{ fontSize: 20 }} />
-        };
-      case 'IN_ACTION':
-        return {
-          label: '진행중',
-          color: '#2196f3',
-          bgColor: '#e3f2fd',
-          icon: <PlayArrow sx={{ fontSize: 20 }} />
-        };
       case 'IN_DIAGNOSIS':
         return {
           label: '진단중',
@@ -56,11 +43,32 @@ const InspectionList = ({
           bgColor: '#f3e5f5',
           icon: <Search sx={{ fontSize: 20 }} />
         };
+      case 'NORMAL':
+        return {
+          label: '정상',
+          color: '#4caf50',
+          bgColor: '#e8f5e8',
+          icon: <CheckCircle sx={{ fontSize: 20 }} />
+        };
+      case 'ABNORMAL':
+        return {
+          label: '이상',
+          color: '#f44336',
+          bgColor: '#ffebee',
+          icon: <PendingActions sx={{ fontSize: 20 }} />
+        };
+      case 'IN_ACTION':
+        return {
+          label: '작업중',
+          color: '#ff9800',
+          bgColor: '#fff8e1',
+          icon: <PlayArrow sx={{ fontSize: 20 }} />
+        };
       case 'COMPLETED':
         return {
           label: '완료',
-          color: '#4caf50',
-          bgColor: '#e8f5e8',
+          color: '#2196f3',
+          bgColor: '#e3f2fd',
           icon: <CheckCircle sx={{ fontSize: 20 }} />
         };
       default:
@@ -150,6 +158,16 @@ const InspectionList = ({
                   검사 목록을 불러오는 중...
                 </Typography>
               </Box>
+            </Box>
+          ) : error ? (
+            <Box sx={{ textAlign: 'center', py: 6 }}>
+              <AssignmentIcon sx={{ fontSize: 48, color: '#f44336', mb: 2 }} />
+              <Typography variant="h6" color="error" sx={{ mb: 1 }}>
+                오류가 발생했습니다
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {error}
+              </Typography>
             </Box>
           ) : (
             <>
