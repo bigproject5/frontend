@@ -3,6 +3,7 @@ import './signup.css'
 import { useNavigate } from "react-router-dom"
 import {checkAdminLoginId, Signup_api} from "../../api/phm_api.jsx";
 import {GoogleReCaptchaProvider, useGoogleReCaptcha} from "react-google-recaptcha-v3";
+import PolicyModal from "./PrivacyModal.jsx";
 
 function SignupForm() {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -19,6 +20,13 @@ function SignupForm() {
         "phoneNumber": "",
         "address": "",
         "password": "",
+    });
+    const [isAgreementChecked, setIsAgreementChecked] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalAgreements, setModalAgreements] = useState({
+        terms: false,
+        privacy: false,
+        marketing: false
     });
     const navigate = useNavigate();
 
@@ -77,7 +85,8 @@ function SignupForm() {
             formData.address.trim() &&
             formData.password.trim() &&
             confirmPassword.trim() &&
-            formData.password === confirmPassword
+            formData.password === confirmPassword &&
+            isAgreementChecked
         );
     };
 
@@ -272,6 +281,15 @@ function SignupForm() {
                             placeholder="비밀번호를 다시 입력하세요."
                         />
                     </div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isAgreementChecked}
+                            onChange={() => setShowModal(true)}
+                        />
+                        약관 동의 (필수)
+                    </label>
+
                     <div>
                         <button type="button" className="prev-button" onClick={handlePrev}>이전</button>
                         <button
@@ -286,6 +304,15 @@ function SignupForm() {
 
                     {error && <div className="login-error-message">{error}</div>}
                 </form>
+                <PolicyModal
+                    visible={showModal}
+                    agreements={modalAgreements}
+                    setAgreements={setModalAgreements}
+                    onClose={(confirmed) => {
+                        setShowModal(false);
+                        if (confirmed) setIsAgreementChecked(true);
+                    }}
+                />
             </div>
         </div>
     );
