@@ -10,7 +10,7 @@ const PrivacyPolicyBar = () => {
         p: 2,
         textAlign: 'center',
         borderTop: '1px solid #e0e0e0',
-        mt: 40, // Add some margin top
+        mt: 16, // Add some margin top
       }}
     >
       <Typography variant="body2">
