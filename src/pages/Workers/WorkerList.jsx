@@ -111,7 +111,10 @@ const WorkerList = () => {
   };
 
   return (
-    <div style={{ width: '100%'}}>
+    <div style={{
+      width: '100%',
+      padding: '5% 10% 200px 10%'
+    }}>
       {/* 디버깅 정보 */}
       <div style={{
         backgroundColor: '#f0f9ff',
