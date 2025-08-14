@@ -10,7 +10,7 @@ function WorkerProfile() {
     const { workerId } = useParams(); // URL에서 workerId 파라미터 추출
     const { user, role } = useSelector(state => state.auth);
 
-    const isAdmin = () => role === 'admin';
+    const isAdmin = () => role === 'ADMIN' || role === "DEV";
     const getWorkerId = () => user?.id || 1;
 
     const [isError, setIsError] = useState(false);
@@ -18,7 +18,9 @@ function WorkerProfile() {
         name: '',
         employeeId: '',
         email: '',
-        password: '••••••••'
+        phoneNumber: '',  // 전화번호 추가
+        loginId: '',
+        taskType: ''
     });
 
     const [isLoading, setIsLoading] = useState(true);
@@ -47,7 +49,10 @@ function WorkerProfile() {
             setUserInfo({
                 name: response.name,
                 employeeId: response.employeeNumber,
-                email: response.email
+                email: response.email,
+                phoneNumber: response.phoneNumber,
+                loginId: response.loginId,
+                taskType: response.taskType,
             });
         } catch (error) {
             console.error('사용자 정보 로드 실패:', error);
@@ -59,7 +64,7 @@ function WorkerProfile() {
 
     useEffect(() => {
         loadUserData();
-    }, [loadUserData]);
+    }, []);
 
     const handleEditProfile = () => {
         if (isAdmin()) {
@@ -127,19 +132,25 @@ function WorkerProfile() {
                             <span>{userInfo.name}</span>
                         </div>
                         <div className="info-item">
-                            <label>사원번호</label>
-                            <span>{userInfo.employeeId}</span>
+                            <label>로그인 ID</label>
+                            <span>{userInfo.loginId}</span>
                         </div>
                         <div className="info-item">
                             <label>이메일</label>
                             <span>{userInfo.email}</span>
                         </div>
-                        {!isAdmin() && (
-                            <div className="info-item">
-                                <label>비밀번호</label>
-                                <span>{userInfo.password}</span>
-                            </div>
-                        )}
+                        <div className="info-item">
+                            <label>전화번호</label>
+                            <span>{userInfo.phoneNumber}</span>
+                        </div>
+                        <div className="info-item">
+                            <label>사원번호</label>
+                            <span>{userInfo.employeeId}</span>
+                        </div>
+                        <div className="info-item">
+                            <label>작업 </label>
+                            <span>{userInfo.taskType}</span>
+                        </div>
                     </div>
                 </div>
 
