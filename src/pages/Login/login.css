@@ -1,4 +1,4 @@
-/* 로그인 화면 스타일 */
+/* 기존 로그인 화면 스타일 */
 
 .login-body {
     background: linear-gradient(135deg, #1256a3 0%, #63a4ff 100%);
@@ -14,75 +14,38 @@
 }
 
 .login-container {
-    max-width: 400px;
+    width: 400px;
     margin: 0 auto;
+    height: 360px;
     padding: 32px;
-
     border-radius: 8px;
     background: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
 
+/* 관리자 전용 헤더 스타일 */
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-header h2 {
+    color: #1256a3;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+}
+
+.login-subtitle {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+    font-weight: normal;
 }
 
 .login-form {
     display: flex;
     flex-direction: column;
-}
-
-.login-role-btn-group {
-    background-color: #f5f5f5;
-    padding: 5px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 16px;
-    gap: 12px;
-    justify-content: center;
-}
-
-.login-role-btn {
-    flex: 1;
-    min-width: 0;
-    width: 180px;
-    height: 36px;
-    padding: 0 12px;
-    border: 1px;
-    background: #e0e0e0;
-    color: #1976d2;
-    border-radius: 4px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-    opacity: 0.7;
-    transition: background 0.2s, color 0.2s, opacity 0.2s;
-    box-sizing: border-box;
-}
-
-
-.login-role-btn.selected {
-    background: #1976d2;
-    color: #fff;
-    opacity: 1;
-    border: 1px;
-}
-
-.login-role-btn:hover {
-    background: #bdbdbd;
-    color: #ccc;
-    opacity: 1;
-    border: 1px;
-}
-
-.login-role-label {
-    display: flex;
-    align-items: center;
-    margin-right: 24px;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-.login-radio {
-    margin-right: 6px;
 }
 
 .login-input-group {
@@ -133,10 +96,70 @@
 .login-signup-btn {
     border: none;
     background-color: transparent;
-    color: inherit;
+    color: #666;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 0;
+    text-decoration: none;
+    transition: color 0.2s ease;
     outline: none;
+}
+
+.login-signup-btn:hover {
+    color: #333;
 }
 
 button:focus {
     outline: none;
+}
+
+/* ========== 작업자 전용 테마 ========== */
+
+/* 작업자 전용 배경 그라데이션 (오렌지/주황 계열) */
+.login-body.worker-theme {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+}
+
+/* 작업자 전용 헤더 색상 */
+.worker-theme .login-header h2 {
+    color: #d84315;
+}
+
+/* 작업자 전용 버튼 색상 */
+.worker-theme .login-button {
+    background: #ff5722;
+}
+
+.worker-theme .login-button:hover {
+    background: #e64a19;
+}
+
+/* 작업자 전용 입력 필드 포커스 색상 */
+.worker-theme .login-input:focus {
+    border-color: #ff5722;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
+}
+
+/* 작업자 전용 푸터 색상 (흰색으로 변경) */
+.worker-theme .footer {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 480px) {
+    .login-container {
+        padding: 28px 20px;
+        max-width: 90%;
+        margin: 20px auto;
+    }
+
+    .login-header h2 {
+        font-size: 22px;
+    }
+
+    .login-input {
+        font-size: 16px; /* iOS에서 줌 방지 */
+    }
 }

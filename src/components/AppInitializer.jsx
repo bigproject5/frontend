@@ -12,7 +12,8 @@ const AppInitializer = () => {
   useEffect(() => {
     async function loadUser() {
       // 초기화 시작을 Redux에 알림
-      if(location.pathname === "/login" || location.pathname === "/signup") return;
+      const curPath = location.pathname;
+      if(curPath === "/login" || curPath === "/signup" || curPath === "/admin-login") return;
       dispatch(setInitializing(true));
 
       try {

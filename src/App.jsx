@@ -20,6 +20,7 @@ import WorkerMainContent from "./pages/WorkerMain/WorkerMainContent.jsx";
 import ManualTestContent from "./pages/ManualTest/ManualTestContent.jsx";
 import MainLayout from "./components/Layout/MainLayout.jsx";
 import DevPage from "./pages/devPage/devPage.jsx";
+import WorkerLogin from "./pages/Login/WorkerLogin.jsx";
 
 function App() {
 
@@ -29,10 +30,11 @@ function App() {
 
           <Routes>
               {/* 🔓 공개 페이지 */}
-              <Route path="/" element={<Login />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/" element={<WorkerLogin />} />
+              <Route path="/login" element={<WorkerLogin />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/dev" element={<DevPage />} />
+              <Route path="/admin-login" element={<Login />} />
               {/* 🔐 공통 로그인 사용자 접근 가능 */}
               <Route element={<ProtectedRoute />}>
                   <Route element={<MainLayout />}>

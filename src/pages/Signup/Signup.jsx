@@ -31,7 +31,7 @@ function SignupForm() {
     const navigate = useNavigate();
 
     const handlePrev = () => {
-        navigate("/")
+        navigate("/admin-login")
     }
 
     const handleChange = (e) => {

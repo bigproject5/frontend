@@ -302,8 +302,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Box> {/* 사이드바 여백 고려 */}
-
+    <Box>
       {/* 헤더 */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: '#1976d2' }}>

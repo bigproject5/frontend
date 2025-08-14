@@ -3,9 +3,9 @@ import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
 import './login.css'
-import { admin_login_api, dev_login_api } from "../../api/phm_api.jsx";
+import { worker_login_api } from "../../api/phm_api.jsx";
 
-function Login() {
+function WorkerLogin() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -17,8 +17,7 @@ function Login() {
     async function handleLogin(formData) {
         sessionStorage.removeItem('accessToken');
 
-
-        const data = await admin_login_api(formData);
+        const data = await worker_login_api(formData);
 
         console.log(data)
         if (data.token) {
@@ -29,31 +28,13 @@ function Login() {
             const role_ = data.user.role;
             console.log(role_);
 
-            navigate("/admin/dashboard"); // 관리자 대시보드로 이동
+            navigate("/worker/main"); // 작업자 메인 페이지로 이동
 
         }
         else {
             alert("로그인 실패")
         }
     }
-
-    const handleDevLogin = async () => {
-        try {
-            const data = await dev_login_api();
-            if (data.token) {
-                sessionStorage.setItem('accessToken', data.token);
-                dispatch(loginSuccess({ user: data.user, role: data.user.role }));
-                alert('DEV token acquired and user role set to DEV.');
-                navigate('/dev');
-            } else {
-                alert('Failed to get DEV token.');
-            }
-        } catch (error) {
-            console.error('Error during DEV login:', error);
-            alert('An error occurred during DEV login.');
-        }
-    };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -69,6 +50,7 @@ function Login() {
             console.error("로그인 중 오류 발생", error)
             alert("로그인 오류 발생")
         }
+
     };
 
     const handleChange = (e) => {
@@ -79,19 +61,15 @@ function Login() {
         }));
     };
 
-    const handleSignup = (e) => {
-        e.preventDefault();
-        navigate("/signup")
-    }
 
     return (
-        <div className="login-body">
+        <div className="login-body worker-theme">
             <div className="login-container">
                 <div className="login-header">
                     <h2 style={{
                         margin: "10px"
-                    }}>관리자 로그인</h2>
-                    {/*<p className="login-subtitle">관리자 전용 로그인 페이지입니다</p>*/}
+                    }}>작업자 로그인</h2>
+                    {/*<p className="login-subtitle">작업자 전용 로그인 페이지입니다</p>*/}
                 </div>
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="login-input-group">
@@ -104,7 +82,7 @@ function Login() {
                                 onChange={handleChange}
                                 required
                                 className="login-input"
-                                placeholder="관리자 아이디를 입력하세요"
+                                placeholder="작업자 아이디를 입력하세요"
                             />
                         </label>
                     </div>
@@ -123,53 +101,9 @@ function Login() {
                         </label>
                     </div>
                     <button type="submit" className="login-button">
-                        관리자 로그인
+                        작업자 로그인
                     </button>
                 </form>
-
-                <div className="signup-link">
-                    <button className="login-signup-btn" onClick={handleSignup}>
-                        관리자 계정 등록
-                    </button>
-                </div>
-            </div>
-
-            {/* 개발용 버튼  */}
-            <div style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-            }}>
-                <button
-                    type="button"
-                    className="login-role-btn"
-                    onClick={handleDevLogin}
-                    style={{
-                        backgroundColor: '#4CAF50',
-                        color: 'white',
-                        padding: '10px 15px',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                    }}
-                >
-                    DEV Login
-                </button>
-                <Link to="/dev" style={{
-                    backgroundColor: '#008CBA',
-                    color: 'white',
-                    padding: '10px 15px',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    textDecoration: 'none',
-                    textAlign: 'center',
-                }}>
-                    /dev
-                </Link>
             </div>
 
             <div className="footer">
@@ -179,4 +113,4 @@ function Login() {
     );
 }
 
-export default Login;
+export default WorkerLogin;

@@ -23,21 +23,14 @@ const ProtectedRoute = ({ requiredRole }) => {
 
   if (!isAuthenticated) {
     console.log("로그인이 필요합니다.");
-    return <Navigate to="/login" replace />;
+      if (!isAuthenticated) {
+          return <Navigate to={requiredRole === 'ADMIN' ? '/admin-login' : '/login'} replace />;
+      }
   }
 
-  if (requiredRole) {
-    const userRole = role;
-    const required = requiredRole;
-
-    if (userRole === 'DEV') {
-      // dev is allowed everywhere
-        // 개발용
-    } else if (userRole !== required) {
-        console.log("접근 거부.");
-        return <Navigate to="/login" replace />;
+    if (requiredRole && role !== requiredRole && role !== 'DEV') {
+        return <Navigate to={requiredRole === 'ADMIN' ? '/admin/login' : '/login'} replace />;
     }
-  }
 
   return <Outlet />;
 };
