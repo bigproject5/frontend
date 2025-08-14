@@ -11,7 +11,7 @@ const WorkerForm = () => {
     password: '',
     name: '',
     employeeNumber: '',
-    department: '',
+    taskType: '', // department를 taskType으로 변경
     email: '',
     address: '',
     phone: ''
@@ -24,7 +24,7 @@ const WorkerForm = () => {
       loginId: 'hong123',
       password: 'password123',
       employeeNumber: 'EMP001',
-      department: '도장',
+      taskType: 'PAINT', // department를 taskType으로 변경하고 API 값으로 변경
       email: 'hong@hyundai.com',
       phone: '010-1234-5678',
       address: '서울시 강남구 테헤란로 123'
@@ -34,7 +34,7 @@ const WorkerForm = () => {
       loginId: 'kim456',
       password: 'password456',
       employeeNumber: 'EMP002',
-      department: '엔진',
+      taskType: 'ENGINE', // department를 taskType으로 변경하고 API 값으로 변경
       email: 'kim@hyundai.com',
       phone: '010-9876-5432',
       address: '부산시 해운대구 해운대로 456'
@@ -44,7 +44,7 @@ const WorkerForm = () => {
       loginId: 'park789',
       password: 'password789',
       employeeNumber: 'EMP003',
-      department: '패널',
+      taskType: 'LAMP', // department를 taskType으로 변경하고 API 값으로 변경
       email: 'park@hyundai.com',
       phone: '010-5555-7777',
       address: '대구시 수성구 수성로 789'
@@ -73,7 +73,7 @@ const WorkerForm = () => {
       password: '',
       name: '',
       employeeNumber: '',
-      department: '',
+      taskType: '', // department를 taskType으로 변경
       email: '',
       address: '',
       phone: ''
@@ -103,7 +103,8 @@ const WorkerForm = () => {
     name: formData.name,
     email: formData.email,
     phoneNumber: formData.phone,
-    address: formData.address
+    address: formData.address,
+    taskType: formData.taskType // taskType 직접 사용
   };
 
   try {
@@ -412,19 +413,21 @@ const WorkerForm = () => {
               color: '#374151',
               marginBottom: '8px'
             }}>
-              부서
+              작업 유형
             </label>
             <select
-              value={formData.department}
-              onChange={(e) => handleInputChange('department', e.target.value)}
+              value={formData.taskType}
+              onChange={(e) => handleInputChange('taskType', e.target.value)}
               style={inputStyle}
               disabled={loading}
             >
-              <option value="">부서를 선택하세요</option>
-              <option value="도장">도장</option>
-              <option value="와이퍼">와이퍼</option>
-              <option value="패널">패널</option>
-              <option value="엔진">엔진</option>
+              <option value="">작업 유형을 선택하세요</option>
+              <option value="PAINT">도장</option>
+              <option value="WIPER">와이퍼</option>
+              <option value="LAMP">램프</option>
+              <option value="ENGINE">엔진</option>
+              <option value="EM_WAVE">전자파</option>
+              <option value="WASHER_FLUID">워셔액</option>
             </select>
           </div>
 

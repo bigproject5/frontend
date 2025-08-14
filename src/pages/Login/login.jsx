@@ -28,7 +28,7 @@ function Login() {
         console.log(data)
         if (data.token) {
             sessionStorage.setItem('accessToken', data.token);
-            dispatch(loginSuccess({ user: data.user, role: data.user.role }));
+            dispatch(loginSuccess({ user: data.user, role: data.user.role, taskType: data.user.taskType.toUpperCase()}));
 
             console.log("리덕트 저장 완료")
             const role_ = data.user.role;
