@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import NoticeOverview from './NoticeOverview.jsx';
 import InspectionSummary from './InspectionSummary.jsx';
 import InspectionList from './InspectionList.jsx';
@@ -25,6 +26,7 @@ const WorkerMainContent = () => {
 
   // Redux에서 사용자 정보 가져오기
   const { user, isAuthenticated, taskType } = useSelector(state => state.auth);
+  const navigate = useNavigate();
 
   // 디버깅용 로그 추가
   console.log('WorkerMainContent - Redux 전체 상태:', useSelector(state => state.auth));
@@ -136,7 +138,7 @@ const WorkerMainContent = () => {
   // 검사 아이템 클릭 (상세 페이지로 이동)
   const handleInspectionClick = (inspectionId) => {
     console.log('검사 상세 페이지로 이동:', inspectionId);
-    // 추후 라우팅 구현
+    navigate(`/worker/inspections/${inspectionId}`);
   };
 
   return (

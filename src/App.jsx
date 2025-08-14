@@ -12,8 +12,8 @@ import NoticeDetail from './pages/Notice/NoticeDetail.jsx'  // 관리자용 - �
 import NoticeForm from './pages/Notice/NoticeForm.jsx'
 import WorkerForm from "./pages/Workers/WorkerForm.jsx";
 import WorkerList from "./pages/Workers/WorkerList.jsx";
-import Workerpartdetail from "./pages/WorkerPartDetail/workerpartdetail.jsx";
-import Cartest from "./pages/WorkerPartDetail/cartest.jsx";
+// import InspectionDetail from "./pages/InspectionDetail/InspectionDetail.jsx";
+import AuditDetail from "./pages/AuditDetail/AuditDetail.jsx";
 import InspectionDetail from "./pages/admin/InspectionDetail.jsx";
 import Dashboard from "./pages/admin/Dashboard";
 import WorkerMainContent from "./pages/WorkerMain/WorkerMainContent.jsx";
@@ -38,7 +38,7 @@ function App() {
                   <Route element={<MainLayout />}>
                       <Route path="/notices" element={<NoticeList />} />
                       <Route path="/notices/:id" element={<NoticeDetail />} />
-                      <Route path="/inspections/:inspectionId" element={<Workerpartdetail />} />
+                      <Route path="/inspections/:inspectionId" element={<InspectionDetail />} />
                   </Route>
               </Route>
 
@@ -62,8 +62,7 @@ function App() {
                       <Route path="/worker/profile" element={<WorkerProfile />} />
                       <Route path="/worker/main" element={<WorkerMainContent />} />
                       <Route path="/worker/manual-test" element={<ManualTestContent />} />
-                      <Route path="/worker-partdetail/:inspectionId" element={<Workerpartdetail />} />
-                      <Route path="/car-test" element={<Cartest />} />
+                      <Route path="/worker/inspections/:inspectionId" element={<InspectionDetail />} />
                   </Route>
               </Route>
           </Routes>
