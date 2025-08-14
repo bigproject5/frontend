@@ -27,6 +27,7 @@ import {
 const InspectionList = ({
   inspections,
   loading,
+  error,
   currentPage,
   totalPages,
   onPageChange,
@@ -63,6 +64,13 @@ const InspectionList = ({
           bgColor: '#e8f5e8',
           icon: <CheckCircle sx={{ fontSize: 20 }} />
         };
+      case 'NORMAL':
+        return {
+            label: '정상',
+            color: '#4caf50',
+            bgColor: '#e8f5e8',
+            icon: <CheckCircle sx={{ fontSize: 20 }} />
+        }
       default:
         return {
           label: '알 수 없음',
@@ -150,6 +158,16 @@ const InspectionList = ({
                   검사 목록을 불러오는 중...
                 </Typography>
               </Box>
+            </Box>
+          ) : error ? (
+            <Box sx={{ textAlign: 'center', py: 6 }}>
+              <AssignmentIcon sx={{ fontSize: 48, color: '#f44336', mb: 2 }} />
+              <Typography variant="h6" color="error" sx={{ mb: 1 }}>
+                오류가 발생했습니다
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {error}
+              </Typography>
             </Box>
           ) : (
             <>
