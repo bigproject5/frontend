@@ -11,7 +11,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const { user, role } = useSelector(state => state.auth);
 
-  const isAdmin = () => role === 'admin';
+  const isAdmin = () => role === 'ADMIN';
   const userName = decodeURIComponent(user?.name || "");
 
   const handleLogoClick = () => {

@@ -302,7 +302,7 @@ const Dashboard = () => {
   }
 
   return (
-    <Box sx={{ p: 3, ml: { md: '280px' } }}> {/* 사이드바 여백 고려 */}
+    <Box> {/* 사이드바 여백 고려 */}
 
       {/* 헤더 */}
       <Box sx={{ mb: 4 }}>
