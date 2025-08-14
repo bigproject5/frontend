@@ -15,11 +15,13 @@ import {
   Chip
 } from '@mui/material';
 import {
-  AttachFile as AttachFileIcon
+  AttachFile as AttachFileIcon,
+  Create as CreateIcon
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { getNotices } from '../../api/NoticeAPI.js';
 import { useSelector } from 'react-redux';
+import './NoticeList.css';
 
 function NoticeList() {
   const [notices, setNotices] = useState([]);
@@ -66,76 +68,89 @@ function NoticeList() {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold', color: '#002c5f' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 'calc(100vh - 64px - 48px)' }}>
+      <Container 
+      sx={{
+        maxWidth: {
+          md: '960px',
+          lg: '1200px',
+          xl: '1400px'
+        },
+        px: {
+          xs: 2,
+          sm: 4,
+          md: 6
+        },
+        py: 4 // Add vertical padding here
+      }}
+    >
+      <Box className="notice-list-header">
+        <Typography variant="h3" component="h1" className="notice-list-title">
           공지사항
         </Typography>
         {isAdmin && (
           <Button
             variant="contained"
+            startIcon={<CreateIcon />}
             onClick={() => navigate('/admin/notices/new')}
-            sx={{
-              backgroundColor: '#002c5f',
-              '&:hover': { backgroundColor: '#001a3e' }
-            }}
+            className="new-notice-button"
+            size="large"
           >
-            공지사항 작성
+            새 공지 작성
           </Button>
         )}
       </Box>
 
-      <TableContainer component={Paper} sx={{ boxShadow: 2, height: '800px' }}>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-              <TableCell align="center" width="8%">번호</TableCell>
-              <TableCell align="center" width="50%">제목</TableCell>
-              <TableCell align="center" width="12%">작성자</TableCell>
-              <TableCell align="center" width="15%">작성일</TableCell>
-              <TableCell align="center" width="10%">조회수</TableCell>
-              <TableCell align="center" width="5%">첨부</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {notices.map((notice) => (
-              <TableRow
-                key={notice.id}
-                sx={{
-                  cursor: 'pointer',
-                  '&:hover': { backgroundColor: '#f9f9f9' }
-                }}
-                onClick={() => handleRowClick(notice.id)}
-              >
-                <TableCell align="center">{notice.id}</TableCell>
-                <TableCell align="left" sx={{ fontWeight: 500 }}>
-                  {notice.title}
-                </TableCell>
-                <TableCell align="center">{notice.author}</TableCell>
-                <TableCell align="center">{notice.date}</TableCell>
-                <TableCell align="center">{notice.views}</TableCell>
-                <TableCell align="center">
-                  {notice.hasAttachment && (
-                    <Chip icon={<AttachFileIcon />} label="" size="small" />
-                  )}
-                </TableCell>
+      <Paper className="notice-list-paper">
+        <TableContainer className="notice-list-table-container">
+          <Table>
+            <TableHead>
+              <TableRow className="notice-table-header-row">
+                <TableCell align="center" className="notice-table-header-cell" sx={{ py: 2 }}>번호</TableCell>
+                <TableCell align="left" className="notice-table-header-cell" sx={{ py: 2 }}>제목</TableCell>
+                <TableCell align="center" className="notice-table-header-cell" sx={{ py: 2 }}>작성자</TableCell>
+                <TableCell align="center" className="notice-table-header-cell" sx={{ py: 2 }}>작성일</TableCell>
+                <TableCell align="center" className="notice-table-header-cell" sx={{ py: 2 }}>조회수</TableCell>
+                <TableCell align="center" className="notice-table-header-cell" sx={{ py: 2 }}>첨부</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {notices.map((notice) => (
+                <TableRow
+                  key={notice.id}
+                  className="notice-table-row"
+                  onClick={() => handleRowClick(notice.id)}
+                >
+                  <TableCell align="center" sx={{ py: 3 }}>{notice.id}</TableCell>
+                  <TableCell align="left" className="notice-title-cell" sx={{ py: 2 }}>
+                    {notice.title}
+                  </TableCell>
+                  <TableCell align="center" sx={{ py: 3 }}>{notice.name}</TableCell>
+                  <TableCell align="center" sx={{ py: 3 }}>{new Date(notice.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell align="center" sx={{ py: 3 }}>{notice.viewCount}</TableCell>
+                  <TableCell align="center" sx={{ py: 2 }}>
+                    {notice.fileUrl && (
+                      <AttachFileIcon fontSize="small" color="action" />
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+      <Box className="pagination-container">
         <Pagination
           count={totalPages}
           page={page}
           onChange={handlePageChange}
           color="primary"
-          showFirstButton
-          showLastButton
+          size="large"
         />
       </Box>
     </Container>
+  </Box>
   );
 }
 
