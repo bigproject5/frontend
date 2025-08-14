@@ -3,21 +3,27 @@ import { Outlet } from 'react-router-dom';
 import { Box } from '@mui/material';
 import Header from './Header';
 import Sidebar from './Sidebar';
+import PrivacyPolicyBar from './PrivacyPolicyBar';
 
 const MainLayout = () => {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      {/* 헤더 영역 - Header 컴포넌트 사용 */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
       <Header />
-
-      {/* 사이드바와 메인 컨텐츠 영역 */}
-      <Box sx={{ display: 'flex' }}>
-        {/* 사이드바 영역 - Sidebar 컴포넌트 사용 */}
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         <Sidebar />
-
-        {/* 페이지 컨텐츠 */}
-        <Box component="main" sx={{ flex: 1, p: 3, bgcolor: '#fafafa', ml: '360px', pt: '88px' }}>
+        <Box 
+          component="main" 
+          sx={{ 
+            flex: 1, 
+            p: 3, 
+            bgcolor: '#fafafa', 
+            ml: '360px', 
+            overflowY: 'auto',
+            minHeight: 'calc(100vh - 64px)' // 64px is header height
+          }}
+        >
           <Outlet />
+          <PrivacyPolicyBar />
         </Box>
       </Box>
     </Box>
@@ -25,3 +31,4 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
+
