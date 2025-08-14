@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
-import { Signup_api } from "../../api/phm_api.jsx";
+import {checkAdminLoginId, Signup_api} from "../../api/phm_api.jsx";
 import {GoogleReCaptchaProvider, useGoogleReCaptcha} from "react-google-recaptcha-v3";
 
-function SignupForm(message) {
+function SignupForm() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const { executeRecaptcha } = useGoogleReCaptcha();
@@ -34,7 +34,7 @@ function SignupForm(message) {
         }));
     };
 
-    const handleIdCheck = () => {
+    const handleIdCheck = async () => {
         const loginId = formData.loginId.trim();
         if (!loginId) {
             setError("아이디를 입력해주세요.");
@@ -42,9 +42,8 @@ function SignupForm(message) {
         }
 
         try {
-            let data = false;
-            if (loginId === "admin") data = true;
-            if (data.exists) {
+            const data = await checkAdminLoginId(loginId);
+            if (!data.available) {
                 setError("이미 사용 중인 아이디입니다.");
                 setIsIdChecked(false);
             } else {

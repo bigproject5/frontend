@@ -53,3 +53,15 @@ export async function dev_login_api() {
     })
     return response.json();
 }
+
+export async function checkAdminLoginId(loginId) {
+    const response = await fetch(`${Base_URL}/api/operation/admin/check-id`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            loginId: loginId
+        }),
+
+    })
+    return response.json();
+}
