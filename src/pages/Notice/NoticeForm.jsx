@@ -1,7 +1,7 @@
 // src/notices/NoticeForm.jsx - 파일 첨부 기능 포함
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import {createNotice, getNoticeDetail, increaseViews, updateNotice} from "../../api/NoticeAPI.js";
+import {createNotice, getNoticeDetail, updateNotice} from "../../api/NoticeAPI.js";
 import {
   Paper,
   Typography,
@@ -127,17 +127,20 @@ function NoticeForm() {
     setShowSuccess(true)
 
     setTimeout(() => {
-      navigate('/admin/notices')
+      navigate(isEdit ? `/notices/${id}` : `/notices`)
     }, 2000)
   }
 
   const handleCancel = () => {
-    if (formData.title || formData.content || attachedFiles.length > 0) {
+    const hasContent = formData.title || formData.content || attachedFiles.length > 0;
+    const targetPath = isEdit ? `/notices/${id}` : `/notices`;
+
+    if (hasContent) {
       if (window.confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
-        navigate('/admin/notices')
+        navigate(targetPath);
       }
     } else {
-      navigate('/admin/notices')
+      navigate(targetPath);
     }
   }
 
