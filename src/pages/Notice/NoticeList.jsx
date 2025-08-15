@@ -129,7 +129,7 @@ function NoticeList() {
                   <TableCell align="center" sx={{ py: 3 }}>{new Date(notice.createdAt).toLocaleDateString()}</TableCell>
                   <TableCell align="center" sx={{ py: 3 }}>{notice.viewCount}</TableCell>
                   <TableCell align="center" sx={{ py: 2 }}>
-                    {notice.fileUrl && (
+                    {notice.hasFiles && (
                       <AttachFileIcon fontSize="small" color="action" />
                     )}
                   </TableCell>
