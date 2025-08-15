@@ -106,8 +106,6 @@ export async function createNotice(noticeData, file) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
-        // Content-Type은 FormData 사용시 브라우저가 자동 설정하므로 제외
-        // 다른 헤더도 제외하여 브라우저가 multipart 경계를 올바르게 설정하도록 함
       },
       body: formData
     });

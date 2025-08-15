@@ -210,18 +210,6 @@ const AdminProfileEditModal = ({ open, onClose, userInfo, onSave, isLoading = fa
                         <Grid item xs={12} container spacing={2}>
                             <Grid item xs={12} sm={4}>
                                 <TextField
-                                    label="이름"
-                                    value={formData.name}
-                                    onChange={handleChange('name')}
-                                    error={!!errors.name}
-                                    helperText={errors.name}
-                                    fullWidth
-                                    variant="outlined"
-                                    className="admin-text-field"
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={4}>
-                                <TextField
                                     label="로그인 ID"
                                     value={formData.loginId}
                                     onChange={handleChange('loginId')}
@@ -233,6 +221,19 @@ const AdminProfileEditModal = ({ open, onClose, userInfo, onSave, isLoading = fa
                                 />
 
                             </Grid>
+                            <Grid item xs={12} sm={4}>
+                                <TextField
+                                    label="이름"
+                                    value={formData.name}
+                                    onChange={handleChange('name')}
+                                    error={!!errors.name}
+                                    helperText={errors.name}
+                                    fullWidth
+                                    variant="outlined"
+                                    className="admin-text-field"
+                                />
+                            </Grid>
+
                             <Grid item xs={12} sm={4}>
                                 <TextField
                                     label="사원번호"
@@ -282,7 +283,7 @@ const AdminProfileEditModal = ({ open, onClose, userInfo, onSave, isLoading = fa
                                     fullWidth
                                     error={!!errors.department}
                                     className="admin-form-control"
-                                    sx={{ width: '200px' }}
+                                    sx={{ width: '225px' }}
                                 >
                                     <InputLabel>부서/작업타입</InputLabel>
                                     <Select
