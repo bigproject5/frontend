@@ -39,7 +39,8 @@ function NoticeForm() {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
-    status: 'published'
+    status: 'published',
+    removeFileIds: []
   })
   const [attachedFiles, setAttachedFiles] = useState([])
   const [showSuccess, setShowSuccess] = useState(false)
@@ -50,11 +51,34 @@ function NoticeForm() {
         try {
           const response = await getNoticeDetail(id)
           // API 응답 구조에 맞게 데이터 설정
-          if (response && response.data) {
-            setFormData(response.data)
-          } else if (response) {
-            // 직접 응답이 데이터인 경우
-            setFormData(response)
+          const data = response?.data || response;
+
+          if (data) {
+            // formData에는 공지사항 내용
+            setFormData({
+              id: data.id,
+              title: data.title,
+              content: data.content,
+              adminId: data.adminId,
+              name: data.name,
+              viewCount: data.viewCount,
+              isActive: data.isActive,
+              createdAt: data.createdAt,
+              updatedAt: data.updatedAt,
+              removeFileIds: []
+            });
+
+            // files만 별도로 state에 넣기
+            setAttachedFiles(
+                (data.files || []).map(file => ({
+                  id: file.fileId,
+                  name: file.fileName,
+                  savedName: file.savedName,
+                  url: file.fileUrl,
+                  size: file.fileSize,
+                  file: null // 서버에서 온 파일은 로컬 File 객체 없음
+                }))
+            );
           }
         } catch (error) {
           console.error('공지사항 상세 조회 실패:', error)
@@ -64,12 +88,6 @@ function NoticeForm() {
       }
 
       fetchNoticeDetail()
-
-      // 기존 첨부파일 로드
-      setAttachedFiles([
-        { id: 1, name: 'document.pdf', size: 1024000 },
-        { id: 2, name: 'image.jpg', size: 512000 }
-      ])
     }
   }, [isEdit])
 
@@ -84,7 +102,7 @@ function NoticeForm() {
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files)
     const newFiles = files.map(file => ({
-      id: Date.now() + Math.random(),
+      id: `new_${Date.now()}_${id}`,
       name: file.name,
       size: file.size,
       file: file
@@ -94,7 +112,16 @@ function NoticeForm() {
   }
 
   const handleFileDelete = (fileId) => {
-    setAttachedFiles(prev => prev.filter(file => file.id !== fileId))
+    const fileToDelete = attachedFiles.find(file => file.id === fileId);
+
+    setAttachedFiles(prev => prev.filter(file => file.id !== fileId));
+
+    if (fileToDelete && !fileToDelete.file) {
+      setFormData(prev => ({
+        ...prev,
+        removeFileIds: [...(prev.removeFileIds || []), fileId]
+      }));
+    }
   }
 
   const formatFileSize = (bytes) => {
@@ -119,10 +146,16 @@ function NoticeForm() {
 
     let response;
     if(isEdit){
-      response = await updateNotice(id, formData);
+      const newFiles = attachedFiles
+          .filter(file => file.file)
+          .map(file => file.file);
+      response = await updateNotice(id, formData, newFiles);
     }
     else{
-      response = await createNotice(formData, attachedFiles);
+      const allFiles = attachedFiles
+          .filter(file => file.file)
+          .map(file => file.file);
+      response = await createNotice(formData, allFiles);
     }
     console.log(response);
     setShowSuccess(true)

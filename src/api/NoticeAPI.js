@@ -5,27 +5,23 @@
 
 // 공지사항 API의 기본 URL
 const API_BASE = "http://localhost:8080/api/operation/notices";
+const token = sessionStorage.getItem('accessToken');
 
 // Bearer 토큰 헤더 설정 (멀티파트용)
 const getAuthHeadersForMultipart = () => {
-  const token = sessionStorage.getItem('accessToken');
   console.log('현재 토큰:', token);
 
   return {
     'Authorization': `Bearer ${token}`
-    // Content-Type은 FormData 사용시 브라우저가 자동으로 설정하므로 제외
-    // X-User-Id, X-User-Name은 Gateway에서 토큰 인증 후 자동으로 설정됨
   };
 };
 
 // JSON 요청용 헤더 설정
 const getAuthHeadersForJSON = () => {
-  const token = sessionStorage.getItem('accessToken');
   console.log('현재 토큰:', token);
   return {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
-    // X-User-Id, X-User-Name은 Gateway에서 토큰 인증 후 자동으로 설정됨
   };
 };
 
@@ -73,7 +69,7 @@ export async function getNoticeDetail(id) {
 /**
  * 새로운 공지사항을 생성합니다. (파일 첨부 가능)
  * @param {object} noticeData - { title, content, fileUrl }
- * @param {Files} [files] - 첨부할 파일 객체 (선택 사항)
+ * @param {*[]} [files] - 첨부할 파일 객체 (선택 사항)
  */
 export async function createNotice(noticeData, files) {
   try {
@@ -87,13 +83,9 @@ export async function createNotice(noticeData, files) {
 
     // @RequestPart("file")에 매핑될 파일
     if (files && files.length > 0) {
-      files.forEach(f => {
-        formData.append('file', f.file); // f.file이 진짜 File 객체
+      files.forEach(file => {
+        formData.append('file', file); // f.file이 진짜 File 객체
       });
-    } else {
-      // 빈 파일 처리
-      const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' });
-      formData.append('file', emptyFile);
     }
 
     console.log('FormData 내용 확인:');
@@ -127,13 +119,27 @@ export async function createNotice(noticeData, files) {
  * 기존 공지사항을 수정합니다.
  * @param {number} id - 공지사항 ID
  * @param {object} noticeData - { title, content, fileUrl }
+ * @param newFiles 새로 업로드될 파일들
  */
-export async function updateNotice(id, noticeData) {
+export async function updateNotice(id, noticeData, newFiles) {
   try {
+    const formData = new FormData();
+
+    formData.append(
+        'notice',
+        new Blob([JSON.stringify(noticeData)], { type: 'application/json' })
+    );
+
+    if (newFiles && newFiles.length > 0) {
+      newFiles.forEach(file => {
+        formData.append('file', file); // f.file이 진짜 File 객체
+      });
+    }
+
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
-      headers: getAuthHeadersForJSON(),
-      body: JSON.stringify(noticeData)
+      headers: getAuthHeadersForMultipart(),
+      body: formData
     });
 
     if (!response.ok) {
