@@ -177,7 +177,7 @@ const WorkerForm = () => {
   };
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ margin: '10%' }}>
       {/* ===== 테스트 데이터 버튼 영역 ===== */}
       <div style={{
         backgroundColor: '#f0f9ff',
