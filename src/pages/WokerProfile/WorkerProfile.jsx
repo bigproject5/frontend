@@ -3,8 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ReportSection from './ReportSection.jsx';
 import './WorkerProfile.css';
-import {editWorkerProfile, getUserInfo, getWorkerProfileByAdmin} from '../../api/phm_api.jsx';
+import {editWorkerProfile, getUserInfo, getWorkerProfileByAdmin } from '../../api/phm_api.jsx';
 import ProfileEditModal from "./ProfileEditModal.jsx";
+import AdminProfileEditModal from "./AdminProfileEditModal.jsx";
 
 function WorkerProfile() {
     const navigate = useNavigate();
@@ -18,15 +19,18 @@ function WorkerProfile() {
         name: '',
         employeeId: '',
         email: '',
-        phoneNumber: '',  // 전화번호 추가
+        phoneNumber: '',
         loginId: '',
-        taskType: ''
+        taskType: '',
+        department: '',    // 부서 추가
+        status: '활성'     // 상태 추가
     });
 
     const [isLoading, setIsLoading] = useState(true);
-    const [editModalOpen, setEditModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);           // 작업자용 모달
+    const [adminEditModalOpen, setAdminEditModalOpen] = useState(false); // 관리자용 모달
 
-    // useCallback으로 감싸서 의존성 문제 해결
+    // 사용자 데이터 로드
     const loadUserData = useCallback(async () => {
         try {
             const token = sessionStorage.getItem('accessToken');
@@ -51,6 +55,8 @@ function WorkerProfile() {
                 phoneNumber: response.phoneNumber,
                 loginId: response.loginId,
                 taskType: response.taskType,
+                department: response.department || response.taskType, // department가 없으면 taskType 사용
+                status: response.status || '활성'
             });
         } catch (error) {
             console.error('사용자 정보 로드 실패:', error);
@@ -64,14 +70,18 @@ function WorkerProfile() {
         loadUserData();
     }, []);
 
+    // 프로필 편집 버튼 클릭 핸들러
     const handleEditProfile = () => {
         if (isAdmin()) {
-            // navigate(`/admin/workers/${id}/edit`);
+            // 관리자인 경우 관리자 전용 모달 열기
+            setAdminEditModalOpen(true);
         } else {
+            // 작업자인 경우 기본 모달 열기
             setEditModalOpen(true);
         }
     };
 
+    // 작업자용 프로필 저장
     const handleSaveProfile = async (updatedData) => {
         try {
             const token = sessionStorage.getItem('accessToken');
@@ -93,7 +103,43 @@ function WorkerProfile() {
 
         } catch (error) {
             console.error('프로필 수정 실패:', error);
-            throw error; // 모달에서 에러 처리할 수 있도록 다시 throw
+            throw error;
+        }
+    };
+
+    // 관리자용 프로필 저장
+    const handleAdminSaveProfile = async (updatedData) => {
+        try {
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error('인증 토큰이 없습니다.');
+            }
+
+            // workerId를 updatedData에 추가
+            const dataWithWorkerId = {
+                ...updatedData,
+                workerId: id
+            };
+
+            // 관리자 권한으로 작업자 정보 업데이트 API 호출
+            const response = await editWorkerProfile(token, dataWithWorkerId);
+
+            // 성공 시 로컬 상태 업데이트
+            setUserInfo(prev => ({
+                ...prev,
+                ...updatedData,
+                // employeeNumber를 employeeId로 매핑
+                employeeId: updatedData.employeeNumber || updatedData.employeeId,
+                // department를 taskType으로도 설정
+                taskType: updatedData.department || prev.taskType
+            }));
+
+            console.log('작업자 정보가 성공적으로 업데이트되었습니다.');
+            console.log(response);
+
+        } catch (error) {
+            console.error('작업자 정보 수정 실패:', error);
+            throw error;
         }
     };
 
@@ -169,9 +215,15 @@ function WorkerProfile() {
                             <span>{userInfo.employeeId}</span>
                         </div>
                         <div className="info-item">
-                            <label>작업 </label>
-                            <span>{userInfo.taskType}</span>
+                            <label>작업타입</label>
+                            <span>{userInfo.taskType || userInfo.department}</span>
                         </div>
+                        {isAdmin() && (
+                            <div className="info-item">
+                                <label>상태</label>
+                                <span>{userInfo.status}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -198,21 +250,27 @@ function WorkerProfile() {
                         </div>
                     </div>
                 )}
-                <div className="worker-profile-container">
-                    {/* 기존 컨텐츠들... */}
-
-                    {/* 프로필 편집 모달 - 작업자용만 */}
-                    {!isAdmin() && (
-                        <ProfileEditModal
-                            open={editModalOpen}
-                            onClose={() => setEditModalOpen(false)}
-                            userInfo={userInfo}
-                            onSave={handleSaveProfile}
-                        />
-                    )}
-                </div>
             </div>
 
+            {/* 작업자 전용 프로필 편집 모달 */}
+            {!isAdmin() && (
+                <ProfileEditModal
+                    open={editModalOpen}
+                    onClose={() => setEditModalOpen(false)}
+                    userInfo={userInfo}
+                    onSave={handleSaveProfile}
+                />
+            )}
+
+            {/* 관리자 전용 프로필 편집 모달 */}
+            {isAdmin() && (
+                <AdminProfileEditModal
+                    open={adminEditModalOpen}
+                    onClose={() => setAdminEditModalOpen(false)}
+                    userInfo={userInfo}
+                    onSave={handleAdminSaveProfile}
+                />
+            )}
         </div>
     );
 }
