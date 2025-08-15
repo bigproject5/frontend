@@ -31,6 +31,7 @@ const Header = () => {
   const handleLogout = () => {
     // 로그아웃 기능 구현
     console.log('로그아웃 버튼 클릭됨');
+    sessionStorage.removeItem('accessToken'); // 세션 스토리지에서 토큰 삭제
     dispatch(logout());
     navigate('/login');
   };
