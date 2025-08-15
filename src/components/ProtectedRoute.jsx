@@ -10,14 +10,18 @@ const ProtectedRoute = ({ requiredRole }) => {
   // 초기화 중이면 로딩 화면 표시
   if (isInitializing) {
     return (
+      <>
+        <Outlet />
         <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100vh'
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh'
         }}>
-          <div>로딩 중...</div>
+            <div>로딩 중...</div>
         </div>
+      </>
+
     );
   }
 

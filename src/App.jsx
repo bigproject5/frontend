@@ -25,47 +25,47 @@ function App() {
 
   return (
       <Router>
-          <AppInitializer />
-
-          <Routes>
-              {/* 🔓 공개 페이지 */}
-              <Route path="/" element={<WorkerLogin />} />
-              <Route path="/login" element={<WorkerLogin />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/dev" element={<DevPage />} />
-              <Route path="/admin-login" element={<Login />} />
-              {/* 🔐 공통 로그인 사용자 접근 가능 */}
-              <Route element={<ProtectedRoute />}>
-                  <Route element={<MainLayout />}>
-                      <Route path="/notices" element={<NoticeList />} />
-                      <Route path="/notices/:id" element={<NoticeDetail />} />
-                      <Route path="/inspections/:inspectionId" element={<InspectionDetail />} />
+          <AppInitializer>
+              <Routes>
+                  {/* 🔓 공개 페이지 */}
+                  <Route path="/" element={<WorkerLogin />} />
+                  <Route path="/login" element={<WorkerLogin />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/dev" element={<DevPage />} />
+                  <Route path="/admin-login" element={<Login />} />
+                  {/* 🔐 공통 로그인 사용자 접근 가능 */}
+                  <Route element={<ProtectedRoute />}>
+                      <Route element={<MainLayout />}>
+                          <Route path="/notices" element={<NoticeList />} />
+                          <Route path="/notices/:id" element={<NoticeDetail />} />
+                          <Route path="/inspections/:inspectionId" element={<InspectionDetail />} />
+                      </Route>
                   </Route>
-              </Route>
 
-              {/* 🔐 관리자 전용 페이지 */}
-              <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
-                  <Route element={<MainLayout />}>
-                      <Route path="/admin/dashboard" element={<Dashboard />} />
-                      <Route path="/admin/inspections/:inspectionId" element={<InspectionDetail />} />
-                      <Route path="/admin/notices/new" element={<NoticeForm />} />
-                      <Route path="/admin/notices/:id/edit" element={<NoticeForm />} />
-                      <Route path="/admin/workers" element={<WorkerList />} />
-                      <Route path="/admin/workers/register" element={<WorkerForm />} />
-                      <Route path="/admin/workers/:id" element={<WorkerProfile />} />
+                  {/* 🔐 관리자 전용 페이지 */}
+                  <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+                      <Route element={<MainLayout />}>
+                          <Route path="/admin/dashboard" element={<Dashboard />} />
+                          <Route path="/admin/inspections/:inspectionId" element={<InspectionDetail />} />
+                          <Route path="/admin/notices/new" element={<NoticeForm />} />
+                          <Route path="/admin/notices/:id/edit" element={<NoticeForm />} />
+                          <Route path="/admin/workers" element={<WorkerList />} />
+                          <Route path="/admin/workers/register" element={<WorkerForm />} />
+                          <Route path="/admin/workers/:id" element={<WorkerProfile />} />
+                      </Route>
                   </Route>
-              </Route>
 
-              {/* 🔐 작업자 전용 페이지 */}
-              <Route element={<ProtectedRoute requiredRole="WORKER" />}>
-                  <Route element={<MainLayout />}>
-                      <Route path="/worker/profile" element={<WorkerProfile />} />
-                      <Route path="/worker/main" element={<WorkerMainContent />} />
-                      <Route path="/worker/manual-test" element={<ManualTestContent />} />
-                      <Route path="/worker/inspections/:inspectionId" element={<InspectionDetail />} />
+                  {/* 🔐 작업자 전용 페이지 */}
+                  <Route element={<ProtectedRoute requiredRole="WORKER" />}>
+                      <Route element={<MainLayout />}>
+                          <Route path="/worker/profile" element={<WorkerProfile />} />
+                          <Route path="/worker/main" element={<WorkerMainContent />} />
+                          <Route path="/worker/manual-test" element={<ManualTestContent />} />
+                          <Route path="/worker/inspections/:inspectionId" element={<InspectionDetail />} />
+                      </Route>
                   </Route>
-              </Route>
-          </Routes>
+              </Routes>
+          </AppInitializer>
       </Router>
   );
 }

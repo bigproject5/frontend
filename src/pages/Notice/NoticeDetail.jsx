@@ -1,6 +1,6 @@
 // src/notices/NoticeDetail.jsx - 하이브리드 라우팅 적용
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
   Paper,
   Typography,
@@ -30,60 +30,54 @@ import {getNoticeDetail, deleteNotice, downloadFile} from '../../api/NoticeAPI.j
 function NoticeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, role } = useSelector((state) => state.auth)
   const [downloading, setDownloading] = useState(null); // 다운로드 중인 파일 ID 저장
   const [error, setError] = useState(null);
   const isAdmin = role === 'ADMIN' || role === "DEV";
-
   const [notice, setNotice] = useState(null)
   const [deleteDialog, setDeleteDialog] = useState(false)
 
+
   useEffect(() => {
-    // 공지사항 상세 조회 API 호출
-    const fetchNoticeDetail = async () => {
-      try {
-        const response = await getNoticeDetail(id)
-        console.log('공지사항 상세 응답:', response) // 디버깅용
-
-        // API 응답 구조에 맞게 데이터 설정
-        if (response && response.data) {
-          setNotice(response.data)
-        } else if (response) {
-          // 직접 응답이 데이터인 경우
-          setNotice(response)
-        }
-
-
-      } catch (error) {
-        console.error('공지사항 상세 조회 실패:', error)
-        // 에러 발생 시 사용자에게 알림
-        alert('공지사항을 불러오는데 실패했습니다.')
-        navigate('/admin/dashboard') // 에러 시 대시보드로 이동
-      }
+    if (location.state?.notice) {
+      setNotice(location.state.notice);
+      console.log(notice);
+      return;
     }
 
-    fetchNoticeDetail()
-  }, [id, isAdmin, navigate])
+    const fetchNoticeDetail = async () => {
+      if (!id) return;
+      try {
+        const response = await getNoticeDetail(id);
+        setNotice(response?.data || response);
+      } catch (error) {
+        console.error('공지사항 상세 조회 실패:', error);
+        alert('공지사항을 불러오는데 실패했습니다.');
+        navigate('/admin/dashboard');
+      }
+    };
+
+    fetchNoticeDetail();
+  }, [id, navigate, location.state])
 
   const handleEdit = () => {
-    navigate(`/admin/notices/${id}/edit`)
+    navigate(`/admin/notices/${id}/edit`, { state: { notice: notice } })
   }
 
   const handleDelete = async () => {
     try {
-      // 삭제 API 호출
       await deleteNotice(id)
       setDeleteDialog(false)
 
-      // 삭제 후 목록 페이지로 이동
-      navigate('/notices') // 관리자는 관리 페이지로
+      navigate('/notices')
     } catch (error) {
       console.error('공지사항 삭제 실패:', error)
     }
   }
 
   const handleBack = () => {
-    navigate('/notices') // 관리자는 관리 페이지로
+    navigate('/notices')
   }
 
   const handleDownload = async (fileId, fileName) => {
@@ -92,17 +86,14 @@ function NoticeDetail() {
       setError(null);
 
       const accessToken = sessionStorage.getItem('accessToken');
-
       const response = await downloadFile(accessToken, fileId);
 
       if (!response.ok) {
         throw new Error(`다운로드 실패: ${response.status}`);
       }
 
-      // Blob으로 변환
       const blob = await response.blob();
 
-      // 브라우저 기본 다운로드 (다운로드 폴더에 자동 저장)
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -112,7 +103,6 @@ function NoticeDetail() {
       document.body.appendChild(link);
       link.click();
 
-      // 정리
       setTimeout(() => {
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);

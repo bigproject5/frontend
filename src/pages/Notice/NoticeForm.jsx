@@ -1,6 +1,6 @@
 // src/notices/NoticeForm.jsx - 파일 첨부 기능 포함
 import React, { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import {createNotice, getNoticeDetail, updateNotice} from "../../api/NoticeAPI.js";
 import {
   Paper,
@@ -33,6 +33,7 @@ import {
 function NoticeForm() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const location = useLocation()
   const isEdit = Boolean(id)
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -44,52 +45,54 @@ function NoticeForm() {
   })
   const [attachedFiles, setAttachedFiles] = useState([])
   const [showSuccess, setShowSuccess] = useState(false)
+  const [originalNotice, setOriginalNotice] = useState(null);
 
   useEffect(() => {
-    if (isEdit) {
-      const fetchNoticeDetail = async () => {
-        try {
-          const response = await getNoticeDetail(id)
-          // API 응답 구조에 맞게 데이터 설정
-          const data = response?.data || response;
+    const noticeFromState = location.state?.notice;
 
-          if (data) {
-            // formData에는 공지사항 내용
-            setFormData({
-              id: data.id,
-              title: data.title,
-              content: data.content,
-              adminId: data.adminId,
-              name: data.name,
-              viewCount: data.viewCount,
-              isActive: data.isActive,
-              createdAt: data.createdAt,
-              updatedAt: data.updatedAt,
-              removeFileIds: []
-            });
+    const setFormState = (noticeData) => {
+      if (noticeData) {
+        const normalizedNotice = {
+          ...noticeData,
+          status: noticeData.status || 'published'
+        };
 
-            // files만 별도로 state에 넣기
-            setAttachedFiles(
-                (data.files || []).map(file => ({
-                  id: file.fileId,
-                  name: file.fileName,
-                  savedName: file.savedName,
-                  url: file.fileUrl,
-                  size: file.fileSize,
-                  file: null // 서버에서 온 파일은 로컬 File 객체 없음
-                }))
-            );
-          }
-        } catch (error) {
-          console.error('공지사항 상세 조회 실패:', error)
-          // 에러 발생 시 사용자에게 알림
-          alert('기존 공지사항 내용을 불러오는데 실패했습니다.')
-        }
+        setOriginalNotice(normalizedNotice);
+        setFormData({
+          ...normalizedNotice,
+          removeFileIds: []
+        });
+        setAttachedFiles(
+            (normalizedNotice.files || []).map(file => ({
+              id: file.fileId,
+              name: file.fileName,
+              savedName: file.savedName,
+              url: file.fileUrl,
+              size: file.fileSize,
+              file: null
+            }))
+        );
       }
+    };
 
-      fetchNoticeDetail()
+    if (isEdit) {
+      if (noticeFromState) {
+        setFormState(noticeFromState);
+      } else {
+        const fetchNoticeDetail = async () => {
+          try {
+            const response = await getNoticeDetail(id);
+            const data = response?.data || response;
+            setFormState(data);
+          } catch (error) {
+            console.error('공지사항 상세 조회 실패:', error);
+            alert('기존 공지사항 내용을 불러오는데 실패했습니다.');
+          }
+        };
+        fetchNoticeDetail();
+      }
     }
-  }, [isEdit])
+  }, [id, isEdit, location.state]);
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -132,17 +135,34 @@ function NoticeForm() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
+  let isDirty = false;
+  if (isEdit && originalNotice) {
+    const titleChanged = formData.title !== originalNotice.title;
+    const contentChanged = formData.content !== originalNotice.content;
+    const statusChanged = formData.status !== originalNotice.status;
+
+    const newFilesAdded = attachedFiles.some(f => f.file !== null);
+    const filesRemoved = (originalNotice.files?.length || 0) !== attachedFiles.filter(f => f.file === null).length;
+
+    isDirty = titleChanged || contentChanged || statusChanged || newFilesAdded || filesRemoved;
+
+  } else {
+    isDirty = !!(formData.title || formData.content || attachedFiles.length > 0);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    if (isEdit && !isDirty) {
+      navigate(`/notices/${id}`, { state: { notice: originalNotice } });
+      return;
+    }
 
     if (!formData.title.trim() || !formData.content.trim()) {
       alert('제목과 내용을 모두 입력해주세요.')
       return
     }
     setIsSubmitting(true);
-    // 실제로는 API 호출 (파일 업로드 포함)
-    console.log('저장할 데이터:', formData)
-    console.log('첨부파일:', attachedFiles)
 
     let response;
     if(isEdit){
@@ -150,31 +170,33 @@ function NoticeForm() {
           .filter(file => file.file)
           .map(file => file.file);
       response = await updateNotice(id, formData, newFiles);
-    }
-    else{
+    } else {
       const allFiles = attachedFiles
           .filter(file => file.file)
           .map(file => file.file);
       response = await createNotice(formData, allFiles);
     }
-    console.log(response);
     setShowSuccess(true)
 
-    setTimeout(() => {
-      navigate(isEdit ? `/notices/${id}` : `/notices`)
-    }, 2000)
+    navigate(`/notices/${response.id}`, { state: { notice: response } });
   }
 
   const handleCancel = () => {
-    const hasContent = formData.title || formData.content || attachedFiles.length > 0;
-    const targetPath = isEdit ? `/notices/${id}` : `/notices`;
-
-    if (hasContent) {
-      if (window.confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
+    const navigateBack = () => {
+      const targetPath = isEdit ? `/notices/${id}` : `/notices`;
+      if (isEdit) {
+        navigate(targetPath, { state: { notice: originalNotice } });
+      } else {
         navigate(targetPath);
       }
+    };
+
+    if (isDirty) {
+      if (window.confirm('작성 중인 내용이 있습니다. 정말 취소하시겠습니까?')) {
+        navigateBack();
+      }
     } else {
-      navigate(targetPath);
+      navigateBack();
     }
   }
 
