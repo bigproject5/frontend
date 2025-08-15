@@ -1,19 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
+import { startTask, completeTask, saveResolve } from '../../api/workerTaskApi';
+import {
+  Typography,
+  Box,
+  Card,
+  CardContent,
+  CircularProgress,
+  Chip,
+  Alert,
+  Button,
+  TextField
+} from '@mui/material';
+import {
+  VideoLibrary as VideoIcon,
+  Info as InfoIcon,
+  Psychology as AIIcon,
+  Assignment as TaskIcon,
+  Edit as EditIcon,
+  Person as PersonIcon
+} from '@mui/icons-material';
 
 const InspectionDetail = () => {
   const { inspectionId } = useParams();
   const [inspectionData, setInspectionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [resolveText, setResolveText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Redux에서 사용자 정보 가져오기
+  const { user } = useSelector(state => state.auth);
 
   useEffect(() => {
     const fetchInspectionDetail = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`http://localhost:8080/api/vehicleaudit/inspections/${inspectionId}`);
+        const response = await axios.get(`/api/vehicleaudit/inspections/${inspectionId}`);
 
         // Enhanced Debugging
         if (!response.data || !response.data.code) {
@@ -28,7 +54,11 @@ const InspectionDetail = () => {
         }
 
         if (response.data.code === 'SUCCESS') {
-          setInspectionData(response.data.data);
+          const data = response.data.data; // 원본 데이터 변수화
+          setInspectionData(data);
+          console.log('[InspectionDetail] 상세 조회 성공');
+          console.log(' - task.workerId:', data?.task?.workerId);
+          console.log(' - user.id:', user?.id);
         } else {
           // 서버가 에러 코드를 보냈을 경우
           console.log(
@@ -52,13 +82,111 @@ const InspectionDetail = () => {
     };
 
     fetchInspectionDetail();
-  }, [inspectionId]);
+  }, [inspectionId, user?.id]);
+
+  // inspectionData 갱신될 때마다 한번 더 확인 (state 적용 후 값 확인 용)
+  useEffect(() => {
+    if (inspectionData) {
+      console.log('[InspectionDetail] state 반영됨');
+      console.log(' - inspectionData.task.workerId:', inspectionData?.task?.workerId);
+      console.log(' - user.id:', user?.id);
+    }
+  }, [inspectionData, user?.id]);
+
+  // 검사 상세 정보 재조회 함수
+  const refetchInspectionDetail = async () => {
+    try {
+      const response = await axios.get(`/api/vehicleaudit/inspections/${inspectionId}`);
+      if (response.data.code === 'SUCCESS') {
+        const data = response.data.data;
+        setInspectionData(data);
+        console.log('[InspectionDetail] 데이터 재조회 완료');
+      }
+    } catch (err) {
+      console.error("검사 상세 정보 재조회 실패:", err);
+    }
+  };
+
+  // 조치 사항 저장 API
+  const handleSaveResolve = async () => {
+    try {
+      const result = await saveResolve(inspectionId, resolveText);
+      if (result.code === 'SUCCESS') {
+        alert('조치 사항이 저장되었습니다.');
+        await refetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+      } else {
+        alert('조치 사항 저장에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
+      }
+    } catch (error) {
+      console.error('조치 사항 저장 실패:', error);
+      if (error.message.includes('인증 토큰')) {
+        alert(error.message);
+      } else if (error.response?.status === 401) {
+        alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+      } else {
+        alert('조치 사항 저장에 실패했습니다: ' + (error.response?.data?.message || error.message));
+      }
+    }
+  };
+
+  // 작업 시작 API
+  const handleStartTask = async () => {
+    const confirmed = window.confirm('작업을 시작하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      const result = await startTask(inspectionId);
+      if (result.code === 'SUCCESS') {
+        alert('작업이 시작되었습니다.');
+        await refetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+      } else {
+        alert('작업 시작에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
+      }
+    } catch (error) {
+      console.error('작업 시작 실패:', error);
+      if (error.message.includes('인증 토큰')) {
+        alert(error.message);
+      } else if (error.response?.status === 401) {
+        alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+      } else {
+        alert('작업 시작에 실패했습니다: ' + (error.response?.data?.message || error.message));
+      }
+    }
+  };
+
+  // 작업 완료 API
+  const handleCompleteTask = async () => {
+    const confirmed = window.confirm('작업을 완료하시겠습니까?');
+    if (!confirmed) return;
+
+    try {
+      const result = await completeTask(inspectionId, resolveText);
+      if (result.code === 'SUCCESS') {
+        alert('작업이 완료되었습니다.');
+        await refetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+      } else {
+        alert('작업 완료에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
+      }
+    } catch (error) {
+      console.error('작업 완료 실패:', error);
+      if (error.message.includes('인증 토큰')) {
+        alert(error.message);
+      } else if (error.response?.status === 401) {
+        alert('인증이 만료되었습니다. 다시 로그인해주세요.');
+      } else {
+        alert('작업 완료에 실패했습니다: ' + (error.response?.data?.message || error.message));
+      }
+    }
+  };
 
   const getStatusInfo = (status) => {
     const statusMap = {
+      'IN_DIAGNOSIS': { color: '#9c27b0', text: '진단중', bgcolor: '#f3e5f5' },
+      'NORMAL': { color: '#4caf50', text: '정상', bgcolor: '#e8f5e8' },
+      'ABNORMAL': { color: '#f44336', text: '이상', bgcolor: '#ffebee' },
+      'IN_ACTION': { color: '#ff9800', text: '작업중', bgcolor: '#fff8e1' },
+      'COMPLETED': { color: '#2196f3', text: '완료', bgcolor: '#e3f2fd' },
       'PENDING': { color: '#6b7280', text: '대기중', bgcolor: '#f3f4f6' },
-      'IN_ACTION': { color: '#f59e0b', text: '진행중', bgcolor: '#fef3c7' },
-      'COMPLETED': { color: '#10b981', text: '완료', bgcolor: '#d1fae5' },
       'FAILED': { color: '#ef4444', text: '실패', bgcolor: '#fee2e2' }
     };
     return statusMap[status] || statusMap['PENDING'];
@@ -81,383 +209,648 @@ const InspectionDetail = () => {
     }
   };
 
+  // 버튼 표시 조건 계산
+  const getButtonCondition = () => {
+    if (!inspectionData) return { showButton: false, buttonText: '', isReadOnly: true };
+
+    const currentUserId = user?.id;
+    const taskWorkerId = inspectionData?.task?.workerId;
+
+    // 디버깅 로그
+    console.log('[ButtonCondition] status:', inspectionData?.status,
+      'task.workerId:', taskWorkerId,
+      'currentUserId:', currentUserId,
+      'hasTask:', !!inspectionData?.task);
+
+    // 1) ABNORMAL 상태이고 task가 없음 -> 시작 버튼
+    if (inspectionData.status === 'ABNORMAL' && !inspectionData.task) {
+      return { showButton: true, buttonText: '시작', isReadOnly: true };
+    }
+
+    // 2) 작업중(IN_ACTION) 상태이고 내가 담당자 -> 완료 버튼
+    if (inspectionData.status === 'IN_ACTION' && taskWorkerId === currentUserId) {
+      return { showButton: true, buttonText: '완료', isReadOnly: false };
+    }
+
+    // 3) ABNORMAL 상태이지만 task가 있고 내가 담당자 (상태 전환 지연 케이스)
+    if (inspectionData.status === 'ABNORMAL' && inspectionData.task && taskWorkerId === currentUserId) {
+      return { showButton: true, buttonText: '완료', isReadOnly: false };
+    }
+
+    return { showButton: false, buttonText: '', isReadOnly: true };
+  };
+
+  const buttonCondition = getButtonCondition();
+
+  useEffect(() => {
+    if (inspectionData?.task?.resolve) {
+      setResolveText(inspectionData.task.resolve);
+    }
+    setIsEditing(!buttonCondition.isReadOnly);
+  }, [inspectionData, buttonCondition.isReadOnly]);
+
   if (loading) {
     return (
-      <div style={{
-        padding: '24px',
-        textAlign: 'center',
+      <Box sx={{
+        width: '100%',
         minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8f9fa'
+        backgroundColor: '#f8f9fa',
+        p: 4
       }}>
-        <div style={{
-          padding: '24px 32px',
-          backgroundColor: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          fontSize: '16px',
-          color: '#374151'
+        <Box sx={{
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '60vh',
+          flexDirection: 'column',
+          gap: 2
         }}>
-          로딩 중...
-        </div>
-      </div>
+          <CircularProgress size={40} sx={{ color: '#1976d2' }} />
+          <Typography variant="body1" color="textSecondary">
+            검사 정보를 불러오는 중...
+          </Typography>
+        </Box>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <div style={{
-        padding: '24px',
-        textAlign: 'center',
+      <Box sx={{
+        width: '100%',
         minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8f9fa'
+        backgroundColor: '#f8f9fa',
+        p: 4
       }}>
-        <div style={{
-          padding: '24px 32px',
-          backgroundColor: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          fontSize: '16px',
-          color: '#ef4444',
-          border: '1px solid #fecaca'
-        }}>
-          오류: {error}
-        </div>
-      </div>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            오류가 발생했습니다
+          </Typography>
+          <Typography variant="body2">
+            {error}
+          </Typography>
+        </Alert>
+      </Box>
     );
   }
 
   if (!inspectionData) {
     return (
-      <div style={{
-        padding: '24px',
-        textAlign: 'center',
+      <Box sx={{
+        width: '100%',
         minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#f8f9fa'
+        backgroundColor: '#f8f9fa',
+        p: 4
       }}>
-        <div style={{
-          padding: '24px 32px',
-          backgroundColor: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          fontSize: '16px',
-          color: '#6b7280'
-        }}>
-          검사 정보를 찾을 수 없습니다.
-        </div>
-      </div>
+        <Alert severity="warning">
+          <Typography variant="h6" sx={{ mb: 1 }}>
+            검사 정보를 찾을 수 없습니다
+          </Typography>
+          <Typography variant="body2">
+            요청하신 검사 정보가 존재하지 않습니다.
+          </Typography>
+        </Alert>
+      </Box>
     );
   }
 
   const statusInfo = getStatusInfo(inspectionData.status);
 
   return (
-    <div style={{
-      padding: '32px',
-      backgroundColor: '#f8f9fa',
+    <Box sx={{
+      width: '100%',
       minHeight: '100vh',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      // m: -3,  // 제거: 레이아웃 붕괴/좌측 치우침 원인
+      p: { xs: 2, sm: 3 },
+      backgroundColor: '#f8f9fa',
+      boxSizing: 'border-box'
     }}>
       {/* 상단 헤더 */}
-      <div style={{ marginBottom: '32px' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '32px'
-        }}>
-          <h1 style={{
-            fontSize: '28px',
-            fontWeight: '700',
-            margin: 0,
-            color: '#111827',
-            letterSpacing: '-0.025em'
-          }}>
-            검사 ID: {inspectionData.inspectionId} / 검사 타입: {inspectionData.inspectionType}
-          </h1>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        mb: 4,
+        maxWidth: '100%'
+      }}>
+        <Typography 
+          variant="h4" 
+          component="h1" 
+          sx={{ 
+            fontWeight: 'bold',
+            color: '#002c5f'
+          }}
+        >
+          검사 ID: {inspectionData.inspectionId} / 검사 타입: {inspectionData.inspectionType}
+        </Typography>
 
-          {/* 상태 표시 */}
-          <span style={{
-            display: 'inline-block',
-            padding: '8px 16px',
+        <Chip
+          label={statusInfo.text}
+          sx={{
             backgroundColor: statusInfo.bgcolor,
             color: statusInfo.color,
-            borderRadius: '20px',
+            fontWeight: 600,
             fontSize: '14px',
-            fontWeight: '600',
             border: `2px solid ${statusInfo.color}`,
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-          }}>
-            {statusInfo.text}
-          </span>
-        </div>
+            px: 2,
+            py: 1
+          }}
+        />
+      </Box>
 
-        {/* 상단 4개 박스 */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 2fr 1fr',
-          gap: '24px',
-          marginBottom: '32px'
-        }}>
-          {/* 검사 영상 섹션 */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-            border: '1px solid #f3f4f6'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              color: '#111827',
-              margin: '0 0 16px 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{
-                width: '6px',
-                height: '6px',
-                backgroundColor: '#3b82f6',
-                borderRadius: '50%'
-              }}></span>
-              검사 영상
-            </h3>
-            <div style={{
-              position: 'relative',
-              width: '100%',
-              height: '240px',
-              backgroundColor: '#f9fafb',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              border: '2px dashed #d1d5db',
-              overflow: 'hidden'
-            }}>
-              {inspectionData.collectDataPath ? (
-                <video
-                  width="100%"
-                  height="100%"
-                  controls
-                  key={inspectionData.collectDataPath}
-                  style={{ borderRadius: '12px' }}
-                >
-                  <source src={inspectionData.collectDataPath} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <div style={{
-                  color: '#6b7280',
-                  fontSize: '14px',
-                  textAlign: 'center'
-                }}>
-                  검사 영상이 없습니다.
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* AI 리포트 섹션 - 더 넓게 */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-            border: '1px solid #f3f4f6'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              color: '#111827',
-              margin: '0 0 16px 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{
-                width: '6px',
-                height: '6px',
-                backgroundColor: '#8b5cf6',
-                borderRadius: '50%'
-              }}></span>
-              AI 리포트
-            </h3>
-            <div style={{
-              padding: '20px',
-              background: 'linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%)',
-              border: '1px solid #e0e7ff',
-              borderRadius: '12px',
-              minHeight: '200px',
-              display: 'flex',
-              alignItems: 'center'
-            }}>
-              <p style={{
-                fontSize: '16px',
-                lineHeight: '1.6',
-                margin: 0,
-                color: '#374151',
-                fontStyle: 'italic'
-              }}>
-                "{inspectionData.aiSuggestion || inspectionData.diagnosisResult || 'AI 분석 결과가 없습니다.'}"
-              </p>
-            </div>
-          </div>
-
-          {/* 작업자 정보 섹션 */}
-          <div style={{
-            backgroundColor: 'white',
-            borderRadius: '16px',
-            padding: '24px',
-            boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-            border: '1px solid #f3f4f6'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              color: '#111827',
-              margin: '0 0 16px 0',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <span style={{
-                width: '6px',
-                height: '6px',
-                backgroundColor: '#10b981',
-                borderRadius: '50%'
-              }}></span>
-              작업자 정보
-            </h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  marginBottom: '6px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}>
-                  작업자
-                </label>
-                <div style={{
-                  padding: '10px 12px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  color: '#374151',
-                  border: '1px solid #e5e7eb'
-                }}>
-                  {inspectionData.task?.workerName || '-'}
-                </div>
-              </div>
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  marginBottom: '6px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}>
-                  조치 시작 시간
-                </label>
-                <div style={{
-                  padding: '10px 12px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  color: '#374151',
-                  border: '1px solid #e5e7eb'
-                }}>
-                  {formatDateTime(inspectionData.task?.startedAt)}
-                </div>
-              </div>
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '13px',
-                  fontWeight: '600',
-                  color: '#6b7280',
-                  marginBottom: '6px',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em'
-                }}>
-                  조치 완료 시간
-                </label>
-                <div style={{
-                  padding: '10px 12px',
-                  backgroundColor: '#f9fafb',
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  color: '#374151',
-                  border: '1px solid #e5e7eb'
-                }}>
-                  {formatDateTime(inspectionData.task?.finishedAt)}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 하단 조치 내용 섹션 - 읽기 전용 */}
-      <div style={{
-        backgroundColor: 'white',
-        borderRadius: '16px',
-        padding: '24px',
-        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
-        border: '1px solid #f3f4f6'
+      {/* 1행: 4:3:3 비율 (모바일에서는 1열 스택) */}
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: '4fr 3fr 3fr' },
+        gap: { xs: 2, md: 3 },
+        mb: 4,
+        alignItems: 'stretch'
       }}>
-        <h3 style={{
-          fontSize: '18px',
-          fontWeight: '600',
-          marginBottom: '16px',
-          color: '#111827',
-          margin: '0 0 16px 0',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
-        }}>
-          <span style={{
-            width: '6px',
-            height: '6px',
-            backgroundColor: '#f59e0b',
-            borderRadius: '50%'
-          }}></span>
-          조치 내용
-        </h3>
-        <div style={{
-          minHeight: '200px',
-          padding: '20px',
-          backgroundColor: '#f9fafb',
-          border: '1px solid #e5e7eb',
-          borderRadius: '12px',
-          fontSize: '15px',
-          lineHeight: '1.6',
-          color: '#374151',
-          whiteSpace: 'pre-wrap',
-          fontFamily: 'inherit'
-        }}>
-          {inspectionData.task?.resolve || '조치 내용이 없습니다.'}
-        </div>
-      </div>
-    </div>
+        {/* 검사 미디어 카드 */}
+        <Card elevation={2} sx={{ borderRadius: 2, background: 'linear-gradient(135deg,#ffffff 0%,#f8f9fa 100%)', border: '1px solid #e9ecef', height: '100%', display: 'flex', flexDirection: 'column', transition: 'all .3s', '&:hover': { boxShadow: '0 8px 25px rgba(0,44,95,.15)' } }}>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{
+              p: 2,
+              background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+              color: 'white'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <VideoIcon sx={{ fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '16px' }}>
+                  검사 미디어
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ p: 3 }}>
+              <Box sx={{
+                position: 'relative',
+                width: '100%',
+                height: '300px',
+                backgroundColor: '#f9fafb',
+                borderRadius: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: '2px dashed #d1d5db',
+                overflow: 'hidden'
+              }}>
+                {inspectionData.resultDataPath ? (
+                  (() => {
+                    const fileExtension = inspectionData.resultDataPath.split('.').pop().toLowerCase();
+                    const isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm'].includes(fileExtension);
+                    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
+
+                    if (isVideo) {
+                      return (
+                        <Box
+                          component="video"
+                          width="100%"
+                          height="100%"
+                          controls
+                          sx={{ borderRadius: 2 }}
+                        >
+                          <source src={inspectionData.resultDataPath} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </Box>
+                      );
+                    } else if (isImage) {
+                      return (
+                        <Box
+                          component="img"
+                          src={inspectionData.resultDataPath}
+                          alt="검사 결과 이미지"
+                          sx={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                            borderRadius: 2
+                          }}
+                        />
+                      );
+                    } else {
+                      return (
+                        <Typography variant="body2" color="textSecondary" textAlign="center">
+                          지원하지 않는 파일 형식입니다.
+                        </Typography>
+                      );
+                    }
+                  })()
+                ) : (
+                  <Typography variant="body2" color="textSecondary" textAlign="center">
+                    검사 미디어가 없습니다.
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        {/* 검사 정보 카드 */}
+        <Card elevation={2} sx={{ borderRadius: 2, background: 'linear-gradient(135deg,#ffffff 0%,#f9f9fa 100%)', border: '1px solid #e9ecef', height: '100%', display: 'flex', flexDirection: 'column', transition: 'all .3s', '&:hover': { boxShadow: '0 8px 25px rgba(0,44,95,.15)' } }}>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{
+              p: 2,
+              background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+              color: 'white'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <InfoIcon sx={{ fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '16px' }}>
+                  검사 정보
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  검사 ID
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: '#f9fafb',
+                  borderRadius: 1,
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <Typography variant="body2" color="textPrimary">
+                    {inspectionData.inspectionId}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  검사 타입
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: '#f9fafb',
+                  borderRadius: 1,
+                  border: '1px solid #e7e9eb'
+                }}>
+                  <Typography variant="body2" color="textPrimary">
+                    {inspectionData.inspectionType}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  불량 여부
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: inspectionData.isDefect ? '#fef2f2' : '#f0fdf4',
+                  borderRadius: 1,
+                  border: `1px solid ${inspectionData.isDefect ? '#fecaca' : '#bbf7d0'}`
+                }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: inspectionData.isDefect ? '#dc2626' : '#16a34a',
+                      fontWeight: 600
+                    }}
+                  >
+                    {inspectionData.isDefect ? '불량' : '정상'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  검사 결과
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: '#f9fafb',
+                  borderRadius: 1,
+                  border: '1px solid #e5e7eb'
+                }}>
+                  <Typography
+                    variant="body2"
+                    color="textPrimary"
+                  >
+                    {inspectionData.diagnosisResult || '-'}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        {/* 작업 현황 카드 */}
+        <Card elevation={2} sx={{ borderRadius: 2, background: 'linear-gradient(135deg,#ffffff 0%,#f9f9fa 100%)', border: '1px solid #e9ecef', height: '100%', display: 'flex', flexDirection: 'column', transition: 'all .3s', '&:hover': { boxShadow: '0 8px 25px rgba(0,44,95,.15)' } }}>
+          <CardContent sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{
+              p: 2,
+              background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+              color: 'white'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <PersonIcon sx={{ fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '16px' }}>
+                  작업 현황
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2, flex: 1 }}>
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  담당 작업자
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: '#f9fafb',
+                  borderRadius: 1,
+                  border: '1px solid #e7e9eb'
+                }}>
+                  <Typography variant="body2" color="textPrimary">
+                    {inspectionData.task?.workerName || '-'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  작업 시작 시간
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: '#f9fafb',
+                  borderRadius: 1,
+                  border: '1px solid #e7e9eb'
+                }}>
+                  <Typography variant="body2" color="textPrimary">
+                    {formatDateTime(inspectionData.task?.startedAt)}
+                  </Typography>
+                </Box>
+              </Box>
+
+              <Box>
+                <Typography variant="caption" sx={{
+                  color: '#6b7280',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.05em'
+                }}>
+                  작업 완료 시간
+                </Typography>
+                <Box sx={{
+                  mt: 0.5,
+                  p: 1.5,
+                  backgroundColor: inspectionData.task?.endedAt ? '#f0fdf4' : '#f9fafb',
+                  borderRadius: 1,
+                  border: `1px solid ${inspectionData.task?.endedAt ? '#bbf7d0' : '#e7e9eb'}`
+                }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: inspectionData.task?.endedAt ? '#16a34a' : '#374151'
+                    }}
+                  >
+                    {formatDateTime(inspectionData.task?.endedAt) || '진행 중'}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* 카드 내부 우측 하단에 버튼 배치 */}
+              {buttonCondition.showButton && (
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  mt: 'auto',
+                  pt: 2
+                }}>
+                  {buttonCondition.buttonText === '시작' && (
+                    <Button
+                      variant="contained"
+                      onClick={handleStartTask}
+                      sx={{
+                        borderRadius: 2,
+                        paddingX: 3,
+                        paddingY: 1.5,
+                        backgroundColor: '#4caf50',
+                        color: 'white',
+                        fontWeight: 600,
+                        '&:hover': {
+                          backgroundColor: '#388e3c'
+                        }
+                      }}
+                    >
+                      {buttonCondition.buttonText}
+                    </Button>
+                  )}
+
+                  {buttonCondition.buttonText === '완료' && (
+                    <Button
+                      variant="contained"
+                      onClick={handleCompleteTask}
+                      sx={{
+                        borderRadius: 2,
+                        paddingX: 3,
+                        paddingY: 1.5,
+                        backgroundColor: '#1976d2',
+                        color: 'white',
+                        fontWeight: 600,
+                        '&:hover': {
+                          backgroundColor: '#155a8a'
+                        }
+                      }}
+                    >
+                      {buttonCondition.buttonText}
+                    </Button>
+                  )}
+                </Box>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+
+      {/* 2행: 5:5 (동일 1:1) */}
+      <Box sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+        gap: { xs: 2, md: 3 },
+        alignItems: 'stretch'
+      }}>
+        {/* AI 리포트 */}
+        <Card elevation={2} sx={{ borderRadius: 2, background: 'linear-gradient(135deg,#ffffff 0%,#f8f9fa 100%)', border: '1px solid #e9ecef', height: '100%', display: 'flex', flexDirection: 'column', transition: 'all .3s', '&:hover': { boxShadow: '0 8px 25px rgba(0,44,95,.15)' } }}>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{
+              p: 2,
+              background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+              color: 'white'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <AIIcon sx={{ fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '16px' }}>
+                  AI 리포트
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ p: 3 }}>
+              <Box sx={{
+                p: 3,
+                background: 'linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%)',
+                border: '1px solid #e0e7ff',
+                borderRadius: 2,
+                minHeight: '320px',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    lineHeight: 1.6,
+                    color: '#374151',
+                    fontStyle: 'italic'
+                  }}
+                >
+                  {inspectionData.aiSuggestion || '조치 제안 없음'}
+                </Typography>
+              </Box>
+            </Box>
+          </CardContent>
+        </Card>
+        {/* 조치 내용 */}
+        <Card elevation={2} sx={{ borderRadius: 2, background: 'linear-gradient(135deg,#ffffff 0%,#f9f9fa 100%)', border: '1px solid #e9ecef', height: '100%', display: 'flex', flexDirection: 'column', transition: 'all .3s', '&:hover': { boxShadow: '0 8px 25px rgba(0,44,95,.15)' } }}>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{
+              p: 2,
+              background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+              color: 'white'
+            }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <EditIcon sx={{ fontSize: 20 }} />
+                <Typography variant="h6" sx={{ fontWeight: 600, fontSize: '16px' }}>
+                  조치 내용
+                </Typography>
+              </Box>
+            </Box>
+
+            <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', height: '100%' }}>
+              {!buttonCondition.isReadOnly ? (
+                // 편집 가능한 상태 - TextField로 표시
+                <TextField
+                  multiline
+                  rows={12}
+                  variant="outlined"
+                  value={resolveText}
+                  onChange={(e) => setResolveText(e.target.value)}
+                  placeholder="조치 내용을 입력하세요..."
+                  sx={{
+                    flex: 1,
+                    '& .MuiOutlinedInput-root': {
+                      height: '100%',
+                      alignItems: 'stretch',
+                      '& textarea': {
+                        height: '100% !important',
+                        overflow: 'auto !important'
+                      },
+                      '& fieldset': {
+                        borderColor: '#e5e7eb'
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#1976d2'
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#1976d2'
+                      }
+                    }
+                  }}
+                />
+              ) : (
+                // 읽기 전용 상태 - 기존 스타일 유지
+                <Box sx={{
+                  minHeight: '320px',
+                  p: 3,
+                  backgroundColor: '#f9fafb',
+                  border: '1px solid #e5e7eb',
+                  borderRadius: 2,
+                  whiteSpace: 'pre-wrap',
+                  flex: 1
+                }}>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      lineHeight: 1.6,
+                      color: '#374151'
+                    }}
+                  >
+                    {(inspectionData.task?.resolve && inspectionData.task.resolve.trim()) || '조치 내용이 없습니다.'}
+                  </Typography>
+                </Box>
+              )}
+
+              {/* 저장 버튼 - 완료 버튼이 보이는 조건에서만 표시 */}
+              {!buttonCondition.isReadOnly && (
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  mt: 2
+                }}>
+                  <Button
+                    variant="contained"
+                    onClick={handleSaveResolve}
+                    sx={{
+                      borderRadius: 2,
+                      paddingX: 3,
+                      paddingY: 1.5,
+                      backgroundColor: '#4caf50',
+                      color: 'white',
+                      fontWeight: 600,
+                      '&:hover': {
+                        backgroundColor: '#388e3c'
+                      }
+                    }}
+                  >
+                    저장
+                  </Button>
+                </Box>
+              )}
+            </Box>
+          </CardContent>
+        </Card>
+      </Box>
+    </Box>
   );
 };
 
