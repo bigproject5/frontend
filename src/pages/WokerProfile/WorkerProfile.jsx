@@ -218,17 +218,14 @@ function WorkerProfile() {
                             <label>작업타입</label>
                             <span>{userInfo.taskType || userInfo.department}</span>
                         </div>
-                        {isAdmin() && (
-                            <div className="info-item">
-                                <label>상태</label>
-                                <span>{userInfo.status}</span>
-                            </div>
-                        )}
+                        {/*{isAdmin() && (*/}
+                        {/*    <div className="info-item">*/}
+                        {/*        <label>상태</label>*/}
+                        {/*        <span>{userInfo.status}</span>*/}
+                        {/*    </div>*/}
+                        {/*)}*/}
                     </div>
                 </div>
-
-                {/* 작업자 전용 리포트 섹션 */}
-                {!isAdmin() && <ReportSection />}
 
                 {/* 관리자가 작업자 정보를 볼 때의 추가 정보 */}
                 {isAdmin() && (
@@ -250,6 +247,7 @@ function WorkerProfile() {
                         </div>
                     </div>
                 )}
+                <ReportSection />
             </div>
 
             {/* 작업자 전용 프로필 편집 모달 */}

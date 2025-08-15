@@ -214,7 +214,7 @@ const AdminProfileEditModal = ({ open, onClose, userInfo, onSave, isLoading = fa
                                     value={formData.loginId}
                                     onChange={handleChange('loginId')}
                                     error={!!errors.loginId}
-                                    // helperText={errors.loginId || "로그인할 때 사용하는 ID입니다."}
+                                    disabled
                                     fullWidth
                                     variant="outlined"
                                     className="admin-text-field"

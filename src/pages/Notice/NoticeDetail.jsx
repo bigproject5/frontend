@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogActions,
   Alert,
-  Container
+  Container, Stack, CircularProgress
 } from '@mui/material'
 import {
   Edit as EditIcon,
@@ -25,13 +25,14 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
-import { getNoticeDetail, deleteNotice } from '../../api/NoticeAPI.js' // API import 추가
+import {getNoticeDetail, deleteNotice, downloadFile} from '../../api/NoticeAPI.js' // API import 추가
 
 function NoticeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user, role } = useSelector((state) => state.auth)
-
+  const [downloading, setDownloading] = useState(null); // 다운로드 중인 파일 ID 저장
+  const [error, setError] = useState(null);
   const isAdmin = role === 'ADMIN' || role === "DEV";
 
   const [notice, setNotice] = useState(null)
@@ -85,11 +86,45 @@ function NoticeDetail() {
     navigate('/notices') // 관리자는 관리 페이지로
   }
 
-  const handleDownload = (attachment) => {
-    // 실제로는 파일 다운로드 구현
-    console.log('파일 다운로드:', attachment.name)
-    // window.open(attachment.url, '_blank')
-  }
+  const handleDownload = async (fileId, fileName) => {
+    try {
+      setDownloading(fileId);
+      setError(null);
+
+      const accessToken = sessionStorage.getItem('accessToken');
+
+      const response = await downloadFile(accessToken, fileId);
+
+      if (!response.ok) {
+        throw new Error(`다운로드 실패: ${response.status}`);
+      }
+
+      // Blob으로 변환
+      const blob = await response.blob();
+
+      // 브라우저 기본 다운로드 (다운로드 폴더에 자동 저장)
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+
+      // 정리
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+    } catch (err) {
+      setError(err.message);
+      console.error('파일 다운로드 오류:', err);
+    } finally {
+      setDownloading(null);
+    }
+  };
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes'
@@ -108,9 +143,13 @@ function NoticeDetail() {
   }
 
   return (
-    <Container maxWidth="md" sx={{
-      py: 4 ,
-      width: "60%"
+    <Container sx={{
+      width: '80% !important',
+      maxWidth: 800,
+      minWidth: 300 ,
+      minHeight: 1000,
+      margin: '0 auto',
+      p: 10,
     }}>
       <Paper elevation={2} sx={{ p: 4 }}>
         {/* 헤더 */}
@@ -184,23 +223,43 @@ function NoticeDetail() {
               </TableCell>
               <TableCell sx={{ borderBottom: 'none' }}>{notice.viewCount}</TableCell>
             </TableRow>
-            {notice.fileUrl && (
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none' }}>
-                  첨부파일
-                </TableCell>
-                <TableCell sx={{ borderBottom: 'none' }}>
-                  <Button
-                    startIcon={<DownloadIcon />}
-                    href={notice.fileUrl}
-                    target="_blank"
-                    sx={{ color: '#002c5f' }}
-                  >
-                    첨부파일 다운로드
-                  </Button>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none', verticalAlign: 'top' }}>
+                첨부파일
+              </TableCell>
+              <TableCell sx={{ borderBottom: 'none' }}>
+                <Stack spacing={0.5}> {/* 파일마다 간격 */}
+                  {notice.files.map((file) => (
+                      <Button
+                          key={file.fileId}
+                          startIcon={
+                            downloading === file.fileId ?
+                                <CircularProgress size={16} /> :
+                                <DownloadIcon />
+                          }
+                          onClick={() => handleDownload(file.fileId, file.fileName)}
+                          disabled={downloading === file.fileId}
+                          sx={{
+                            color: downloading === file.fileId ? '#999' : '#002c5f',
+                            fontSize: '0.875rem',
+                            minWidth: 0,
+                            padding: '2px 8px',
+                            justifyContent: 'flex-start',
+                            maxWidth: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                      >
+                        {downloading === file.fileId ?
+                            '다운로드 중...' :
+                            `${file.fileName} (${formatFileSize(file.fileSize)})`
+                        }
+                      </Button>
+                  ))}
+                </Stack>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
 
@@ -211,7 +270,7 @@ function NoticeDetail() {
             sx={{
               lineHeight: 1.8,
               fontSize: '16px',
-              minHeight: '200px',
+              minHeight: '300px',
               wordBreak: 'break-word',      // 긴 단어 줄바꿈
               overflowWrap: 'break-word',   // 추가 안전 장치
               whiteSpace: 'pre-wrap',       // 줄바꿈 + 공백 유지

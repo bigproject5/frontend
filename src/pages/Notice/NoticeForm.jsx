@@ -105,7 +105,7 @@ function NoticeForm() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     if (!formData.title.trim() || !formData.content.trim()) {
@@ -119,10 +119,10 @@ function NoticeForm() {
 
     let response;
     if(isEdit){
-      response = updateNotice(id, formData);
+      response = await updateNotice(id, formData);
     }
     else{
-      response = createNotice(formData, attachedFiles)
+      response = await createNotice(formData, attachedFiles);
     }
     console.log(response);
     setShowSuccess(true)

@@ -73,9 +73,9 @@ export async function getNoticeDetail(id) {
 /**
  * 새로운 공지사항을 생성합니다. (파일 첨부 가능)
  * @param {object} noticeData - { title, content, fileUrl }
- * @param {File} [file] - 첨부할 파일 객체 (선택 사항)
+ * @param {Files} [files] - 첨부할 파일 객체 (선택 사항)
  */
-export async function createNotice(noticeData, file) {
+export async function createNotice(noticeData, files) {
   try {
     const formData = new FormData();
 
@@ -86,10 +86,12 @@ export async function createNotice(noticeData, file) {
     );
 
     // @RequestPart("file")에 매핑될 파일
-    if (file) {
-      formData.append('file', file);
+    if (files && files.length > 0) {
+      files.forEach(f => {
+        formData.append('file', f.file); // f.file이 진짜 File 객체
+      });
     } else {
-      // 파일이 없는 경우 빈 파일을 제대로 생성
+      // 빈 파일 처리
       const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' });
       formData.append('file', emptyFile);
     }
@@ -199,3 +201,11 @@ export const getDepartmentColor = (department) => {
   const dept = departments.find(d => d.value === department);
   return dept ? dept.color : "default";
 };
+
+
+export async function downloadFile(accessToken, fileId) {
+  return await fetch(`${API_BASE}/download/${fileId}`, {
+    method: 'GET',
+    headers: {'Authorization': `Bearer ${accessToken}`}
+  });
+}
