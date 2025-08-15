@@ -304,10 +304,10 @@ const Dashboard = () => {
 
   return (
     <Box sx={{
-      maxWidth: "1536px",
+      // maxWidth: "1536px",
       display: 'flex',
       flexDirection: 'column',
-      margin: "auto",
+      margin: "10%",
       marginTop: "100px"
     }}>
       {/* 헤더 */}
