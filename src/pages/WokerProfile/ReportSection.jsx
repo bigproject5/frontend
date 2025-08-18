@@ -5,11 +5,10 @@ import {getReportsByAdmin, getReportsByWorkerId} from "../../api/reportApi.js";
 import {useSelector} from "react-redux";
 
 
-// const { role } = useSelector(state => state.auth);
-// const { id } = useParams();
-const isAdmin = () => role === 'ADMIN' || role === "DEV";
-
 const ReportSection = () => {
+    const { role } = useSelector(state => state.auth);
+    const { id } = useParams();
+    const isAdmin = () => role === 'ADMIN' || role === "DEV";
     const [reports, setReports] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +26,7 @@ const ReportSection = () => {
                 setReports(response);
             }
             else{
-                const response = await getReportsByAdmin();
+                const response = await getReportsByAdmin(id);
                 setReports(response);
             }
         } catch (error) {
