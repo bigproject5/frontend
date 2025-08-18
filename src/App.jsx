@@ -20,6 +20,8 @@ import ManualTestContent from "./pages/ManualTest/ManualTestContent.jsx";
 import MainLayout from "./components/Layout/MainLayout.jsx";
 import DevPage from "./pages/devPage/devPage.jsx";
 import WorkerLogin from "./pages/Login/WorkerLogin.jsx";
+import ReportDashboard from './pages/Report/ReportDashboard.jsx'
+import ReportDetail from './pages/Report/ReportDetail.jsx'
 
 function App() {
 
@@ -39,6 +41,8 @@ function App() {
                           <Route path="/notices" element={<NoticeList />} />
                           <Route path="/notices/:id" element={<NoticeDetail />} />
                           <Route path="/inspections/:inspectionId" element={<InspectionDetail />} />
+                          <Route path="/" element={<ReportDashboard />} />
+                          <Route path="/reports/:reportId" element={<ReportDetail />} />
                       </Route>
                   </Route>
 

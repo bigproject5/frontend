@@ -1,0 +1,216 @@
+.container {
+  padding: 2rem;
+  font-family: sans-serif;
+  background-color: #f9fafb;
+  color: #1f2937;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  text-align: left;
+}
+
+.subtitle {
+  color: #6b7280;
+  font-size: 14px;
+  text-align: left;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.outline-btn,
+.primary-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.outline-btn {
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  color: #1e3a8a;
+}
+
+.primary-btn {
+  background-color: #0f2e6d;
+  color: #fff;
+  border: none;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background-color: #fff;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.card-title-sm {
+  font-size: 14px;
+  color: #6b7280;
+}
+.card-value {
+  font-size: 24px;
+  font-weight: bold;
+}
+.card-diff {
+  font-size: 12px;
+}
+.diff-good {
+  color: #10b981;
+}
+.diff-bad {
+  color: #ef4444;
+}
+
+.section {
+  margin: 2rem 0;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+  text-align: left;
+}
+
+.section-desc {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.badge {
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 12px;
+}
+
+.status-badge {
+  background-color: #d1fae5;
+  color: #10b981;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 12px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid #1e3a8a;
+  border-radius: 0.375rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e3a8a;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.icon-btn.download {
+  margin-left: 0.5rem;
+}
+
+.icon {
+  font-size: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  text-align: left;
+}
+
+.report-option-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.report-option-btn.active {
+  background-color: #1e3a8a;
+  color: #fff;
+  border-color: #1e3a8a;
+}
+
+.schedule-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.schedule-title {
+  font-weight: bold;
+}
+.schedule-time {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-weight: bold;
+}
+.tag-on {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+.tag-off {
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
