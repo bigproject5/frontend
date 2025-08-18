@@ -32,7 +32,10 @@ const InspectionDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Redux에서 사용자 정보 가져오기
-  const { user } = useSelector(state => state.auth);
+  const { user, role } = useSelector(state => state.auth);
+
+  // 디버깅용 로그 추가
+  console.log('[InspectionDetail] user role:', role);
 
   useEffect(() => {
     const fetchInspectionDetail = async () => {
@@ -192,6 +195,12 @@ const InspectionDetail = () => {
   const getButtonCondition = () => {
     if (!inspectionData) return { showButton: false, buttonText: '', isReadOnly: true };
 
+    // 관리자인 경우 항상 readonly로 동작하고 버튼 숨김
+    if (role === 'ADMIN') {
+      console.log('[ButtonCondition] 관리자 권한으로 readonly 모드');
+      return { showButton: false, buttonText: '', isReadOnly: true };
+    }
+
     const currentUserId = user?.id;
     const taskWorkerId = inspectionData?.task?.workerId;
 
@@ -199,7 +208,8 @@ const InspectionDetail = () => {
     console.log('[ButtonCondition] status:', inspectionData?.status,
       'task.workerId:', taskWorkerId,
       'currentUserId:', currentUserId,
-      'hasTask:', !!inspectionData?.task);
+      'hasTask:', !!inspectionData?.task,
+      'role:', role);
 
     // 1) ABNORMAL 상태이고 task가 없음 -> 시작 버튼
     if (inspectionData.status === 'ABNORMAL' && !inspectionData.task) {
