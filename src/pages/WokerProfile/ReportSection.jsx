@@ -5,8 +5,8 @@ import {getReportsByAdmin, getReportsByWorkerId} from "../../api/reportApi.js";
 import {useSelector} from "react-redux";
 
 
-const { role } = useSelector(state => state.auth);
-const { id } = useParams();
+// const { role } = useSelector(state => state.auth);
+// const { id } = useParams();
 const isAdmin = () => role === 'ADMIN' || role === "DEV";
 
 const ReportSection = () => {
