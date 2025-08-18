@@ -11,8 +11,6 @@ import NoticeDetail from './pages/Notice/NoticeDetail.jsx'  // 관리자용 - �
 import NoticeForm from './pages/Notice/NoticeForm.jsx'
 import WorkerForm from "./pages/Workers/WorkerForm.jsx";
 import WorkerList from "./pages/Workers/WorkerList.jsx";
-// import InspectionDetail from "./pages/InspectionDetail/InspectionDetail.jsx";
-import AuditDetail from "./pages/AuditDetail/AuditDetail.jsx";
 import InspectionDetail from "./pages/admin/InspectionDetail.jsx";
 import Dashboard from "./pages/admin/Dashboard";
 import WorkerMainContent from "./pages/WorkerMain/WorkerMainContent.jsx";
@@ -22,6 +20,8 @@ import DevPage from "./pages/devPage/devPage.jsx";
 import WorkerLogin from "./pages/Login/WorkerLogin.jsx";
 import ReportDashboard from './pages/Report/ReportDashboard.jsx'
 import ReportDetail from './pages/Report/ReportDetail.jsx'
+
+
 
 function App() {
 
@@ -43,6 +43,8 @@ function App() {
                           <Route path="/inspections/:inspectionId" element={<InspectionDetail />} />
                           <Route path="/" element={<ReportDashboard />} />
                           <Route path="/reports/:reportId" element={<ReportDetail />} />
+                          <Route path="/reports" element={<ReportDashboard />} />
+
                       </Route>
                   </Route>
 

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import './ReportSection.css';
-import { Link } from 'react-router-dom';
+import {Link, useParams} from 'react-router-dom';
+import {getReportsByAdmin, getReportsByWorkerId} from "../../api/reportApi.js";
+import {useSelector} from "react-redux";
+
+
+const { role } = useSelector(state => state.auth);
+const { id } = useParams();
+const isAdmin = () => role === 'ADMIN' || role === "DEV";
 
 const ReportSection = () => {
     const [reports, setReports] = useState([]);
@@ -15,84 +22,14 @@ const ReportSection = () => {
     const loadReports = async () => {
         setIsLoading(true);
         try {
-            // const response = await fetch('/api/user/reports');
-            // const data = await response.json();
-
-            setReports([
-                {
-                    id: 1,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용1'
-                },
-                {
-                    id: 2,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용2'
-                },
-                {
-                    id: 3,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용1'
-                },
-                {
-                    id: 4,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용2'
-                },
-                {
-                    id: 1,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용1'
-                },
-                {
-                    id: 2,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용2'
-                },
-                {
-                    id: 3,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용1'
-                },
-                {
-                    id: 4,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용2'
-                },
-                {
-                    id: 1,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용1'
-                },
-                {
-                    id: 2,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용2'
-                },
-                {
-                    id: 3,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용1'
-                },
-                {
-                    id: 4,
-                    title: '업무 보고서',
-                    date: '2025/07/30',
-                    content: '내용2'
-                }
-            ]
-            );
+            if(!isAdmin()){
+                const response = await getReportsByWorkerId();
+                setReports(response);
+            }
+            else{
+                const response = await getReportsByAdmin();
+                setReports(response);
+            }
         } catch (error) {
             console.error('보고서 목록 로드 실패:', error);
         } finally {
@@ -138,10 +75,10 @@ const ReportSection = () => {
                     </div>
                 ) : (
                     reports.map((report) => (
-                        <Link to={`/report/${report.id}`} className="report-link">
+                        <Link to={`/reports/${report.reportId}`} className="report-link">
                             <div className="report-simple-card">
-                                <div className="report-card-title">{report.title}</div>
-                                <div className="report-card-date">{report.date}</div>
+                                {/*<div className="report-card-title">{report.title}</div>*/}
+                                <div className="report-card-date">{report.createdAt}</div>
                             </div>
                         </Link>
                     ))

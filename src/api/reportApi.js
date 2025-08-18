@@ -1,4 +1,4 @@
-const BASE_URL = "/api/taskreports/reports";
+const BASE_URL = "http://localhost:8080/api/taskreports/reports";
 
 // 전체 목록 조회
 export async function fetchReports() {
@@ -8,13 +8,20 @@ export async function fetchReports() {
   return json.data.reports;
 }
 
-// 상세 조회
 export async function fetchReportDetail(reportId) {
-  const res = await fetch(`${BASE_URL}/${reportId}`);
-  if (!res.ok) throw new Error("리포트 상세 정보를 불러오지 못했습니다");
-  const json = await res.json();
-  return json.data;
+  try{
+    const response = await fetch(`${BASE_URL}/${reportId}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    })
+    return response.json();
+  }
+  catch (err){
+    console.error(err);
+  }
+  return null;
 }
+
 
 // 요약 다시 요청 (GPT 재요약)
 export async function resummarizeReport(reportId) {
@@ -43,4 +50,21 @@ export async function createReport(reportData) {
   if (!res.ok) throw new Error("리포트 생성 실패");
   const json = await res.json();
   return json.data;
+}
+
+
+export async function getReportsByWorkerId(workerId) {
+  const response = await fetch(`${BASE_URL}/worker-reports?${workerId}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  return response.json();
+}
+
+export async function getReportsByAdmin(workerId) {
+  const response = await fetch(`${BASE_URL}/admin/worker-reports/${workerId}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  })
+  return response.json();
 }
