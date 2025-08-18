@@ -268,6 +268,7 @@ const Dashboard = () => {
           justifyContent: 'center',
           height: '100%',
           textAlign: 'center',
+          width: '150px',
           py: 3
         }}
       >
@@ -302,8 +303,13 @@ const Dashboard = () => {
   }
 
   return (
-    <Box sx={{ p: 3, ml: { md: '280px' } }}> {/* 사이드바 여백 고려 */}
-
+    <Box sx={{
+      // maxWidth: "1536px",
+      display: 'flex',
+      flexDirection: 'column',
+      margin: "10%",
+      marginTop: "100px"
+    }}>
       {/* 헤더 */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: '#1976d2' }}>

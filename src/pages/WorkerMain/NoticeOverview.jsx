@@ -31,7 +31,7 @@ const NoticeOverview = () => {
       setError(null);
 
       // 최신 5개 공지사항 조회
-      const response = await getNotices({ page: 0, size: 5 });
+      const response = await getNotices({ page: 0, size: 4 });
 
       if (response.status === 'success' && response.data?.content) {
         setNotices(response.data.content);
@@ -136,69 +136,73 @@ const NoticeOverview = () => {
             </Alert>
           )}
 
-          {!loading && !error && notices.length === 0 && (
-            <Typography
-              variant="body2"
-              sx={{
-                textAlign: 'center',
-                py: 3,
-                color: '#6c757d'
-              }}
-            >
-              공지사항이 없습니다.
-            </Typography>
-          )}
-
-          {!loading && !error && notices.length > 0 && (
-            <List sx={{ p: 0 }}>
-              {notices.map((notice, index) => (
-                <ListItem
+          {!loading && !error && (
+            <Box sx={{ minHeight: '250px' }}>
+              {notices.length > 0 ? (
+                <List sx={{ p: 0 }}>
+                  {notices.map((notice, index) => (
+                    <ListItem
                   key={notice.id}
+                  onClick={() => navigate(`/notices/${notice.id}`)}
                   sx={{
-                    py: 1.2,
-                    px: 0,
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s ease',
-                    borderBottom: index < notices.length - 1 ? '1px solid #dee2e6' : 'none',
-                    '&:hover': {
-                      backgroundColor: 'rgba(0, 44, 95, 0.04)'
-                    }
+                        py: 0.8,
+                        px: 0,
+                        cursor: 'pointer',
+                        transition: 'background-color 0.2s ease',
+                        borderBottom: index < notices.length - 1 ? '1px solid #dee2e6' : 'none',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0, 44, 95, 0.04)'
+                        }
+                      }}
+                    >
+                      <ListItemText
+                        primary={
+                          <Typography
+                            variant="body2"
+                            sx={{
+                              fontWeight: 500,
+                              color: '#212529',
+                              fontSize: '14px',
+                              mb: 0.5
+                            }}
+                          >
+                            {notice.title}
+                          </Typography>
+                        }
+                        secondary={
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: '#6c757d', fontSize: '12px' }}
+                            >
+                              {notice.name}
+                            </Typography>
+                            <Typography
+                              variant="caption"
+                              sx={{ color: '#6c757d', fontSize: '12px' }}
+                            >
+                              {formatDate(notice.createdAt)}
+                            </Typography>
+                          </Box>
+                        }
+                      />
+
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <Typography
+                  variant="body2"
+                  sx={{
+                    textAlign: 'center',
+                    py: 3,
+                    color: '#6c757d'
                   }}
                 >
-                  <ListItemText
-                    primary={
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          fontWeight: 500,
-                          color: '#212529',
-                          fontSize: '14px',
-                          mb: 0.5
-                        }}
-                      >
-                        {notice.title}
-                      </Typography>
-                    }
-                    secondary={
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: '#6c757d', fontSize: '12px' }}
-                        >
-                          {notice.name}
-                        </Typography>
-                        <Typography
-                          variant="caption"
-                          sx={{ color: '#6c757d', fontSize: '12px' }}
-                        >
-                          {formatDate(notice.createdAt)}
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
+                  공지사항이 없습니다.
+                </Typography>
+              )}
+            </Box>
           )}
         </Box>
       </CardContent>

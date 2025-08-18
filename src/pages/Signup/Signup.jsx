@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
-import { Signup_api } from "../../api/phm_api.jsx";
+import {checkAdminLoginId, Signup_api} from "../../api/phm_api.jsx";
 import {GoogleReCaptchaProvider, useGoogleReCaptcha} from "react-google-recaptcha-v3";
+import PolicyModal from "./PrivacyModal.jsx";
 
 function SignupForm() {
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,10 +21,17 @@ function SignupForm() {
         "address": "",
         "password": "",
     });
+    const [isAgreementChecked, setIsAgreementChecked] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalAgreements, setModalAgreements] = useState({
+        terms: false,
+        privacy: false,
+        marketing: false
+    });
     const navigate = useNavigate();
 
     const handlePrev = () => {
-        navigate("/")
+        navigate("/admin-login")
     }
 
     const handleChange = (e) => {
@@ -34,7 +42,7 @@ function SignupForm() {
         }));
     };
 
-    const handleIdCheck = () => {
+    const handleIdCheck = async () => {
         const loginId = formData.loginId.trim();
         if (!loginId) {
             setError("아이디를 입력해주세요.");
@@ -42,9 +50,8 @@ function SignupForm() {
         }
 
         try {
-            let data = false;
-            if (loginId === "admin") data = true;
-            if (data.exists) {
+            const data = await checkAdminLoginId(loginId);
+            if (!data.available) {
                 setError("이미 사용 중인 아이디입니다.");
                 setIsIdChecked(false);
             } else {
@@ -63,19 +70,6 @@ function SignupForm() {
             setIsIdChecked(false);
         }
 
-        // const script = document.createElement("script");
-        // script.src = `https://www.google.com/recaptcha/api.js?render=6LexfqQrAAAAAB74EWP7GNCePpS60kzv2a9tWXif`;
-        // script.async = true;
-        // document.body.appendChild(script);
-        //
-        // return () => {
-        //     document.body.removeChild(script);
-        //
-        //     const recaptchaBadge = document.querySelector(".grecaptcha-badge");
-        //     if (recaptchaBadge) {
-        //         recaptchaBadge.remove();
-        //     }
-        // };
 
     }, [formData.loginId, lastCheckedId, isIdChecked])
 
@@ -91,7 +85,8 @@ function SignupForm() {
             formData.address.trim() &&
             formData.password.trim() &&
             confirmPassword.trim() &&
-            formData.password === confirmPassword
+            formData.password === confirmPassword &&
+            isAgreementChecked
         );
     };
 
@@ -100,6 +95,8 @@ function SignupForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        const passwordRegex = /^(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/;
+        const loginIdRegex = /^[A-Za-z0-9]{8,20}$/;
 
         if (!formData.adminCode.trim() ||
             !formData.employeeNumber.trim() ||
@@ -118,29 +115,55 @@ function SignupForm() {
             setError("아이디 중복 확인을 해주세요.");
             return;
         }
+        if (!loginIdRegex.test(formData.loginId)) {
+            setError("아이디는 최소 8자리 이상이고, 영문과 숫자로만 구성되어야 합니다.");
+            return;
+        }
+        if (!passwordRegex.test(formData.password)) {
+            setError("비밀번호는 최소 8자리 이상이고, 특수문자를 포함해야 합니다.");
+            return;
+        }
         if (formData.password !== confirmPassword) {
             setError("비밀번호가 일치하지 않습니다.");
             return;
         }
-
         if (!executeRecaptcha) {
             console.log("reCAPTCHA 실행 함수가 준비되지 않았습니다.");
+            alert("reCaptcha 오류");
             return;
         }
         const token = await executeRecaptcha("signup");
 
         try {
-            const response = Signup_api(formData, token);
+            const response = await Signup_api(formData, token);
             console.log(response);
+            if (response.status < 200 || response.status >= 300) {
+                if (response.validationErrors) {
+                    const messages = Object.entries(response.validationErrors)
+                        .map(([field, msg]) => {
+                            switch(field) {
+                                case "password":
+                                    return "비밀번호는 8자리 이상에 특수문자가 포함되어야 합니다.";
+                                case "loginId":
+                                    return "아이디는 8자리 이상이어야 합니다";
+                                default:
+                                    return `${field}: ${msg}`;
+                            }
+                        })
+                        .join("\n");
+                    alert("회원가입 실패:\n" + messages);
+                } else {
+                    alert("회원가입 실패: " + (response || "알 수 없는 오류"));
+                }
+                return;
+            }
         }
         catch (err) {
-            if(err) alert("회원가입 실패")
+            alert("회원가입 실패", err);
             return;
         }
 
-
-
-        alert("회원가입 성공")
+        alert("회원가입 성공");
         handlePrev();
     };
 
@@ -258,6 +281,15 @@ function SignupForm() {
                             placeholder="비밀번호를 다시 입력하세요."
                         />
                     </div>
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={isAgreementChecked}
+                            onChange={() => setShowModal(true)}
+                        />
+                        약관 동의 (필수)
+                    </label>
+
                     <div>
                         <button type="button" className="prev-button" onClick={handlePrev}>이전</button>
                         <button
@@ -272,6 +304,15 @@ function SignupForm() {
 
                     {error && <div className="login-error-message">{error}</div>}
                 </form>
+                <PolicyModal
+                    visible={showModal}
+                    agreements={modalAgreements}
+                    setAgreements={setModalAgreements}
+                    onClose={(confirmed) => {
+                        setShowModal(false);
+                        if (confirmed) setIsAgreementChecked(true);
+                    }}
+                />
             </div>
         </div>
     );

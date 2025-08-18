@@ -21,8 +21,8 @@ const WorkerForm = () => {
   const testDataSets = [
     {
       name: '홍길동',
-      loginId: 'hong123',
-      password: 'password123',
+      loginId: 'hong1234',
+      password: 'password123!',
       employeeNumber: 'EMP001',
       taskType: 'PAINT', // department를 taskType으로 변경하고 API 값으로 변경
       email: 'hong@hyundai.com',
@@ -31,8 +31,8 @@ const WorkerForm = () => {
     },
     {
       name: '김철수',
-      loginId: 'kim456',
-      password: 'password456',
+      loginId: 'kim45678',
+      password: 'password456!',
       employeeNumber: 'EMP002',
       taskType: 'ENGINE', // department를 taskType으로 변경하고 API 값으로 변경
       email: 'kim@hyundai.com',
@@ -41,8 +41,8 @@ const WorkerForm = () => {
     },
     {
       name: '박영희',
-      loginId: 'park789',
-      password: 'password789',
+      loginId: 'park7890',
+      password: 'password789!',
       employeeNumber: 'EMP003',
       taskType: 'LAMP', // department를 taskType으로 변경하고 API 값으로 변경
       email: 'park@hyundai.com',
@@ -132,7 +132,7 @@ const WorkerForm = () => {
           data = JSON.parse(text);
           console.log('🔍 파싱된 응답 데이터:', data);
         } catch (parseError) {
-          console.log('JSON 파싱 실패, 하지만 등록은 성공한 것으로 처리');
+          console.log('JSON 파싱 실패, 하지만 등록은 성공한 것으로 처리', parseError);
         }
       }
 
@@ -149,6 +149,7 @@ const WorkerForm = () => {
           errorMessage = errorData.message || errorMessage;
         }
       } catch (e) {
+          console.log("error ", e);
         // 에러 응답 파싱 실패
       }
 
@@ -176,7 +177,7 @@ const WorkerForm = () => {
   };
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ margin: '10%' }}>
       {/* ===== 테스트 데이터 버튼 영역 ===== */}
       <div style={{
         backgroundColor: '#f0f9ff',
@@ -499,7 +500,7 @@ const WorkerForm = () => {
           marginTop: '32px'
         }}>
           <Link
-            to="/workers"
+            to="/admin/workers"
             style={{
               padding: '8px 24px',
               border: '1px solid #d1d5db',

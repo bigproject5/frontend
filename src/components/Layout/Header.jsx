@@ -11,7 +11,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const { user, role } = useSelector(state => state.auth);
 
-  const isAdmin = () => role === 'admin';
+  const isAdmin = () => role === 'ADMIN';
   const userName = decodeURIComponent(user?.name || "");
 
   const handleLogoClick = () => {
@@ -31,13 +31,14 @@ const Header = () => {
   const handleLogout = () => {
     // 로그아웃 기능 구현
     console.log('로그아웃 버튼 클릭됨');
+    sessionStorage.removeItem('accessToken'); // 세션 스토리지에서 토큰 삭제
     dispatch(logout());
     navigate('/login');
   };
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       sx={{
         background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
         boxShadow: '0 4px 20px rgba(0,44,95,0.15)',

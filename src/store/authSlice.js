@@ -6,25 +6,29 @@ const authSlice = createSlice({
     isAuthenticated: false,
     user: null,
     role: null,
-    taskType: null, // taskType 필드 추가
-    isInitializing: true, // 초기값을 true로 설정
+    taskType: null,
+    isInitializing: true,
   },
   reducers: {
     setInitializing: (state, action) => {
       state.isInitializing = action.payload;
     },
     loginSuccess: (state, action) => {
+      const fullUser = action.payload.user;
       state.isAuthenticated = true;
-      state.user = action.payload.user;
-      state.role = action.payload.role;
-      state.taskType = action.payload.taskType; // taskType 상태 업데이트
+      state.user = {
+        id: fullUser.id,
+        name: fullUser.name
+      };
+      state.role = fullUser.role;
+      state.taskType = fullUser.taskType;
       state.isInitializing = false;
     },
     logout: (state) => {
       state.isAuthenticated = false;
       state.user = null;
       state.role = null;
-      state.taskType = null; // 로그아웃 시 taskType도 초기화
+      state.taskType = null;
       state.isInitializing = false;
     }
   }

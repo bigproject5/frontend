@@ -5,14 +5,12 @@ const DevPage = () => {
   const pages = [
     { path: '/notices', name: '공지사항 목록' },
     { path: '/admin/dashboard', name: '관리자 대시보드' },
-    { path: '/admin/notices', name: '관리자 공지사항' },
     { path: '/admin/notices/new', name: '관리자 공지사항 등록' },
     { path: '/admin/workers', name: '관리자 작업자 목록' },
     { path: '/admin/workers/register', name: '관리자 작업자 등록' },
     { path: '/worker/profile', name: '작업자 프로필' },
     { path: '/worker/main', name: '작업자 메인' },
-    { path: '/worker/manual-test', name: '작업자 수동 테스트' },
-    { path: '/car-test', name: '차량 테스트' },
+    { path: '/worker/manual-test', name: '작업자 수동 테스트' }
   ];
 
   const containerStyle = {

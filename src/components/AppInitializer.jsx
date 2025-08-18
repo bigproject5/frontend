@@ -1,26 +1,34 @@
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { loginSuccess, setInitializing } from '../store/authSlice';
 import { fetchCurrentUser } from '../Api/phm_api.jsx';
 
-const AppInitializer = () => {
+const AppInitializer = ({ children }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const isInitializing = useSelector((state) => state.auth.isInitializing);
+  const initialLoadComplete = useRef(false);
 
   useEffect(() => {
     async function loadUser() {
-      // 초기화 시작을 Redux에 알림
-      if(location.pathname === "/login" || location.pathname === "/signup") return;
-      dispatch(setInitializing(true));
+      const curPath = location.pathname;
+      if (curPath === "/login" || curPath === "/signup" || curPath === "/admin-login") {
+        if (initialLoadComplete.current === false) {
+          dispatch(setInitializing(false));
+          initialLoadComplete.current = true;
+        }
+        return;
+      }
+
+      if (!initialLoadComplete.current) {
+        dispatch(setInitializing(true));
+      }
 
       try {
-
-
         const token = sessionStorage.getItem("accessToken");
         if (!token) {
-          dispatch(setInitializing(false));
           navigate("/login");
           return;
         }
@@ -28,23 +36,28 @@ const AppInitializer = () => {
         const response = await fetchCurrentUser(token);
         if (!response) throw new Error("토큰 만료 혹은 인증 실패");
 
-        const userRole = response.role;
-        const taskType = response.taskType;
-        dispatch(loginSuccess({ user: response, role: userRole, taskType: taskType })); // taskType도 함께 전달
+        dispatch(loginSuccess({ user: response, role: response.role, taskType: response.taskType }));
 
       } catch (error) {
         console.error(error);
-        sessionStorage.removeItem("accessToken"); // 잘못된 토큰 제거
+        sessionStorage.removeItem("accessToken");
         navigate("/login");
       } finally {
-        dispatch(setInitializing(false));
+        if (!initialLoadComplete.current) {
+          dispatch(setInitializing(false));
+          initialLoadComplete.current = true;
+        }
       }
     }
 
     loadUser();
   }, [dispatch, navigate, location]);
 
-  return null;
+  if (isInitializing && !initialLoadComplete.current) {
+    return <div>Loading...</div>;
+  }
+
+  return children;
 };
 
 export default AppInitializer;

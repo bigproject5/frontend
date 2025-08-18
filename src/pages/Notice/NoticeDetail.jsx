@@ -1,6 +1,6 @@
 // src/notices/NoticeDetail.jsx - 하이브리드 라우팅 적용
 import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
   Paper,
   Typography,
@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogActions,
   Alert,
-  Container
+  Container, Stack, CircularProgress
 } from '@mui/material'
 import {
   Edit as EditIcon,
@@ -25,78 +25,96 @@ import {
   Download as DownloadIcon
 } from '@mui/icons-material'
 import { useSelector } from 'react-redux'
-import { getNoticeDetail, deleteNotice, increaseViews } from '../../api/NoticeAPI.js' // API import 추가
+import {getNoticeDetail, deleteNotice, downloadFile} from '../../api/NoticeAPI.js' // API import 추가
 
 function NoticeDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, role } = useSelector((state) => state.auth)
-
-  const isAdmin = role === 'admin'
-
+  const [downloading, setDownloading] = useState(null); // 다운로드 중인 파일 ID 저장
+  const [error, setError] = useState(null);
+  const isAdmin = role === 'ADMIN' || role === "DEV";
   const [notice, setNotice] = useState(null)
   const [deleteDialog, setDeleteDialog] = useState(false)
 
+
   useEffect(() => {
-    // 공지사항 상세 조회 API 호출
-    const fetchNoticeDetail = async () => {
-      try {
-        const response = await getNoticeDetail(id)
-        console.log('공지사항 상세 응답:', response) // 디버깅용
-
-        // API 응답 구조에 맞게 데이터 설정
-        if (response && response.data) {
-          setNotice(response.data)
-        } else if (response) {
-          // 직접 응답이 데이터인 경우
-          setNotice(response)
-        }
-
-        // 조회수 증가 API 호출 (관리자 접근 시에는 조회수 증가 안 함)
-        if (!isAdmin) {
-          await increaseViews(id)
-        }
-      } catch (error) {
-        console.error('공지사항 상세 조회 실패:', error)
-        // 에러 발생 시 사용자에게 알림
-        alert('공지사항을 불러오는데 실패했습니다.')
-        navigate('/admin/dashboard') // 에러 시 대시보드로 이동
-      }
+    if (location.state?.notice) {
+      setNotice(location.state.notice);
+      console.log(notice);
+      return;
     }
 
-    fetchNoticeDetail()
-  }, [id, isAdmin, navigate])
+    const fetchNoticeDetail = async () => {
+      if (!id) return;
+      try {
+        const response = await getNoticeDetail(id);
+        setNotice(response?.data || response);
+      } catch (error) {
+        console.error('공지사항 상세 조회 실패:', error);
+        alert('공지사항을 불러오는데 실패했습니다.');
+        navigate('/admin/dashboard');
+      }
+    };
+
+    fetchNoticeDetail();
+  }, [id, navigate, location.state])
 
   const handleEdit = () => {
-    navigate(`/admin/notices/${id}/edit`)
+    navigate(`/admin/notices/${id}/edit`, { state: { notice: notice } })
   }
 
   const handleDelete = async () => {
     try {
-      // 삭제 API 호출
       await deleteNotice(id)
       setDeleteDialog(false)
 
-      // 삭제 후 목록 페이지로 이동
-      navigate('/admin/notices') // 관리자는 관리 페이지로
+      navigate('/notices')
     } catch (error) {
       console.error('공지사항 삭제 실패:', error)
     }
   }
 
   const handleBack = () => {
-    if (isAdmin) {
-      navigate('/admin/notices') // 관리자는 관리 페이지로
-    } else {
-      navigate('/notices') // 작업자는 일반 목록으로
-    }
+    navigate('/notices')
   }
 
-  const handleDownload = (attachment) => {
-    // 실제로는 파일 다운로드 구현
-    console.log('파일 다운로드:', attachment.name)
-    // window.open(attachment.url, '_blank')
-  }
+  const handleDownload = async (fileId, fileName) => {
+    try {
+      setDownloading(fileId);
+      setError(null);
+
+      const accessToken = sessionStorage.getItem('accessToken');
+      const response = await downloadFile(accessToken, fileId);
+
+      if (!response.ok) {
+        throw new Error(`다운로드 실패: ${response.status}`);
+      }
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      link.style.display = 'none';
+
+      document.body.appendChild(link);
+      link.click();
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }, 100);
+
+    } catch (err) {
+      setError(err.message);
+      console.error('파일 다운로드 오류:', err);
+    } finally {
+      setDownloading(null);
+    }
+  };
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes'
@@ -115,7 +133,14 @@ function NoticeDetail() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container sx={{
+      width: '80% !important',
+      maxWidth: 800,
+      minWidth: 300 ,
+      minHeight: 1000,
+      margin: '0 auto',
+      p: 10,
+    }}>
       <Paper elevation={2} sx={{ p: 4 }}>
         {/* 헤더 */}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -188,30 +213,59 @@ function NoticeDetail() {
               </TableCell>
               <TableCell sx={{ borderBottom: 'none' }}>{notice.viewCount}</TableCell>
             </TableRow>
-            {notice.fileUrl && (
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none' }}>
-                  첨부파일
-                </TableCell>
-                <TableCell sx={{ borderBottom: 'none' }}>
-                  <Button
-                    startIcon={<DownloadIcon />}
-                    href={notice.fileUrl}
-                    target="_blank"
-                    sx={{ color: '#002c5f' }}
-                  >
-                    첨부파일 다운로드
-                  </Button>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', borderBottom: 'none', verticalAlign: 'top' }}>
+                첨부파일
+              </TableCell>
+              <TableCell sx={{ borderBottom: 'none' }}>
+                <Stack spacing={0.5}> {/* 파일마다 간격 */}
+                  {notice.files.map((file) => (
+                      <Button
+                          key={file.fileId}
+                          startIcon={
+                            downloading === file.fileId ?
+                                <CircularProgress size={16} /> :
+                                <DownloadIcon />
+                          }
+                          onClick={() => handleDownload(file.fileId, file.fileName)}
+                          disabled={downloading === file.fileId}
+                          sx={{
+                            color: downloading === file.fileId ? '#999' : '#002c5f',
+                            fontSize: '0.875rem',
+                            minWidth: 0,
+                            padding: '2px 8px',
+                            justifyContent: 'flex-start',
+                            maxWidth: '100%',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          }}
+                      >
+                        {downloading === file.fileId ?
+                            '다운로드 중...' :
+                            `${file.fileName} (${formatFileSize(file.fileSize)})`
+                        }
+                      </Button>
+                  ))}
+                </Stack>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
 
         <Divider sx={{ my: 3 }} />
 
         {/* 공지사항 내용 */}
-        <Box sx={{ lineHeight: 1.8, fontSize: '16px', minHeight: '200px' }}>
+        <Box
+            sx={{
+              lineHeight: 1.8,
+              fontSize: '16px',
+              minHeight: '300px',
+              wordBreak: 'break-word',      // 긴 단어 줄바꿈
+              overflowWrap: 'break-word',   // 추가 안전 장치
+              whiteSpace: 'pre-wrap',       // 줄바꿈 + 공백 유지
+            }}
+        >
           {notice.content}
         </Box>
 

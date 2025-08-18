@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Card, CardContent, Typography } from '@mui/material';
 import { PendingActions, PlayArrow, CheckCircle, Search, Assessment } from '@mui/icons-material';
 
-const InspectionSummary = ({ summaryData, onStatusClick, selectedStatus }) => {
+const InspectionSummary = ({ summaryData, onStatusFilter, selectedStatus }) => {
   const statusItems = [
     {
       label: '진단중',
@@ -13,36 +13,42 @@ const InspectionSummary = ({ summaryData, onStatusClick, selectedStatus }) => {
       bgColor: '#f3e5f5' // 더 연한 보라색 배경
     },
     {
-      label: '대기중',
-      value: summaryData.abnormal,
-      status: 'ABNORMAL',
-      icon: <PendingActions sx={{ fontSize: 32, color: '#ff9800' }} />,
-      color: '#ff9800',
-      bgColor: '#fff8e1', // 더 연한 오렌지 배경
-      accentColor: '#ffcc02'
+      label: '정상',
+      value: summaryData.normal,
+      status: 'NORMAL',
+      icon: <CheckCircle sx={{ fontSize: 32, color: '#4caf50' }} />,
+      color: '#4caf50',
+      bgColor: '#e8f5e8' // 더 연한 초록색 배경
     },
     {
-      label: '진행중',
+      label: '이상',
+      value: summaryData.abnormal,
+      status: 'ABNORMAL',
+      icon: <PendingActions sx={{ fontSize: 32, color: '#f44336' }} />,
+      color: '#f44336',
+      bgColor: '#ffebee' // 더 연한 빨간색 배경
+    },
+    {
+      label: '작업중',
       value: summaryData.inAction,
       status: 'IN_ACTION',
-      icon: <PlayArrow sx={{ fontSize: 32, color: '#2196f3' }} />,
-      color: '#2196f3',
-      bgColor: '#e3f2fd' // 더 연한 파란색 배경
+      icon: <PlayArrow sx={{ fontSize: 32, color: '#ff9800' }} />,
+      color: '#ff9800',
+      bgColor: '#fff8e1' // 더 연한 오렌지 배경
     },
     {
       label: '완료',
       value: summaryData.completed,
       status: 'COMPLETED',
-      icon: <CheckCircle sx={{ fontSize: 32, color: '#4caf50' }} />,
-      color: '#4caf50',
-      bgColor: '#e8f5e8', // 더 연한 초록색 배경
-      accentColor: '#66bb6a'
+      icon: <CheckCircle sx={{ fontSize: 32, color: '#2196f3' }} />,
+      color: '#2196f3',
+      bgColor: '#e3f2fd' // 더 연한 파란색 배경
     }
   ];
 
   const handleCardClick = (status) => {
     const newStatus = selectedStatus === status ? null : status;
-    onStatusClick(newStatus);
+    onStatusFilter(newStatus);
   };
 
   return (
@@ -91,13 +97,14 @@ const InspectionSummary = ({ summaryData, onStatusClick, selectedStatus }) => {
           </Box>
 
           {/* 상태별 카드들 */}
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
             {statusItems.map((item) => (
               <Card
                 key={item.status}
                 onClick={() => handleCardClick(item.status)}
                 sx={{
-                  flex: 1,
+                  flex: '1 1 calc(20% - 12px)', // 5개 카드가 한 줄에 들어가도록 조정
+                  minWidth: '140px', // 최소 너비 설정
                   cursor: 'pointer',
                   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   border: selectedStatus === item.status ? `3px solid ${item.color}` : '1px solid #e0e0e0',
@@ -116,56 +123,51 @@ const InspectionSummary = ({ summaryData, onStatusClick, selectedStatus }) => {
               >
                 <CardContent sx={{
                   display: 'flex',
+                  flexDirection: 'column',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
-                  py: 3,
-                  px: 2.5,
-                  '&:last-child': { pb: 3 }
+                  py: 2,
+                  px: 1.5,
+                  '&:last-child': { pb: 2 }
                 }}>
-                  {/* 왼쪽 1/3: 아이콘과 라벨 */}
+                  {/* 상단: 아이콘 */}
                   <Box sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 1,
-                    flex: '0 0 33.33%'
-                  }}>
-                    <Box sx={{
-                      p: 1,
-                      borderRadius: '50%',
-                      backgroundColor: `${item.color}15`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      {item.icon}
-                    </Box>
-                    <Typography
-                      variant="subtitle1"
-                      sx={{
-                        fontWeight: 700,
-                        color: item.color,
-                        fontSize: '16px',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {item.label}
-                    </Typography>
-                  </Box>
-
-                  {/* 오른쪽 2/3: 숫자와 "건" */}
-                  <Box sx={{
+                    p: 1,
+                    borderRadius: '50%',
+                    backgroundColor: `${item.color}15`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    gap: 0.5,
-                    flex: '0 0 66.67%'
+                    mb: 1
+                  }}>
+                    {React.cloneElement(item.icon, { sx: { fontSize: 24, color: item.color } })}
+                  </Box>
+
+                  {/* 중단: 라벨 */}
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      fontWeight: 700,
+                      color: item.color,
+                      fontSize: '14px',
+                      mb: 1,
+                      textAlign: 'center'
+                    }}
+                  >
+                    {item.label}
+                  </Typography>
+
+                  {/* 하단: 숫자와 "건" */}
+                  <Box sx={{
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    gap: 0.5
                   }}>
                     <Typography
-                      variant="h3"
+                      variant="h4"
                       sx={{
                         fontWeight: 800,
                         color: item.color,
-                        fontSize: '2.5rem',
+                        fontSize: '1.8rem',
                         lineHeight: 1,
                         textShadow: `0 2px 4px ${item.color}25`
                       }}
@@ -173,13 +175,11 @@ const InspectionSummary = ({ summaryData, onStatusClick, selectedStatus }) => {
                       {item.value}
                     </Typography>
                     <Typography
-                      variant="h6"
+                      variant="body2"
                       sx={{
                         color: item.color,
-                        fontSize: '18px',
-                        fontWeight: 600,
-                        alignSelf: 'flex-end',
-                        mb: 0.5
+                        fontSize: '14px',
+                        fontWeight: 600
                       }}
                     >
                       건

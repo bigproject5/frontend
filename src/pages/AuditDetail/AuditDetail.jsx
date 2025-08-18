@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetch_audit_detail } from "../../api/vehicleAuditApi.jsx";
-import "./cartest.css";
+import "./AuditDetail.css";
 
 const inspectionTypeKor = {
   PAINT: "도장면",
@@ -18,7 +18,7 @@ function getColor(isDefect, status) {
   return "part-default";
 }
 
-export default function Cartest() {
+export default function AuditDetail() {
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

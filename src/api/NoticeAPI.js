@@ -5,27 +5,23 @@
 
 // 공지사항 API의 기본 URL
 const API_BASE = "http://localhost:8080/api/operation/notices";
+const token = sessionStorage.getItem('accessToken');
 
 // Bearer 토큰 헤더 설정 (멀티파트용)
 const getAuthHeadersForMultipart = () => {
-  const token = sessionStorage.getItem('accessToken');
   console.log('현재 토큰:', token);
 
   return {
     'Authorization': `Bearer ${token}`
-    // Content-Type은 FormData 사용시 브라우저가 자동으로 설정하므로 제외
-    // X-User-Id, X-User-Name은 Gateway에서 토큰 인증 후 자동으로 설정됨
   };
 };
 
 // JSON 요청용 헤더 설정
 const getAuthHeadersForJSON = () => {
-  const token = sessionStorage.getItem('accessToken');
   console.log('현재 토큰:', token);
   return {
     'Authorization': `Bearer ${token}`,
     'Content-Type': 'application/json'
-    // X-User-Id, X-User-Name은 Gateway에서 토큰 인증 후 자동으로 설정됨
   };
 };
 
@@ -73,9 +69,9 @@ export async function getNoticeDetail(id) {
 /**
  * 새로운 공지사항을 생성합니다. (파일 첨부 가능)
  * @param {object} noticeData - { title, content, fileUrl }
- * @param {File} [file] - 첨부할 파일 객체 (선택 사항)
+ * @param {*[]} [files] - 첨부할 파일 객체 (선택 사항)
  */
-export async function createNotice(noticeData, file) {
+export async function createNotice(noticeData, files) {
   try {
     const formData = new FormData();
 
@@ -86,12 +82,10 @@ export async function createNotice(noticeData, file) {
     );
 
     // @RequestPart("file")에 매핑될 파일
-    if (file) {
-      formData.append('file', file);
-    } else {
-      // 파일이 없는 경우 빈 파일을 제대로 생성
-      const emptyFile = new File([''], 'empty.txt', { type: 'text/plain' });
-      formData.append('file', emptyFile);
+    if (files && files.length > 0) {
+      files.forEach(file => {
+        formData.append('file', file); // f.file이 진짜 File 객체
+      });
     }
 
     console.log('FormData 내용 확인:');
@@ -106,8 +100,6 @@ export async function createNotice(noticeData, file) {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`
-        // Content-Type은 FormData 사용시 브라우저가 자동 설정하므로 제외
-        // 다른 헤더도 제외하여 브라우저가 multipart 경계를 올바르게 설정하도록 함
       },
       body: formData
     });
@@ -127,13 +119,27 @@ export async function createNotice(noticeData, file) {
  * 기존 공지사항을 수정합니다.
  * @param {number} id - 공지사항 ID
  * @param {object} noticeData - { title, content, fileUrl }
+ * @param newFiles 새로 업로드될 파일들
  */
-export async function updateNotice(id, noticeData) {
+export async function updateNotice(id, noticeData, newFiles) {
   try {
+    const formData = new FormData();
+
+    formData.append(
+        'notice',
+        new Blob([JSON.stringify(noticeData)], { type: 'application/json' })
+    );
+
+    if (newFiles && newFiles.length > 0) {
+      newFiles.forEach(file => {
+        formData.append('file', file); // f.file이 진짜 File 객체
+      });
+    }
+
     const response = await fetch(`${API_BASE}/${id}`, {
       method: 'PUT',
-      headers: getAuthHeadersForJSON(),
-      body: JSON.stringify(noticeData)
+      headers: getAuthHeadersForMultipart(),
+      body: formData
     });
 
     if (!response.ok) {
@@ -201,3 +207,11 @@ export const getDepartmentColor = (department) => {
   const dept = departments.find(d => d.value === department);
   return dept ? dept.color : "default";
 };
+
+
+export async function downloadFile(accessToken, fileId) {
+  return await fetch(`${API_BASE}/download/${fileId}`, {
+    method: 'GET',
+    headers: {'Authorization': `Bearer ${accessToken}`}
+  });
+}
