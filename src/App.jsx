@@ -20,6 +20,7 @@ import DevPage from "./pages/devPage/devPage.jsx";
 import WorkerLogin from "./pages/Login/WorkerLogin.jsx";
 import ReportDashboard from './pages/Report/ReportDashboard.jsx'
 import ReportDetail from './pages/Report/ReportDetail.jsx'
+import AuditDetail from "./pages/AuditDetail/AuditDetail.jsx";
 
 
 
@@ -58,6 +59,7 @@ function App() {
                           <Route path="/admin/workers" element={<WorkerList />} />
                           <Route path="/admin/workers/register" element={<WorkerForm />} />
                           <Route path="/admin/workers/:id" element={<WorkerProfile />} />
+                          <Route path="/admin/audits/:auditId" element={<AuditDetail />} />
                       </Route>
                   </Route>
 
