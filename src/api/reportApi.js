@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/taskreports/reports";
+const BASE_URL = "http://localhost:8080/api/taskreports";
 
 // 전체 목록 조회
 export async function fetchReports() {
@@ -10,7 +10,7 @@ export async function fetchReports() {
 
 export async function fetchReportDetail(reportId) {
   try{
-    const response = await fetch(`${BASE_URL}/${reportId}`, {
+    const response = await fetch(`${BASE_URL}/reports/${reportId}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     })
@@ -25,7 +25,7 @@ export async function fetchReportDetail(reportId) {
 
 // 요약 다시 요청 (GPT 재요약)
 export async function resummarizeReport(reportId) {
-  const res = await fetch(`${BASE_URL}/${reportId}/resummarize`, {
+  const res = await fetch(`${BASE_URL}/reports/${reportId}/resummarize`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -41,7 +41,7 @@ export async function resummarizeReport(reportId) {
 
 // 리포트 생성(임시)
 export async function createReport(reportData) {
-  const res = await fetch(BASE_URL, {
+  const res = await fetch(`${BASE_URL}/reports`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(reportData),
@@ -53,16 +53,16 @@ export async function createReport(reportData) {
 }
 
 
-export async function getReportsByWorkerId(workerId) {
-  const response = await fetch(`${BASE_URL}/worker-reports?${workerId}`, {
+export async function getReportsByWorkerId(accessToken) {
+  const response = await fetch(`${BASE_URL}/worker-reports`, {
     method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Authorization': `Bearer ${accessToken}` }
   })
   return response.json();
 }
 
 export async function getReportsByAdmin(workerId) {
-  const response = await fetch(`${BASE_URL}/admin/worker-reports/${workerId}`, {
+  const response = await fetch(`${BASE_URL}/worker-reports/${workerId}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   })

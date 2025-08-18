@@ -22,7 +22,8 @@ const ReportSection = () => {
         setIsLoading(true);
         try {
             if(!isAdmin()){
-                const response = await getReportsByWorkerId();
+                const token = sessionStorage.getItem("accessToken");
+                const response = await getReportsByWorkerId(token);
                 setReports(response);
             }
             else{
@@ -31,6 +32,7 @@ const ReportSection = () => {
             }
         } catch (error) {
             console.error('보고서 목록 로드 실패:', error);
+            setReports([])
         } finally {
             setIsLoading(false);
         }
@@ -76,7 +78,7 @@ const ReportSection = () => {
                     reports.map((report) => (
                         <Link to={`/reports/${report.reportId}`} className="report-link">
                             <div className="report-simple-card">
-                                {/*<div className="report-card-title">{report.title}</div>*/}
+                                <div className="report-card-title">{report.type}</div>
                                 <div className="report-card-date">{report.createdAt}</div>
                             </div>
                         </Link>
