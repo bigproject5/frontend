@@ -8,20 +8,23 @@ const NOTICE_API_BASE_URL = '/api/operation';
  * @param {number} params.page - 페이지 번호 (0부터 시작)
  * @param {number} params.size - 페이지 크기 (기본값: 10)
  * @param {Object} params.user - Redux에서 가져온 사용자 정보 (taskType 포함)
+ * @param {string} params.taskType - 검사 유형
  * @returns {Promise} API 응답
  */
 export const getInspections = async (params = {}) => {
   try {
-    const { status, page = 0, size = 10, user } = params;
+    const { status, page = 0, size = 10, user, taskType } = params;
 
     // 사용자 정보에서 taskType 가져오기, 없으면 에러
-    console.log(user)
-    if (user === undefined) {
+    console.log('user:', user);
+    console.log('taskType:', taskType);
+
+    if (!user || !taskType) {
       throw new Error('사용자 인증 정보가 없거나 taskType이 설정되지 않았습니다.');
     }
 
     const queryParams = new URLSearchParams({
-      inspectionType: user.taskType,
+      inspectionType: taskType, // user.taskType 대신 별도 taskType 사용
       page: page.toString(),
       size: size.toString()
     });
