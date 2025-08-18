@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import {Link, Route} from 'react-router-dom';
+import ReportDetail from "../Report/ReportDetail.jsx";
 
 const DevPage = () => {
   const pages = [
@@ -10,7 +11,8 @@ const DevPage = () => {
     { path: '/admin/workers/register', name: '관리자 작업자 등록' },
     { path: '/worker/profile', name: '작업자 프로필' },
     { path: '/worker/main', name: '작업자 메인' },
-    { path: '/worker/manual-test', name: '작업자 수동 테스트' }
+    { path: '/worker/manual-test', name: '작업자 수동 테스트' },
+    { path: '/reports/1', name: '보고서 페이지' }
   ];
 
   const containerStyle = {
