@@ -44,8 +44,8 @@ const WorkerMainContent = () => {
     console.log('- taskType:', taskType);
     console.log('- isAuthenticated:', isAuthenticated);
 
-    // 사용자 정보가 없으면 에러 처리
-    if (!user || !user.taskType) {
+    // 사용자 정보가 없으면 에러 처리 - taskType을 별도로 확인
+    if (!user || !taskType) {
       const errorMessage = '사용자 인증 정보가 없거나 taskType이 설정되지 않았습니다.';
       console.error(errorMessage);
       setError(errorMessage);
@@ -58,6 +58,7 @@ const WorkerMainContent = () => {
         page,
         size: 10,
         user, // Redux에서 가져온 사용자 정보 전달
+        taskType, // taskType을 별도로 전달
         ...(status && { status })
       };
 
@@ -78,8 +79,8 @@ const WorkerMainContent = () => {
 
   // 전체 데이터 조회하여 집계 정보 계산
   const fetchAllInspectionsForSummary = async () => {
-    // 사용자 정보가 없으면 실행하지 않음
-    if (!user || !user.taskType) {
+    // 사용자 정보가 없으면 실행하지 않음 - taskType을 별도로 확인
+    if (!user || !taskType) {
       console.log('fetchAllInspectionsForSummary: 사용자 정보가 없어서 실행하지 않음');
       return;
     }
@@ -89,7 +90,8 @@ const WorkerMainContent = () => {
       const params = {
         page: 0,
         size: 1000, // 충분히 큰 사이즈로 전체 데이터 조회
-        user // 사용자 정보 추가
+        user, // 사용자 정보 추가
+        taskType // taskType도 추가
       };
 
       const response = await getInspections(params);
@@ -114,13 +116,13 @@ const WorkerMainContent = () => {
 
   // 초기 데이터 로드 - 사용자 정보가 있을 때만 실행
   useEffect(() => {
-    if (user && user.taskType) {
+    if (user && taskType) {
       fetchInspections();
       fetchAllInspectionsForSummary(); // 집계용 전체 데이터 조회
     } else {
       console.log('사용자 정보가 아직 로드되지 않았습니다.');
     }
-  }, [user]); // user 의존성 추가
+  }, [user, taskType]); // taskType도 의존성에 추가
 
   // 상태 필터 변경 시 검사 목록 다시 조회 - 각 상태별로 개별 필터링
   const handleStatusFilter = async (status) => {
