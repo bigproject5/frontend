@@ -35,6 +35,7 @@ const ReportSection = () => {
             setReports([])
         } finally {
             setIsLoading(false);
+            setReports([]);
         }
     };
 
