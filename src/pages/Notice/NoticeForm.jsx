@@ -177,7 +177,7 @@ function NoticeForm() {
         response = await createNotice(formData, allFiles);
       }
 
-      if (!response.ok) {
+      if (response.error) {
         alert(response.message || '요청 처리 중 문제가 발생했습니다.');
         return;
       }
