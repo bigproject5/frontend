@@ -287,7 +287,7 @@ function SignupForm() {
                             checked={isAgreementChecked}
                             onChange={() => setShowModal(true)}
                         />
-                        약관 동의 (필수)
+                        개인정보 활용 동의 (필수)
                     </label>
 
                     <div>
