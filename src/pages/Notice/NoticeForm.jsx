@@ -163,22 +163,36 @@ function NoticeForm() {
       return
     }
     setIsSubmitting(true);
-
     let response;
-    if(isEdit){
-      const newFiles = attachedFiles
-          .filter(file => file.file)
-          .map(file => file.file);
-      response = await updateNotice(id, formData, newFiles);
-    } else {
-      const allFiles = attachedFiles
-          .filter(file => file.file)
-          .map(file => file.file);
-      response = await createNotice(formData, allFiles);
-    }
-    setShowSuccess(true)
+    try {
+      if (isEdit) {
+        const newFiles = attachedFiles
+            .filter(file => file.file)
+            .map(file => file.file);
+        response = await updateNotice(id, formData, newFiles);
+      } else {
+        const allFiles = attachedFiles
+            .filter(file => file.file)
+            .map(file => file.file);
+        response = await createNotice(formData, allFiles);
+      }
 
-    navigate(`/notices/${response.id}`, { state: { notice: response } });
+      if (response.error) {
+        alert(response.message || '요청 처리 중 문제가 발생했습니다.');
+        return;
+      }
+
+      setShowSuccess(true);
+      navigate(`/notices/${response.id}`, { state: { notice: response } });
+
+    } catch (error) {
+      console.error("API Error:", error);
+      const errorMessage = error.response?.data?.message || "파일 업로드 중 오류가 발생했습니다. 파일 크기를 확인해주세요.";
+      alert(errorMessage);
+
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   const handleCancel = () => {

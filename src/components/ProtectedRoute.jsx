@@ -33,7 +33,7 @@ const ProtectedRoute = ({ requiredRole }) => {
   }
 
     if (requiredRole && role !== requiredRole && role !== 'DEV') {
-        return <Navigate to={requiredRole === 'ADMIN' ? '/admin/login' : '/login'} replace />;
+        return <Navigate to={requiredRole === 'ADMIN' ? '/admin-login' : '/login'} replace />;
     }
 
   return <Outlet />;
