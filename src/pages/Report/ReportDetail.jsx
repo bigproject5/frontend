@@ -13,45 +13,42 @@ export default function ReportDetail() {
     try {
       const res = await fetchReportDetail(reportId);
       console.log(res);
-
-      setReport(res.data); // 여기서 실제 report 데이터만 state에 저장
+      setReport(res.data);
     } catch (err) {
       setError(err.message);
     }
   }
 
-
   useEffect(() => {
       setReportInfo();
   }, [reportId]);
 
- const handleResummarize = async () => {
-  try {
-    setLoading(true);
-    const res = await fetch(`http://localhost:8080/api/taskreports/reports/${reportId}/resummarize`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ prompt: report.content }),
-    });
+  const handleResummarize = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(`http://localhost:8080/api/taskreports/reports/${reportId}/resummarize`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: report.resolve }),
+      });
 
-    if (!res.ok) {
-      throw new Error("다시 요약에 실패했습니다.");
+      if (!res.ok) {
+        throw new Error("다시 요약에 실패했습니다.");
+      }
+
+      const result = await res.json();
+      setReport((prev) => ({
+        ...prev,
+        summary: result.summary,
+      }));
+    } catch (err) {
+      alert("요약 실패: " + err.message);
+    } finally {
+      setLoading(false);
     }
-
-    const result = await res.json();
-    setReport((prev) => ({
-      ...prev,
-      summary: result.summary,
-    }));
-  } catch (err) {
-    alert("요약 실패: " + err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   if (error) return <div className="report-container">오류: {error}</div>;
   if (!report) return <div className="report-container">로딩 중...</div>;
@@ -61,31 +58,110 @@ export default function ReportDetail() {
       <div className="breadcrumb">작업자/관리자 &gt; 불량 레포트 상세</div>
       <h1 className="report-title">불량 레포트 (RPT-{report.reportId})</h1>
 
-      <div className="meta-grid center-meta">
-        <div><strong>생성일시:</strong> {new Date(report.createdAt).toLocaleString()}</div>
-        <div><strong>검사 담당자 사번:</strong> {report.workerId}</div>
-        <div><strong>검사 번호:</strong> {report.inspectionId}</div>
-        <div><strong>검사 타입:</strong> {report.type}</div>
-        {/*<div><strong>상태:</strong> {report.status}</div>*/}
+      {/* 레포트 기본 정보 */}
+      <div className="report-card">
+        <h2 className="card-title">레포트 기본 정보</h2>
+        
+        <table className="report-table">
+          <tbody>
+            <tr>
+              <td className="table-header">레포트번호</td>
+              <td>RPT-{report.reportId}</td>
+              <td className="table-header">검사 타입</td>
+              <td>{report.type}</td>
+            </tr>
+            <tr>
+              <td className="table-header">검사번호</td>
+              <td>{report.inspectionId}</td>
+              <td className="table-header">담당자 사번</td>
+              <td>{report.workerId}</td>
+            </tr>
+            <tr>
+              <td className="table-header">생성일시</td>
+              <td colSpan="3">
+                {new Date(report.createdAt).toLocaleString('ko-KR', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                })}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
-      <div className="report-section">
-        <h2 className="section-title">📋 검사 결과</h2>
-        <div className="memo-box">{report.resolve}</div>
-      </div>
-
-      <div className="report-section">
-        <div className="summary-header">
-          <h2 className="section-title">📝 요약</h2>
-          <button
-            className="resummarize-btn"
-            onClick={handleResummarize}
-            disabled={loading}
-          >
-            {loading ? "요약 중..." : "다시 요약"}
-          </button>
+      {/* 검사 시간 정보 */}
+      {(report.startedAt || report.endedAt) && (
+        <div className="report-card">
+          <h2 className="card-title">검사 시간 정보</h2>
+          
+          <table className="report-table">
+            <tbody>
+              {report.startedAt && report.endedAt && (
+                <tr>
+                  <td className="table-header">검사 시간</td>
+                  <td colSpan="3">
+                    {new Date(report.startedAt).toLocaleString('ko-KR')} ~ {new Date(report.endedAt).toLocaleString('ko-KR')}
+                    <br />
+                    <span className="duration">
+                      (소요시간: {Math.round((new Date(report.endedAt) - new Date(report.startedAt)) / 1000 / 60)}분)
+                    </span>
+                  </td>
+                </tr>
+              )}
+              {report.startedAt && !report.endedAt && (
+                <tr>
+                  <td className="table-header">시작 시간</td>
+                  <td colSpan="3">{new Date(report.startedAt).toLocaleString('ko-KR')}</td>
+                </tr>
+              )}
+              {!report.startedAt && report.endedAt && (
+                <tr>
+                  <td className="table-header">종료 시간</td>
+                  <td colSpan="3">{new Date(report.endedAt).toLocaleString('ko-KR')}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-        <div className="memo-box">{report.summary}</div>
+      )}
+
+      {/* 검사 결과 상세 */}
+      <div className="report-card">
+        <h2 className="card-title">검사 결과 상세</h2>
+        
+        <table className="report-table">
+          <tbody>
+            <tr>
+              <td className="table-header">상세 내용</td>
+              <td className="content-cell">
+                {report.resolve}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      {/* AI 분석 결과 */}
+      <div className="ai-analysis-card">
+        <h2 className="ai-card-title">🤖 AI 분석 결과</h2>
+        <div className="ai-content">
+          <div className="summary-header">
+            <button
+              className="resummarize-btn"
+              onClick={handleResummarize}
+              disabled={loading}
+            >
+              {loading ? "요약 중..." : "다시 요약"}
+            </button>
+          </div>
+          <div className="ai-summary">
+            {report.summary}
+          </div>
+        </div>
       </div>
 
       <footer className="footer">ⓒ HYUNDAI</footer>
