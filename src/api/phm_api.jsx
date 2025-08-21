@@ -76,9 +76,26 @@ export async function editWorkerProfile(accessToken, data) {
 }
 
 export async function getWorkerProfileByAdmin(accessToken, workerId) {
-    const response = await fetch(`${Base_URL}/api/operation/workers/${workerId}`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${accessToken}` }
-    })
-    return await response.json();
+    // workerId가 유효하지 않은 경우 early return
+    if (!workerId || workerId === 'undefined' || workerId === 'null') {
+        console.warn('유효하지 않은 workerId로 API 호출 시도:', workerId);
+        return null; // 또는 기본값 반환
+    }
+
+    try {
+        const response = await fetch(`${Base_URL}/api/operation/workers/${workerId}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${accessToken}` }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('getWorkerProfileByAdmin 오류:', error);
+        throw error;
+    }
 }
+
