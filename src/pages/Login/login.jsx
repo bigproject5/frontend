@@ -85,95 +85,101 @@ function Login() {
     }
 
     return (
-        <div className="login-body">
-            <div className="login-container">
-                <div className="login-header">
-                    <h2 style={{
-                        margin: "10px"
-                    }}>관리자 로그인</h2>
-                    {/*<p className="login-subtitle">관리자 전용 로그인 페이지입니다</p>*/}
-                </div>
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <div className="login-input-group">
-                        <label>
-                            아이디
-                            <input
-                                type="text"
-                                name="loginId"
-                                value={formData.loginId}
-                                onChange={handleChange}
-                                required
-                                className="login-input"
-                                placeholder="관리자 아이디를 입력하세요"
-                            />
-                        </label>
+        <div className="login-wrapper">
+            <video autoPlay muted loop id="background-video">
+                <source src="/src/assets/터널_속_현대차_주행_영상_생성.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+        
+            <div className="login-body">
+                <div className="login-container">
+                    <div className="login-header">
+                        <h2 style={{
+                            margin: "10px"
+                        }}>관리자 로그인</h2>
                     </div>
-                    <div className="login-input-group">
-                        <label>
-                            비밀번호
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                className="login-input"
-                                placeholder="비밀번호를 입력하세요"
-                            />
-                        </label>
+                    <form className="login-form" onSubmit={handleSubmit}>
+                        <div className="login-input-group">
+                            <label>
+                                아이디
+                                <input
+                                    type="text"
+                                    name="loginId"
+                                    value={formData.loginId}
+                                    onChange={handleChange}
+                                    required
+                                    className="login-input"
+                                    placeholder="관리자 아이디를 입력하세요"
+                                />
+                            </label>
+                        </div>
+                        <div className="login-input-group">
+                            <label>
+                                비밀번호
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    className="login-input"
+                                    placeholder="비밀번호를 입력하세요"
+                                />
+                            </label>
+                        </div>
+                        <button type="submit" className="login-button">
+                            관리자 로그인
+                        </button>
+                    </form>
+    
+                    <div className="signup-link">
+                        <button className="login-signup-btn" onClick={handleSignup}>
+                            관리자 계정 등록
+                        </button>
                     </div>
-                    <button type="submit" className="login-button">
-                        관리자 로그인
-                    </button>
-                </form>
-
-                <div className="signup-link">
-                    <button className="login-signup-btn" onClick={handleSignup}>
-                        관리자 계정 등록
-                    </button>
                 </div>
-            </div>
-
-            {/* 개발용 버튼  */}
-            <div style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-            }}>
-                <button
-                    type="button"
-                    className="login-role-btn"
-                    onClick={handleDevLogin}
-                    style={{
-                        backgroundColor: '#4CAF50',
+    
+                {/* 개발용 버튼  */}
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                }}>
+                    <button
+                        type="button"
+                        className="login-role-btn"
+                        onClick={handleDevLogin}
+                        style={{
+                            backgroundColor: '#4CAF50',
+                            color: 'white',
+                            padding: '10px 15px',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                        }}
+                    >
+                        DEV Login
+                    </button>
+                    <Link to="/dev" style={{
+                        backgroundColor: '#008CBA',
                         color: 'white',
                         padding: '10px 15px',
                         border: 'none',
                         borderRadius: '5px',
                         cursor: 'pointer',
-                    }}
-                >
-                    DEV Login
-                </button>
-                <Link to="/dev" style={{
-                    backgroundColor: '#008CBA',
-                    color: 'white',
-                    padding: '10px 15px',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    textDecoration: 'none',
-                    textAlign: 'center',
-                }}>
-                    /dev
-                </Link>
-            </div>
-
-            <div className="footer">
-                © 2025 Hyundai Motor Company. All rights reserved.
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                    }}>
+                        /dev
+                    </Link>
+                </div>
+    
+                <div className="footer">
+                    © 2025 Hyundai Motor Company. All rights reserved.
+                </div>
             </div>
         </div>
     );
