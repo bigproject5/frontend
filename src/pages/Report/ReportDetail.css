@@ -1,97 +1,121 @@
 .report-container {
-  background-color: #f5f5f5;
-  padding: 2rem;
-  font-family: "Pretendard", sans-serif;
-  color: #333;
-  max-width: 800px;
+  background: #f8fafc;
+  min-height: 100vh;
+  padding: 1.5rem;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #374151;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
 .breadcrumb {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 0.5rem;
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 0.8rem;
+  font-weight: 400;
 }
 
 .report-title {
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 2rem;
-  color: #333;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
   text-align: center;
 }
 
-/* 레포트 카드 */
+/* 레포트 카드 - 더 컴팩트한 디자인 */
 .report-card {
-  background-color: #ffffff;
-  border: 2px solid #333;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.report-card:hover {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-title {
-  background-color: #f8f8f8;
-  border-bottom: 1px solid #333;
-  padding: 12px 16px;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 12px 20px;
   margin: 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
 }
 
-/* 테이블 스타일 */
+/* 테이블 스타일 - 더 간결한 디자인 */
 .report-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
+  table-layout: auto;
+  max-width: 100%;
 }
 
 .report-table td {
-  border: 1px solid #333;
-  padding: 10px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 12px 16px;
   vertical-align: top;
+  word-wrap: break-word;
+}
+
+.report-table tr:last-child td {
+  border-bottom: none;
 }
 
 .table-header {
-  background-color: #f0f0f0;
-  font-weight: bold;
+  background-color: #f9fafb;
+  font-weight: 600;
   text-align: center;
-  width: 120px;
-  color: #333;
+  width: 140px;
+  max-width: 140px;
+  color: #374151;
+  border-right: 1px solid #e5e7eb;
+  white-space: nowrap;
 }
 
 .content-cell {
   line-height: 1.6;
-  color: #333;
+  color: #374151;
+  min-width: 180px;
 }
 
 .duration {
   font-size: 12px;
-  color: #666;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 4px;
+  display: block;
 }
 
-/* AI 분석 카드 */
+/* AI 분석 카드 - 더 간단한 디자인 */
 .ai-analysis-card {
-  background-color: #ffffff;
-  border: 2px solid #4a90e2;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-left: 4px solid #6366f1;
+  border-radius: 8px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
 .ai-card-title {
-  background-color: #e6f2ff;
-  border-bottom: 1px solid #4a90e2;
-  padding: 12px 16px;
+  background: #f8fafc;
+  color: #374151;
+  padding: 12px 20px;
   margin: 0;
-  font-size: 16px;
-  font-weight: bold;
-  color: #4a90e2;
-  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .ai-content {
-  padding: 16px;
+  padding: 20px;
 }
 
 .summary-header {
@@ -101,40 +125,82 @@
 }
 
 .resummarize-btn {
-  background-color: #333;
+  background: #374151;
   color: white;
   border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
+  padding: 8px 16px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 12px;
-  font-weight: bold;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .resummarize-btn:hover:not(:disabled) {
-  background-color: #555;
+  background: #1f2937;
 }
 
 .resummarize-btn:disabled {
-  background-color: #999;
+  background: #9ca3af;
   cursor: not-allowed;
 }
 
 .ai-summary {
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  padding: 12px;
-  border-radius: 4px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  padding: 16px;
+  border-radius: 6px;
   line-height: 1.6;
   font-size: 14px;
-  color: #333;
+  color: #374151;
+}
+
+/* 이미지 스타일링 */
+.result-image {
+  max-width: 500px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  object-fit: contain;
+}
+/* 작업자 입력 박스 */
+.worker-input-box {
+  background: #f3f4f6;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 6px;
+  border: 1px solid #d1d5db;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.refined-content-box {
+  background: #eff6ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 6px;
+  border: 1px solid #bfdbfe;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.ai-suggestion-box {
+  background: #f0fdf4;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 .footer {
   text-align: center;
   font-size: 13px;
-  color: #999;
-  margin-top: 3rem;
+  color: #9ca3af;
+  margin-top: 2rem;
+  font-weight: 400;
 }
 
 /* 반응형 디자인 */
@@ -143,8 +209,45 @@
     padding: 1rem;
   }
   
+  .report-title {
+    font-size: 20px;
+    margin-bottom: 1.2rem;
+  }
+  
   .report-table {
-    font-size: 12px;
+    font-size: 13px;
+  }
+  
+  .report-table td {
+    padding: 10px 12px;
+  }
+  
+  .table-header {
+    width: 120px;
+    max-width: 120px;
+  }
+  
+  .content-cell {
+    min-width: 150px;
+  }
+  
+  .card-title, .ai-card-title {
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+  
+  .ai-content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-container {
+    padding: 0.8rem;
+  }
+  
+  .report-title {
+    font-size: 18px;
   }
   
   .report-table td {
@@ -153,25 +256,39 @@
   
   .table-header {
     width: 100px;
+    max-width: 100px;
+    font-size: 12px;
+  }
+  
+  .content-cell {
+    max-width: 200px;
   }
   
   .card-title, .ai-card-title {
-    font-size: 14px;
-    padding: 10px 12px;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  
+  .ai-content {
+    padding: 12px;
+  }
+  
+  .resummarize-btn {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 
-@media (max-width: 480px) {
-  .report-title {
-    font-size: 20px;
-  }
-  
-  .report-table td {
-    padding: 6px 8px;
-  }
-  
-  .table-header {
-    width: 80px;
-    font-size: 11px;
-  }
+/* 로딩 및 에러 상태 */
+.loading-container, .error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.error-container {
+  color: #ef4444;
 }
