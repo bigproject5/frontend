@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
@@ -12,11 +12,26 @@ function Login() {
     const [formData, setFormData] = useState({
         "loginId": "",
         "password": ""
-    })
+    });
+
+    const [rememberMe, setRememberMe] = useState(false);
+
+    // 컴포넌트 마운트 시 저장된 아이디 불러오기
+    useEffect(() => {
+        const savedLoginId = localStorage.getItem('rememberedLoginId');
+        const wasRemembered = localStorage.getItem('rememberMe') === 'true';
+
+        if (savedLoginId && wasRemembered) {
+            setFormData(prev => ({
+                ...prev,
+                loginId: savedLoginId
+            }));
+            setRememberMe(true);
+        }
+    }, []);
 
     async function handleLogin(formData) {
         sessionStorage.removeItem('accessToken');
-
 
         const data = await admin_login_api(formData);
 
@@ -26,6 +41,17 @@ function Login() {
             dispatch(loginSuccess({ user: data.user, role: data.user.role, taskType: data.user.taskType.toUpperCase()}));
 
             console.log("리덕트 저장 완료")
+
+            // 아이디 저장 처리
+            if (rememberMe) {
+                localStorage.setItem('rememberedLoginId', formData.loginId);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                // 체크 해제 시 저장된 정보 삭제
+                localStorage.removeItem('rememberedLoginId');
+                localStorage.removeItem('rememberMe');
+            }
+
             const role_ = data.user.role;
             console.log(role_);
 
@@ -54,7 +80,6 @@ function Login() {
         }
     };
 
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.loginId.trim() || !formData.password.trim()) {
@@ -79,6 +104,10 @@ function Login() {
         }));
     };
 
+    const handleRememberChange = (e) => {
+        setRememberMe(e.target.checked);
+    };
+
     const handleSignup = (e) => {
         e.preventDefault();
         navigate("/signup")
@@ -90,7 +119,7 @@ function Login() {
                 <source src="/src/assets/터널_속_현대차_주행_영상_생성.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
-        
+
             <div className="login-body">
                 <div className="login-container">
                     <div className="login-header">
@@ -110,6 +139,7 @@ function Login() {
                                     required
                                     className="login-input"
                                     placeholder="관리자 아이디를 입력하세요"
+                                    autoComplete="username"
                                 />
                             </label>
                         </div>
@@ -124,22 +154,38 @@ function Login() {
                                     required
                                     className="login-input"
                                     placeholder="비밀번호를 입력하세요"
+                                    autoComplete="current-password"
                                 />
                             </label>
                         </div>
+
+                        {/* 아이디 저장 체크박스 */}
+                        <div className="remember-me-container">
+                            <label className="remember-me-label">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={handleRememberChange}
+                                    className="remember-me-checkbox"
+                                />
+                                <span className="checkmark"></span>
+                                아이디 저장
+                            </label>
+                        </div>
+
                         <button type="submit" className="login-button">
                             관리자 로그인
                         </button>
                     </form>
-    
+
                     <div className="signup-link">
                         <button className="login-signup-btn" onClick={handleSignup}>
                             관리자 계정 등록
                         </button>
                     </div>
                 </div>
-    
-                {/* 개발용 버튼  */}
+
+                {/* 개발용 버튼  */}
                 <div style={{
                     position: 'absolute',
                     top: '10px',
@@ -176,7 +222,7 @@ function Login() {
                         /dev
                     </Link>
                 </div>
-    
+
                 <div className="footer">
                     © 2025 Hyundai Motor Company. All rights reserved.
                 </div>
