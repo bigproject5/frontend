@@ -188,10 +188,6 @@ function SignupForm() {
             setError("주소를 10자 이상 입력해주세요.");
             return;
         }
-        if (formData.adminCode.trim().length < 4) {
-            setError("관리자 코드는 4자 이상 입력해주세요.");
-            return;
-        }
         if (!executeRecaptcha) {
             console.log("reCAPTCHA 실행 함수가 준비되지 않았습니다.");
             alert("reCaptcha 오류");
