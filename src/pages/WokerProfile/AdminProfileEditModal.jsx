@@ -108,8 +108,8 @@ const AdminProfileEditModal = ({ open, onClose, userInfo, onSave, isLoading = fa
 
         if (!formData.loginId.trim()) {
             newErrors.loginId = '로그인 ID를 입력해주세요.';
-        } else if (formData.loginId.length < 3) {
-            newErrors.loginId = '로그인 ID는 최소 3자 이상이어야 합니다.';
+        } else if (formData.loginId.length < 8) {
+            newErrors.loginId = '로그인 ID는 최소 8자 이상이어야 합니다.';
         }
 
         if (!formData.employeeNumber.trim()) {

@@ -145,3 +145,108 @@
     80% { transform: translateX(5px); }
     100% { transform: translateX(0); }
 }
+
+/* 비밀번호 입력 그룹을 relative로 설정 */
+.password-input-group {
+    position: relative;
+}
+
+/* 비밀번호 검증 팝업 */
+.password-popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    margin-top: 5px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.password-popup-content {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+}
+
+.password-popup-content h4 {
+    margin: 0 0 10px 0;
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+}
+
+.password-rules {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.password-rule {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    transition: color 0.2s ease;
+}
+
+.password-rule.valid {
+    color: #22c55e;
+}
+
+.password-rule.invalid {
+    color: #ef4444;
+}
+
+.rule-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    margin-right: 8px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.rule-icon.check {
+    background-color: #22c55e;
+    color: white;
+}
+
+.rule-icon.cross {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* 팝업 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 모바일 반응형 */
+@media (max-width: 768px) {
+    .password-popup-content {
+        padding: 12px;
+        font-size: 13px;
+    }
+
+    .password-popup-content h4 {
+        font-size: 15px;
+    }
+
+    .rule-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 11px;
+    }
+}
