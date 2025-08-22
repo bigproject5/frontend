@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
+import { fetchInspectionDetail as apiFetchInspectionDetail } from "../../api/adminApi";
 import { startTask, completeTask, saveResolve } from '../../api/workerTaskApi';
 import {
   Typography,
@@ -39,22 +39,22 @@ const InspectionDetail = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get(`/api/vehicleaudit/inspections/${inspectionId}`);
+        const responseData = await apiFetchInspectionDetail(inspectionId);
 
         // Enhanced Debugging
-        if (!response.data || !response.data.code) {
+        if (!responseData || !responseData.code) {
             console.log(
                 "**************************************************\n" +
                 "********** 여기를 확인해주세요! **********\n" +
                 "서버 응답이 비어있거나 code 필드가 없습니다.\n" +
-                "받은 데이터:", response.data,
+                "받은 데이터:", responseData,
                 "\n**************************************************"
             );
             throw new Error('서버로부터 비정상적인 응답을 받았습니다.');
         }
 
-        if (response.data.code === 'SUCCESS') {
-          const data = response.data.data; // 원본 데이터 변수화
+        if (responseData.code === 'SUCCESS') {
+          const data = responseData.data; // 원본 데이터 변수화
           setInspectionData(data);
           console.log('[InspectionDetail] 상세 조회 성공');
           console.log(' - task.workerId:', data?.task?.workerId);
@@ -64,10 +64,10 @@ const InspectionDetail = () => {
           console.log(
             "**************************************************\n" +
             "********** 여기를 확인해주세요! **********\n" +
-            "서버가 SUCCESS 대신 보낸 응답 내용:", response.data,
+            "서버가 SUCCESS 대신 보낸 응답 내용:", responseData,
             "\n**************************************************"
           );
-          throw new Error(response.data.message || '데이터를 불러오는데 실패했습니다.');
+          throw new Error(responseData.message || '데이터를 불러오는데 실패했습니다.');
         }
       } catch (err) {
         console.error("검사 상세 정보 조회 실패:", err);
@@ -84,28 +84,7 @@ const InspectionDetail = () => {
     fetchInspectionDetail();
   }, [inspectionId, user?.id]);
 
-  // inspectionData 갱신될 때마다 한번 더 확인 (state 적용 후 값 확인 용)
-  useEffect(() => {
-    if (inspectionData) {
-      console.log('[InspectionDetail] state 반영됨');
-      console.log(' - inspectionData.task.workerId:', inspectionData?.task?.workerId);
-      console.log(' - user.id:', user?.id);
-    }
-  }, [inspectionData, user?.id]);
-
-  // 검사 상세 정보 재조회 함수
-  const refetchInspectionDetail = async () => {
-    try {
-      const response = await axios.get(`/api/vehicleaudit/inspections/${inspectionId}`);
-      if (response.data.code === 'SUCCESS') {
-        const data = response.data.data;
-        setInspectionData(data);
-        console.log('[InspectionDetail] 데이터 재조회 완료');
-      }
-    } catch (err) {
-      console.error("검사 상세 정보 재조회 실패:", err);
-    }
-  };
+  
 
   // 조치 사항 저장 API
   const handleSaveResolve = async () => {
@@ -113,7 +92,7 @@ const InspectionDetail = () => {
       const result = await saveResolve(inspectionId, resolveText);
       if (result.code === 'SUCCESS') {
         alert('조치 사항이 저장되었습니다.');
-        await refetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+        await fetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
       } else {
         alert('조치 사항 저장에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
       }
@@ -138,7 +117,7 @@ const InspectionDetail = () => {
       const result = await startTask(inspectionId);
       if (result.code === 'SUCCESS') {
         alert('작업이 시작되었습니다.');
-        await refetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+        await fetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
       } else {
         alert('작업 시작에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
       }
@@ -163,7 +142,7 @@ const InspectionDetail = () => {
       const result = await completeTask(inspectionId, resolveText);
       if (result.code === 'SUCCESS') {
         alert('작업이 완료되었습니다.');
-        await refetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+        await fetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
       } else {
         alert('작업 완료에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
       }

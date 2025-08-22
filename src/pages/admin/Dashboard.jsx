@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { fetchAudits as apiFetchAudits, createTestAudit as apiCreateTestAudit } from "../../api/adminApi";
 import {
   Typography,
   Grid,
@@ -98,28 +98,20 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
 
-      const response = await axios.get(
-        `http://localhost:8080/api/vehicleaudit/audits`,
-        {
-          params: {
-            size: ITEMS_PER_PAGE,
-            page: page - 1, // API는 0-based, UI는 1-based
-          },
-        }
-      );
+      const responseData = await apiFetchAudits(page, ITEMS_PER_PAGE);
 
-      console.log("API Response:", response.data);
+      console.log("API Response:", responseData);
 
-      if (response.data.code === "SUCCESS" && response.data.data) {
-        const responseData = response.data.data;
-        setAudits(responseData.content || []);
-        setTotalPages(responseData.totalPages || 0);
-        setTotalElements(responseData.totalElements || 0);
+      if (responseData.code === "SUCCESS" && responseData.data) {
+        const responseDataData = responseData.data;
+        setAudits(responseDataData.content || []);
+        setTotalPages(responseDataData.totalPages || 0);
+        setTotalElements(responseDataData.totalElements || 0);
 
         // 통계 계산
-        calculateStatistics(responseData.content || []);
+        calculateStatistics(responseDataData.content || []);
       } else {
-        throw new Error(response.data.message || "데이터 형식이 올바르지 않습니다.");
+        throw new Error(responseData.message || "데이터 형식이 올바르지 않습니다.");
       }
     } catch (err) {
       console.error("감사 목록 조회 실패:", err);
@@ -170,20 +162,14 @@ const Dashboard = () => {
   const createTestAudit = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(
-        `http://localhost:8080/api/vehicleaudit/audits`,
-        {
-          model: "SONATA",
-          lineCode: "A" + Math.floor(Math.random() * 5 + 1),
-        }
-      );
+      const responseData = await apiCreateTestAudit();
 
-      if (response.data.code === "SUCCESS") {
+      if (responseData.code === "SUCCESS") {
         // 성공 시 목록 새로고침
         await fetchAudits();
-        console.log("테스트 감사 생성 성공:", response.data.data);
+        console.log("테스트 감사 생성 성공:", responseData.data);
       } else {
-        throw new Error(response.data.message || "테스트 감사 생성에 실패했습니다.");
+        throw new Error(responseData.message || "테스트 감사 생성에 실패했습니다.");
       }
     } catch (err) {
       console.error("테스트 감사 생성 실패:", err);

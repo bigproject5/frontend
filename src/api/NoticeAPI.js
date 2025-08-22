@@ -36,7 +36,9 @@ export async function getNotices(page = 0, size = 10) {
     url.searchParams.append('page', page);
     url.searchParams.append('size', size);
 
-    const response = await fetch(url.toString());
+    const response = await fetch(url.toString(), {
+      headers: getAuthHeadersForJSON(),
+    });
 
     if (!response.ok) {
       throw new Error(`공지사항 조회 실패: ${response.status}`);
@@ -54,7 +56,9 @@ export async function getNotices(page = 0, size = 10) {
  */
 export async function getNoticeDetail(id) {
   try {
-    const response = await fetch(`${API_BASE}/${id}`);
+    const response = await fetch(`${API_BASE}/${id}`, {
+      headers: getAuthHeadersForJSON(),
+    });
 
     if (!response.ok) {
       throw new Error(`공지사항 상세 조회 실패: ${response.status}`);

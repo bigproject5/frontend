@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './WorkerList.css';
 
+import { fetchWorkers, deleteWorker } from '../../api/workerApi';
+
 const WorkerList = () => {
   const [workers, setWorkers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/operation/workers')
-        .then((response) => response.json())
+    fetchWorkers()
         .then((data) => {
           console.log('🔍 작업자 목록 응답:', data);
           if (data.data) {
@@ -29,55 +30,17 @@ const WorkerList = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/api/operation/workers/${id}`, {
-        method: 'DELETE',
-      });
-
-      console.log('🔍 삭제 응답 상태:', response.status);
-
-      if (response.ok) {
-        const text = await response.text();
-        console.log('🔍 삭제 응답 텍스트:', text);
-
-        let data = null;
-        if (text.trim()) {
-          try {
-            data = JSON.parse(text);
-            console.log('🔍 삭제 응답 데이터:', data);
-          } catch (parseError) {
-            console.log('JSON 파싱 실패, 하지만 삭제는 성공한 것으로 처리', parseError);
-          }
-        }
-
-        setWorkers(prevWorkers =>
-            prevWorkers.filter(worker => {
-              const workerId = worker.id || worker.workerId;
-              return workerId != id;
-            })
-        );
-
-        alert('✅ 작업자가 삭제되었습니다.');
-
-      } else {
-        const errorText = await response.text();
-        console.error('삭제 HTTP 오류:', response.status, errorText);
-
-        if (response.status === 404) {
-          setWorkers(prevWorkers =>
-              prevWorkers.filter(worker => {
-                const workerId = worker.id || worker.workerId;
-                return workerId != id;
-              })
-          );
-          alert('✅ 작업자가 이미 삭제되었습니다.');
-        } else {
-          alert(`❌ 삭제 실패: HTTP ${response.status}`);
-        }
-      }
-
+      await deleteWorker(id);
+      setWorkers(prevWorkers =>
+          prevWorkers.filter(worker => {
+            const workerId = worker.id || worker.workerId;
+            return workerId != id;
+          })
+      );
+      alert('✅ 작업자가 삭제되었습니다.');
     } catch (error) {
       console.error('삭제 요청 실패:', error);
-      alert('❌ 삭제 중 네트워크 오류가 발생했습니다.');
+      alert('❌ 삭제 중 오류가 발생했습니다.');
     }
   };
 

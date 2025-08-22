@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./ReportDetail.css";
 import { useParams } from "react-router-dom";
-import {fetchReportDetail} from "../../api/reportApi.js";
+import { fetchReportDetail, resummarizeReport } from "../../api/reportApi.js";
 
 export default function ReportDetail() {
   const { reportId } = useParams();
@@ -26,17 +26,7 @@ export default function ReportDetail() {
   const handleResummarize = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`http://localhost:8080/api/taskreports/reports/${reportId}/resummarize`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt: report.resolve }),
-      });
-      if (!res.ok) {
-        throw new Error("다시 요약에 실패했습니다.");
-      }
-      const result = await res.json();
+      const result = await resummarizeReport(reportId);
       setReport((prev) => ({
         ...prev,
         summary: result.summary,

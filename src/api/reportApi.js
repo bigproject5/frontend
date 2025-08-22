@@ -1,18 +1,33 @@
 const BASE_URL = "http://localhost:8080/api/taskreports";
 
+const getAuthHeaders = () => {
+  const token = sessionStorage.getItem('accessToken');
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+};
+
 // 전체 목록 조회
 export async function fetchReports() {
-  const res = await fetch(BASE_URL);
-  if (!res.ok) throw new Error("리포트 목록을 불러오지 못했습니다");
-  const json = await res.json();
-  return json.data.reports;
+  try {
+    const res = await fetch(BASE_URL, {
+      headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error("리포트 목록을 불러오지 못했습니다");
+    const json = await res.json();
+    return json.data.reports;
+  } catch (error) {
+    console.error('Error fetching reports:', error);
+    throw error;
+  }
 }
 
 export async function fetchReportDetail(reportId) {
   try{
     const response = await fetch(`${BASE_URL}/reports/${reportId}`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
     })
     return response.json();
   }
@@ -25,46 +40,66 @@ export async function fetchReportDetail(reportId) {
 
 // 요약 다시 요청 (GPT 재요약)
 export async function resummarizeReport(reportId) {
-  const res = await fetch(`${BASE_URL}/reports/${reportId}/resummarize`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/reports/${reportId}/resummarize`, {
+      method: "PATCH",
+      headers: getAuthHeaders(),
+    });
 
-  if (!res.ok) throw new Error("요약 재요청 실패");
+    if (!res.ok) throw new Error("요약 재요청 실패");
 
-  const json = await res.json();
-  return json.data;
+    const json = await res.json();
+    return json.data;
+  } catch (error) {
+    console.error('Error resummarizing report:', error);
+    throw error;
+  }
 }
 
 
 // 리포트 생성(임시)
 export async function createReport(reportData) {
-  const res = await fetch(`${BASE_URL}/reports`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(reportData),
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/reports`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(reportData),
+    });
 
-  if (!res.ok) throw new Error("리포트 생성 실패");
-  const json = await res.json();
-  return json.data;
+    if (!res.ok) throw new Error("리포트 생성 실패");
+    const json = await res.json();
+    return json.data;
+  } catch (error) {
+    console.error('Error creating report:', error);
+    throw error;
+  }
 }
 
 
 export async function getReportsByWorkerId(accessToken) {
-  const response = await fetch(`${BASE_URL}/worker-reports`, {
-    method: 'GET',
-    headers: { 'Authorization': `Bearer ${accessToken}` }
-  })
-  return response.json();
+  try {
+    const response = await fetch(`${BASE_URL}/worker-reports`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${accessToken}` }
+    });
+    if (!response.ok) throw new Error("해당 작업자의 리포트 목록을 불러오지 못했습니다");
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching reports by worker id:', error);
+    throw error;
+  }
 }
 
 export async function getReportsByAdmin(workerId) {
-  const response = await fetch(`${BASE_URL}/worker-reports/${workerId}`, {
-    method: 'GET',
-    headers: { 'Content-Type': 'application/json' },
-  })
-  return response.json();
+  try {
+    const response = await fetch(`${BASE_URL}/worker-reports/${workerId}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) throw new Error("해당 작업자의 리포트 목록을 불러오지 못했습니다");
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching reports by admin:', error);
+    throw error;
+  }
 }

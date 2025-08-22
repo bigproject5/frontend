@@ -1,6 +1,14 @@
 const API_BASE_URL = '/api/vehicleaudit';
 const NOTICE_API_BASE_URL = '/api/operation';
 
+const getAuthHeaders = () => {
+  const token = sessionStorage.getItem('accessToken');
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Content-Type': 'application/json'
+  };
+};
+
 /**
  * 검사 목록 조회 API
  * @param {Object} params - 조회 파라미터
@@ -41,11 +49,7 @@ export const getInspections = async (params = {}) => {
 
     const response = await fetch(url, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        // JWT 토큰이 있다면 Authorization 헤더 추가 (추후 Redux에서 관리)
-        // 'Authorization': `Bearer ${token}`
-      }
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -80,9 +84,7 @@ export const getNotices = async (params = {}) => {
 
     const response = await fetch(`${NOTICE_API_BASE_URL}/notices?${queryParams}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -239,8 +241,12 @@ export const createManualAudit = async (auditData, files) => {
     }
     console.log('========================');
 
+    const token = sessionStorage.getItem('accessToken');
     const response = await fetch(`${API_BASE_URL}/audits/manual`, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
       body: formData
       // FormData 사용 시 헤더를 명시적으로 설정하지 않음
       // 브라우저가 자동으로 multipart/form-data와 boundary를 설정
