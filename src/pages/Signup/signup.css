@@ -154,13 +154,15 @@
 /* 비밀번호 검증 팝업 */
 .password-popup {
     position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
+    top: 0;
+    left: 100%; /* 입력 필드 오른쪽에 표시 */
     z-index: 1000;
-    margin-top: 5px;
-    animation: fadeIn 0.3s ease-in-out;
-}
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-left: 12px;
+    width: 350px; /* 고정 너비 */
 
 .password-popup-content {
     background: white;
@@ -249,4 +251,5 @@
         height: 16px;
         font-size: 11px;
     }
+}
 }
