@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import './signup.css'
 import { useNavigate } from "react-router-dom"
-import {checkAdminLoginId, Signup_api} from "../../api/phm_api.jsx";
+import {checkAdminLoginId, signupApi} from "../../api/loginApi.jsx";
 import {GoogleReCaptchaProvider, useGoogleReCaptcha} from "react-google-recaptcha-v3";
 import PolicyModal from "./PrivacyModal.jsx";
 import PasswordValidationPopup from "./PasswordValidationPopup.jsx";
@@ -196,7 +196,7 @@ function SignupForm() {
         const token = await executeRecaptcha("signup");
 
         try {
-            const response = await Signup_api(formData, token);
+            const response = await signupApi(formData, token);
             console.log(response);
             if (response.status < 200 || response.status >= 300) {
                 if (response.validationErrors) {

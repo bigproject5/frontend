@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
 import './login.css'
-import { admin_login_api, dev_login_api } from "../../api/phm_api.jsx";
+import { adminLoginApi, devLoginApi } from "../../api/loginApi.jsx";
 
 function Login() {
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ function Login() {
     async function handleLogin(formData) {
         sessionStorage.removeItem('accessToken');
 
-        const data = await admin_login_api(formData);
+        const data = await adminLoginApi(formData);
 
         console.log(data)
         if (data.token) {
@@ -65,7 +65,7 @@ function Login() {
 
     const handleDevLogin = async () => {
         try {
-            const data = await dev_login_api();
+            const data = await devLoginApi();
             if (data.token) {
                 sessionStorage.setItem('accessToken', data.token);
                 dispatch(loginSuccess({ user: data.user, role: data.user.role }));

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import ReportSection from './ReportSection.jsx';
 import './WorkerProfile.css';
-import {editWorkerProfile, getUserInfo, getWorkerProfileByAdmin } from '../../api/phm_api.jsx';
+import {editWorkerProfile, getUserInfo, getWorkerProfileByAdmin } from '../../api/loginApi.jsx';
 import ProfileEditModal from "./ProfileEditModal.jsx";
 import AdminProfileEditModal from "./AdminProfileEditModal.jsx";
 

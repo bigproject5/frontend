@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { loginSuccess, setInitializing } from '../store/authSlice';
-import { fetchCurrentUser } from '../Api/phm_api.jsx';
+import { fetchCurrentUser } from '../api/loginApi.jsx';
 
 const AppInitializer = ({ children }) => {
   const dispatch = useDispatch();

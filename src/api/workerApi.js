@@ -20,3 +20,14 @@ export const deleteWorker = async (id) => {
   const response = await axios.delete(`${API_BASE_URL}/workers/${id}`, getAuthHeaders());
   return response.data;
 };
+
+
+export const workerRegister = async (formData) => {
+  const response = await axios.post(
+    `${API_BASE_URL}/signup/workers`,
+    formData,
+    getAuthHeaders()
+  );
+
+  return response.data;
+};

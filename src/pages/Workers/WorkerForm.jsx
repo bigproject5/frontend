@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import {workerRegister} from "../../api/workerApi.js";
+
+
+
 
 const WorkerForm = () => {
   const navigate = useNavigate();
@@ -81,89 +85,59 @@ const WorkerForm = () => {
     setError('');
   };
 
- const handleSubmit = async () => {
-  setLoading(true);
-  setError('');
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError('');
 
-  // 필수 필드 유효성 검사
-  const requiredFields = ['loginId', 'password', 'name', 'employeeNumber', 'email', 'phone'];
-  const missingFields = requiredFields.filter(field => !formData[field]?.trim());
+     // 필수 필드 유효성 검사
+    const requiredFields = ['loginId', 'password', 'name', 'employeeNumber', 'email', 'phone'];
+    const missingFields = requiredFields.filter(field => !formData[field]?.trim());
 
-  if (missingFields.length > 0) {
-    setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
-    setLoading(false);
-    return;
-  }
+    if (missingFields.length > 0) {
+      setError(`다음 필드를 입력해주세요: ${missingFields.join(', ')}`);
+      setLoading(false);
+      return;
+    }
 
-  // API 명세서에 맞게 데이터 변환
-  const submitData = {
-    loginId: formData.loginId,
-    password: formData.password,
-    employeeNumber: formData.employeeNumber,
-    name: formData.name,
-    email: formData.email,
-    phoneNumber: formData.phone,
-    address: formData.address,
-    taskType: formData.taskType // taskType 직접 사용
-  };
+    // API 명세서에 맞게 데이터 변환
+    const submitData = {
+      loginId: formData.loginId,
+      password: formData.password,
+      employeeNumber: formData.employeeNumber,
+      name: formData.name,
+      email: formData.email,
+      phoneNumber: formData.phone,
+      address: formData.address,
+      taskType: formData.taskType // taskType 직접 사용
+    };
 
-  try {
-    console.log('🔍 전송할 데이터:', submitData);
-
-    const response = await fetch('http://localhost:8080/api/operation/workers/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(submitData),
-    });
-
-    console.log('🔍 응답 상태:', response.status);
-    console.log('🔍 응답 상태 텍스트:', response.statusText);
-    console.log('🔍 응답 OK:', response.ok);
-
-    // HTTP 상태 코드가 성공 범위(200-299)인지 확인
-    if (response.ok) {
-      // 응답 본문이 있는지 확인
-      const text = await response.text();
-      console.log('🔍 응답 텍스트:', text);
-
-      let data = null;
-      if (text.trim()) {
-        try {
-          data = JSON.parse(text);
-          console.log('🔍 파싱된 응답 데이터:', data);
-        } catch (parseError) {
-          console.log('JSON 파싱 실패, 하지만 등록은 성공한 것으로 처리', parseError);
-        }
-      }
-
+    try {
+      await workerRegister(submitData);
       alert('✅ 작업자 등록이 완료되었습니다!');
       navigate('/admin/workers');
 
-    } else {
-      let errorMessage = `등록 실패 (HTTP ${response.status})`;
+    } catch (err) {
+      console.error('등록 요청 실패:', err);
 
-      try {
-        const errorText = await response.text();
-        if (errorText) {
-          const errorData = JSON.parse(errorText);
-          errorMessage = errorData.message || errorMessage;
-        }
-      } catch (e) {
-          console.log("error ", e);
-        // 에러 응답 파싱 실패
+      let errorMessage = '서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.';
+
+      if (err.response) {
+        console.error('서버 응답 데이터:', err.response.data);
+        console.error('서버 응답 상태:', err.response.status);
+
+        errorMessage = err.response.data?.message || `등록에 실패했습니다. (오류 코드: ${err.response.status})`;
+      } else if (err.request) {
+        console.error('서버로부터 응답을 받지 못했습니다:', err.request);
+        errorMessage = '서버 응답이 없습니다. 네트워크 연결을 확인해주세요.';
+      } else {
+        console.error('요청 설정 오류:', err.message);
+        errorMessage = '요청 중 오류가 발생했습니다.';
       }
-
-      console.error('등록 실패:', errorMessage);
       setError(errorMessage);
-    }
-
-  } catch (err) {
-    console.error('등록 요청 실패:', err);
-    setError('서버 연결 오류가 발생했습니다. 네트워크를 확인해주세요.');
-  } finally {
-    setLoading(false);
+     } finally {
+       setLoading(false); // 성공/실패 여부와 관계없이 로딩 종료
+     }
   }
-};
 
   const inputStyle = {
     width: '100%',

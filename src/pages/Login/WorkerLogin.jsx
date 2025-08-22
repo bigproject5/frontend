@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
 import './login.css'
-import { worker_login_api } from "../../api/phm_api.jsx";
+import { workerLoginApi } from "../../api/loginApi.jsx";
 
 function WorkerLogin() {
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ function WorkerLogin() {
     async function handleLogin(formData) {
         sessionStorage.removeItem('accessToken');
 
-        const data = await worker_login_api(formData);
+        const data = await workerLoginApi(formData);
 
         console.log(data)
         if (data.token) {

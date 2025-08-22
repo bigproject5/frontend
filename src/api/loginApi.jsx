@@ -1,7 +1,7 @@
 const Base_URL = 'http://localhost:8080';
 
-export async function admin_login_api(postData) {
-    const response = await fetch(`${Base_URL}/api/operation/admin/login`, {
+export async function adminLoginApi(postData) {
+    const response = await fetch(`${Base_URL}/api/operation/login/admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),
@@ -9,8 +9,8 @@ export async function admin_login_api(postData) {
     return response.json();
 }
 
-export async function worker_login_api(postData) {
-    const response = await fetch(`${Base_URL}/api/operation/workers/login`, {
+export async function workerLoginApi(postData) {
+    const response = await fetch(`${Base_URL}/api/operation/login/workers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(postData),
@@ -18,8 +18,8 @@ export async function worker_login_api(postData) {
     return response.json();
 }
 
-export async function Signup_api(postData, reCaptchaToken) {
-    const response = await fetch(`${Base_URL}/api/operation/admin/signup`, {
+export async function signupApi(postData, reCaptchaToken) {
+    const response = await fetch(`${Base_URL}/api/operation/signup/admin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -46,8 +46,8 @@ export async function fetchCurrentUser(accessToken) {
     return await response.json();
 }
 
-export async function dev_login_api() {
-    const response = await fetch(`${Base_URL}/api/operation/dev/login`, {
+export async function devLoginApi() {
+    const response = await fetch(`${Base_URL}/api/operation/login/dev`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
     })
