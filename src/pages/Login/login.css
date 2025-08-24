@@ -118,8 +118,7 @@
     z-index: 10;
 }
 
-/* 기존 footer 클래스 (사용하지 않음) */
-.footer {
+.footer_text {
     margin-top: 10px;
     text-align: center;
     font-size: 14px;

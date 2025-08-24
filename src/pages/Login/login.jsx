@@ -223,7 +223,7 @@ function Login() {
                     </Link>
                 </div>
 
-                <div className="footer">
+                <div className="footer_text">
                     © 2025 Hyundai Motor Company. All rights reserved.
                 </div>
             </div>

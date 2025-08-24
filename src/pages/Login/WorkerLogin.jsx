@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
@@ -14,6 +14,26 @@ function WorkerLogin() {
         "password": ""
     })
 
+    const [rememberMe, setRememberMe] = useState(false);
+
+    // 컴포넌트 마운트 시 저장된 아이디 불러오기
+    useEffect(() => {
+        const savedLoginId = localStorage.getItem('rememberedLoginId');
+        const wasRemembered = localStorage.getItem('rememberMe') === 'true';
+
+        if (savedLoginId && wasRemembered) {
+            setFormData(prev => ({
+                ...prev,
+                loginId: savedLoginId
+            }));
+            setRememberMe(true);
+        }
+    }, []);
+
+    const handleRememberChange = (e) => {
+        setRememberMe(e.target.checked);
+    };
+
     async function handleLogin(formData) {
         sessionStorage.removeItem('accessToken');
 
@@ -25,6 +45,16 @@ function WorkerLogin() {
             dispatch(loginSuccess({ user: data.user, role: data.user.role, taskType: data.user.taskType.toUpperCase()}));
 
             console.log("리덕트 저장 완료")
+
+            if (rememberMe) {
+                localStorage.setItem('rememberedLoginId', formData.loginId);
+                localStorage.setItem('rememberMe', 'true');
+            } else {
+                // 체크 해제 시 저장된 정보 삭제
+                localStorage.removeItem('rememberedLoginId');
+                localStorage.removeItem('rememberMe');
+            }
+
             const role_ = data.user.role;
             console.log(role_);
 
@@ -100,13 +130,25 @@ function WorkerLogin() {
                             />
                         </label>
                     </div>
+                    <div className="remember-me-container">
+                        <label className="remember-me-label">
+                            <input
+                                type="checkbox"
+                                checked={rememberMe}
+                                onChange={handleRememberChange}
+                                className="remember-me-checkbox"
+                            />
+                            <span className="checkmark"></span>
+                            아이디 저장
+                        </label>
+                    </div>
                     <button type="submit" className="login-button">
                         작업자 로그인
                     </button>
                 </form>
             </div>
 
-            <div className="footer">
+            <div className="footer_text">
                 © 2025 Hyundai Motor Company. All rights reserved.
             </div>
         </div>
