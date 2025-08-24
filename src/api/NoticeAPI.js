@@ -4,7 +4,7 @@
 //========================================================
 
 // 공지사항 API의 기본 URL
-const API_BASE = "http://localhost:8080/api/operation/notices";
+const API_BASE = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/operation/notices`;
 const token = sessionStorage.getItem('accessToken');
 
 // Bearer 토큰 헤더 설정 (멀티파트용)
