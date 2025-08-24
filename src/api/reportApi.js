@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:8080/api/taskreports";
+const BASE_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/taskreports`;
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');
@@ -9,14 +9,14 @@ const getAuthHeaders = () => {
 };
 
 // 전체 목록 조회
-export async function fetchReports() {
+export async function fetchReports(page = 0, size = 10) {
   try {
-    const res = await fetch(BASE_URL, {
+    const res = await fetch(`${BASE_URL}/reports?page=${page}&size=${size}`, {
       headers: getAuthHeaders()
     });
     if (!res.ok) throw new Error("리포트 목록을 불러오지 못했습니다");
     const json = await res.json();
-    return json.data.reports;
+    return json.data;
   } catch (error) {
     console.error('Error fetching reports:', error);
     throw error;

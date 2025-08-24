@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  labels:
+    app: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        # 중요: 이 부분은 실제 ECR이나 Docker Hub의 이미지 주소로 변경해야 합니다.
+        # 예: 1234567890.dkr.ecr.ap-northeast-2.amazonaws.com/my-frontend-app:v1.0.0
+        image: my-frontend-app:latest
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    # 로드밸런서가 받을 포트
+    port: 80
+    # 컨테이너가 받을 포트
+    targetPort: 80

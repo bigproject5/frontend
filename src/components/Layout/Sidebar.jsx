@@ -7,7 +7,7 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
-  Divider
+  Divider,
 } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -19,7 +19,8 @@ import {
   Person as PersonIcon,
   Home as HomeIcon,
   Assignment as AssignmentIcon,
-  Build as BuildIcon
+  Build as BuildIcon,
+  Description as DescriptionIcon
 } from '@mui/icons-material';
 
 const Sidebar = () => {
@@ -65,6 +66,12 @@ const Sidebar = () => {
       icon: <BuildIcon />,
       path: '/worker/manual-test',
       description: '수동 테스트 생성'
+    },
+    {
+      text: '보고서',
+      icon: <DescriptionIcon />,
+      path: '/reports',
+      description: '보고서 목록'
     }
   ];
 
@@ -88,6 +95,12 @@ const Sidebar = () => {
       icon: <NotificationsIcon />,
       path: '/notices',
       description: '공지 목록'
+    },
+    {
+      text: '보고서',
+      icon: <DescriptionIcon />,
+      path: '/reports',
+      description: '보고서 목록'
     }
   ];
 

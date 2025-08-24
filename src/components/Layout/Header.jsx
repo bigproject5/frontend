@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/authSlice';
 import LogoutIcon from '@mui/icons-material/Logout';
-import logo from '../../assets/icons8-현대-480.svg';
+import logo from '../../../public/icons8-현대-480.svg';
 
 const Header = () => {
   const navigate = useNavigate();

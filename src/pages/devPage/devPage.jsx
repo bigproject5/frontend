@@ -12,7 +12,7 @@ const DevPage = () => {
     { path: '/worker/profile', name: '작업자 프로필' },
     { path: '/worker/main', name: '작업자 메인' },
     { path: '/worker/manual-test', name: '작업자 수동 테스트' },
-    { path: '/reports/1', name: '보고서 페이지' }
+    { path: '/reports', name: '보고서 목록' }
   ];
 
   const containerStyle = {

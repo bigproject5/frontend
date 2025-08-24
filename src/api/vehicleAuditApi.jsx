@@ -1,6 +1,6 @@
 // src/api/vehicleAuditApi.js
 
-const Base_URL = 'http://localhost:8080';
+const Base_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');

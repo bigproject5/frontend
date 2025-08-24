@@ -116,7 +116,7 @@ function Login() {
     return (
         <div className="login-wrapper">
             <video autoPlay muted loop id="background-video">
-                <source src="/src/assets/터널_속_현대차_주행_영상_생성.mp4" type="video/mp4" />
+                <source src="/public/터널_속_현대차_주행_영상_생성.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
 

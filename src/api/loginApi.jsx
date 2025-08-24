@@ -1,4 +1,4 @@
-const Base_URL = 'http://localhost:8080';
+const Base_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export async function adminLoginApi(postData) {
     const response = await fetch(`${Base_URL}/api/operation/login/admin`, {
