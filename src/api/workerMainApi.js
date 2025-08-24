@@ -1,5 +1,5 @@
-const API_BASE_URL = '/api/vehicleaudit';
-const NOTICE_API_BASE_URL = '/api/operation';
+const API_BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}/api/vehicleaudit`;
+
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');
@@ -42,7 +42,7 @@ export const getInspections = async (params = {}) => {
       queryParams.append('status', status);
     }
 
-    const url = `${API_BASE_URL}/inspections?${queryParams.toString()}`;
+    const url = `${API_BASE_URL}/api/vehicleaudit/inspections?${queryParams.toString()}`;
 
     console.log('API 호출 URL:', url);
     console.log('API 호출 파라미터:', queryParams.toString());
@@ -82,7 +82,7 @@ export const getNotices = async (params = {}) => {
       size: size.toString()
     });
 
-    const response = await fetch(`${NOTICE_API_BASE_URL}/notices?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/api/operation/notices?${queryParams}`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -100,104 +100,7 @@ export const getNotices = async (params = {}) => {
     };
   } catch (error) {
     console.error('공지사항 조회 실패:', error);
-
-    // API 호출 실패 시 목업 데이터로 폴백
-    console.log('API 호출 실패로 목업 데이터 사용');
-    return getMockNotices(params);
   }
-};
-
-// 공지사항 목업 데이터 반환 함수
-const getMockNotices = (params = {}) => {
-  const { page = 0, size = 5 } = params;
-
-  // 목업 공지사항 데이터
-  const MOCK_NOTICES = [
-    {
-      "id": 1,
-      "title": "시스템 점검 안내",
-      "adminId": 1,
-      "name": "김관리자",
-      "fileUrl": null,
-      "viewCount": 5,
-      "createdAt": "2025-01-10T13:18:58.554331",
-      "updatedAt": "2025-01-10T13:18:58.554331"
-    },
-    {
-      "id": 2,
-      "title": "검사 프로세스 업데이트",
-      "adminId": 2,
-      "name": "박매니저",
-      "fileUrl": null,
-      "viewCount": 12,
-      "createdAt": "2025-01-08T09:30:15.123456",
-      "updatedAt": "2025-01-08T09:30:15.123456"
-    },
-    {
-      "id": 3,
-      "title": "품질관리 교육 완료",
-      "adminId": 1,
-      "name": "김관리자",
-      "fileUrl": null,
-      "viewCount": 8,
-      "createdAt": "2025-01-05T16:45:30.789012",
-      "updatedAt": "2025-01-05T16:45:30.789012"
-    },
-    {
-      "id": 4,
-      "title": "새로운 검사 장비 도입",
-      "adminId": 3,
-      "name": "이팀장",
-      "fileUrl": null,
-      "viewCount": 15,
-      "createdAt": "2025-01-03T14:22:45.321654",
-      "updatedAt": "2025-01-03T14:22:45.321654"
-    },
-    {
-      "id": 5,
-      "title": "안전 수칙 개정 안내",
-      "adminId": 2,
-      "name": "박매니저",
-      "fileUrl": null,
-      "viewCount": 20,
-      "createdAt": "2025-01-01T11:15:20.987654",
-      "updatedAt": "2025-01-01T11:15:20.987654"
-    }
-  ];
-
-  // 페이징 처리
-  const totalElements = MOCK_NOTICES.length;
-  const totalPages = Math.ceil(totalElements / size);
-  const startIndex = page * size;
-  const endIndex = startIndex + size;
-  const content = MOCK_NOTICES.slice(startIndex, endIndex);
-
-  // Spring Data JPA Page 형식으로 응답 생성
-  const mockResponse = {
-    content,
-    pageable: {
-      sort: { sorted: false, unsorted: true },
-      pageNumber: page,
-      pageSize: size,
-      offset: startIndex,
-      paged: true,
-      unpaged: false
-    },
-    totalElements,
-    totalPages,
-    last: page >= totalPages - 1,
-    first: page === 0,
-    numberOfElements: content.length,
-    size,
-    number: page,
-    sort: { sorted: false, unsorted: true },
-    empty: content.length === 0
-  };
-
-  return {
-    data: mockResponse,
-    status: 'success'
-  };
 };
 
 /**
@@ -242,7 +145,7 @@ export const createManualAudit = async (auditData, files) => {
     console.log('========================');
 
     const token = sessionStorage.getItem('accessToken');
-    const response = await fetch(`${API_BASE_URL}/audits/manual`, {
+    const response = await fetch(`${API_BASE_URL}/api/vehicleaudit/audits/manual`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`

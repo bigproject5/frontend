@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080'}/api/operation`;
+const API_BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}/api/operation`;
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');

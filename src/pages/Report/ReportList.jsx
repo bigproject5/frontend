@@ -7,7 +7,7 @@ import {
 import { fetchReports } from "../../api/reportApi.js";
 import { useNavigate } from "react-router-dom";
 import {Pagination, Box} from "@mui/material";
-import './reportlist.css';
+import "./ReportList.css";
 
 function ReportRow({ report, onView }) {
     const navigate = useNavigate();

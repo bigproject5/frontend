@@ -11,7 +11,7 @@ const WorkerList = () => {
   useEffect(() => {
     fetchWorkers()
         .then((data) => {
-          console.log('🔍 작업자 목록 응답:', data);
+          console.log('작업자 목록 응답:', data);
           if (data.data) {
             setWorkers(data.data);
           } else if (Array.isArray(data)) {
@@ -37,10 +37,10 @@ const WorkerList = () => {
             return workerId != id;
           })
       );
-      alert('✅ 작업자가 삭제되었습니다.');
+      alert('작업자가 삭제되었습니다.');
     } catch (error) {
       console.error('삭제 요청 실패:', error);
-      alert('❌ 삭제 중 오류가 발생했습니다.');
+      alert('삭제 중 오류가 발생했습니다.');
     }
   };
 
