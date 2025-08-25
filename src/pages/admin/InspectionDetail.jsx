@@ -384,9 +384,12 @@ const InspectionDetail = () => {
                 border: '2px dashed #d1d5db',
                 overflow: 'hidden'
               }}>
-                {inspectionData.resultDataPath ? (
-                  (() => {
-                    const fileExtension = inspectionData.resultDataPath.split('.').pop().toLowerCase();
+                {(() => {
+                  // resultDataPath가 우선, 없으면 collectDataPath 사용
+                  const mediaPath = inspectionData.resultDataPath || inspectionData.collectDataPath;
+
+                  if (mediaPath) {
+                    const fileExtension = mediaPath.split('.').pop().toLowerCase();
                     const isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm'].includes(fileExtension);
                     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
 
@@ -399,7 +402,7 @@ const InspectionDetail = () => {
                           controls
                           sx={{ borderRadius: 2 }}
                         >
-                          <source src={inspectionData.resultDataPath} type="video/mp4" />
+                          <source src={mediaPath} type="video/mp4" />
                           Your browser does not support the video tag.
                         </Box>
                       );
@@ -407,7 +410,7 @@ const InspectionDetail = () => {
                       return (
                         <Box
                           component="img"
-                          src={inspectionData.resultDataPath}
+                          src={mediaPath}
                           alt="검사 결과 이미지"
                           sx={{
                             width: '100%',
@@ -424,12 +427,14 @@ const InspectionDetail = () => {
                         </Typography>
                       );
                     }
-                  })()
-                ) : (
-                  <Typography variant="body2" color="textSecondary" textAlign="center">
-                    검사 미디어가 없습니다.
-                  </Typography>
-                )}
+                  } else {
+                    return (
+                      <Typography variant="body2" color="textSecondary" textAlign="center">
+                        검사 미디어가 없습니다.
+                      </Typography>
+                    );
+                  }
+                })()}
               </Box>
             </Box>
           </CardContent>
