@@ -36,7 +36,7 @@ import {
   Schedule,
   Refresh
 } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -89,9 +89,10 @@ const Dashboard = () => {
     total: 0,
     inProgress: 0,
     completed: 0,
-    pending: 0,
-    withDefects: 0
+    pending: 0
   });
+
+  const navigate = useNavigate();
 
   const fetchAudits = async () => {
     try {
@@ -132,8 +133,7 @@ const Dashboard = () => {
       total: auditList.length,
       inProgress: 0,
       completed: 0,
-      pending: 0,
-      withDefects: 0
+      pending: 0
     };
 
     auditList.forEach(audit => {
@@ -147,11 +147,6 @@ const Dashboard = () => {
         case 'PENDING':
           stats.pending += 1;
           break;
-      }
-
-      // 불량이 있는 차량 계산
-      if (audit.inspections && audit.inspections.some(inspection => inspection.isDefect)) {
-        stats.withDefects += 1;
       }
     });
 
@@ -243,9 +238,23 @@ const Dashboard = () => {
     return Math.round((completed / inspections.length) * 100);
   };
 
-  // 통계 카드 컴포넌트
-  const StatCard = ({ title, value, color, icon }) => (
-    <Card elevation={2} sx={{ height: '100%' }}>
+  // 통계 카드 컴포넌트 - WorkerMain과 통일된 디자인
+  const StatCard = ({ title, value, color, icon, bgColor }) => (
+    <Card
+      elevation={2}
+      sx={{
+        height: '100%',
+        borderRadius: 2,
+        background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        border: '1px solid #e9ecef',
+        transition: 'all 0.3s ease',
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: '0 8px 25px rgba(0,44,95,0.15)',
+          transform: 'translateY(-2px)'
+        }
+      }}
+    >
       <CardContent
         sx={{
           display: 'flex',
@@ -254,15 +263,41 @@ const Dashboard = () => {
           justifyContent: 'center',
           height: '100%',
           textAlign: 'center',
-          width: '150px',
-          py: 3
+          p: 3,
+          position: 'relative',
+          overflow: 'hidden'
         }}
       >
-        <Box sx={{ color: color, mb: 2 }}>{icon}</Box>
-        <Typography variant="h4" sx={{ fontWeight: 'bold', color: color, mb: 1 }}>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            backgroundColor: color,
+            borderRadius: '2px 2px 0 0'
+          }}
+        />
+        <Box
+          sx={{
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            backgroundColor: bgColor,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            mb: 2,
+            transition: 'all 0.3s ease'
+          }}
+        >
+          {React.cloneElement(icon, { sx: { fontSize: 32, color: color } })}
+        </Box>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: color, mb: 1 }}>
           {value}
         </Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="body2" sx={{ color: '#002c5f', fontWeight: 600 }}>
           {title}
         </Typography>
       </CardContent>
@@ -296,12 +331,15 @@ const Dashboard = () => {
       margin: "10%",
       marginTop: "100px"
     }}>
-      {/* 헤더 */}
+      {/* 헤더 - 단순한 남색 텍스트로 변경 */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h3" gutterBottom sx={{ fontWeight: "bold", color: '#1976d2' }}>
-          차량 검사 관리 대시보드
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Assessment sx={{ fontSize: 32, color: '#002c5f' }} />
+          <Typography variant="h3" sx={{ fontWeight: 700, color: '#002c5f' }}>
+            차량 검사 관리 대시보드
+          </Typography>
+        </Box>
+        <Typography variant="body1" color="text.secondary" sx={{ ml: 5 }}>
           실시간 차량 검사 현황을 확인하고 관리할 수 있습니다.
         </Typography>
       </Box>
@@ -319,36 +357,31 @@ const Dashboard = () => {
 
       {/* 통계 카드 */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="총 차량 수"
             value={totalElements}
             color="#1976d2"
             icon={<DirectionsCar sx={{ fontSize: 40 }} />}
+            bgColor="#e3f2fd"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="진행 중"
             value={statistics.inProgress}
             color="#f59e0b"
             icon={<Schedule sx={{ fontSize: 40 }} />}
+            bgColor="#fff3e0"
           />
         </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        <Grid item xs={12} sm={6} md={4}>
           <StatCard
             title="완료"
             value={statistics.completed}
             color="#22c55e"
             icon={<CheckCircle sx={{ fontSize: 40 }} />}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <StatCard
-            title="불량 발견"
-            value={statistics.withDefects}
-            color="#ef4444"
-            icon={<ErrorIcon sx={{ fontSize: 40 }} />}
+            bgColor="#e8f5e9"
           />
         </Grid>
       </Grid>
@@ -418,143 +451,168 @@ const Dashboard = () => {
       </Card>
 
       {/* 차량 목록 테이블 */}
-      <TableContainer component={Paper} elevation={2}>
-        <Table>
-          <TableHead sx={{ bgcolor: "grey.100" }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: "bold" }}>차량 ID</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>모델</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>라인 코드</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>검사 항목</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>진행률</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>시작 시간</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>상태</TableCell>
-              <TableCell sx={{ fontWeight: "bold" }}>액션</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading && audits.length > 0 ? (
-              <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 4 }}>
-                  <CircularProgress size={24} sx={{ mr: 2 }} />
-                  업데이트 중...
-                </TableCell>
-              </TableRow>
-            ) : sortedData.length > 0 ? (
-              sortedData.map((audit) => {
-                const progress = calculateProgress(audit.inspections);
-                const defectCount = audit.inspections?.filter(i => i.isDefect).length || 0;
+      <Card
+        elevation={2}
+        sx={{
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          border: '1px solid #e9ecef',
+          overflow: 'hidden',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            boxShadow: '0 8px 25px rgba(0,44,95,0.15)'
+          }
+        }}
+      >
+        {/* 헤더 */}
+        <Box sx={{
+          p: 3,
+          background: 'linear-gradient(135deg, #002c5f 0%, #1976d2 100%)',
+          color: 'white'
+        }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <DirectionsCar sx={{ fontSize: 24 }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              차량 검사 목록
+            </Typography>
+            {sortedData.length > 0 && (
+              <Chip
+                label={`${totalElements}건`}
+                size="small"
+                sx={{
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  color: 'white',
+                  fontWeight: 600
+                }}
+              />
+            )}
+          </Box>
+        </Box>
 
-                return (
-                  <TableRow key={audit.auditId} hover>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <DirectionsCar color="primary" />
-                        <Typography fontWeight="bold">#{audit.auditId}</Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" fontWeight="medium">
-                        {audit.model || 'N/A'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={audit.lineCode || 'N/A'}
-                        size="small"
-                        variant="outlined"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {audit.inspections ? `${audit.inspections.length}개 항목` : '0개 항목'}
-                      </Typography>
-                      {defectCount > 0 && (
+        <TableContainer component={Paper} elevation={0} sx={{ boxShadow: 'none' }}>
+          <Table>
+            <TableHead sx={{ bgcolor: "grey.100" }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: "bold" }}>차량 ID</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>모델</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>라인 코드</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>검사 항목</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>진행률</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>시작 시간</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>상태</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {loading && audits.length > 0 ? (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 4 }}>
+                    <CircularProgress size={24} sx={{ mr: 2 }} />
+                    업데이트 중...
+                  </TableCell>
+                </TableRow>
+              ) : sortedData.length > 0 ? (
+                sortedData.map((audit) => {
+                  const progress = calculateProgress(audit.inspections);
+
+                  return (
+                    <TableRow
+                      key={audit.auditId}
+                      hover
+                      onClick={() => navigate(`/admin/audits/${audit.auditId}`)}
+                      sx={{
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        '&:hover': {
+                          backgroundColor: '#f5f5f5',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }
+                      }}
+                    >
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <DirectionsCar color="primary" />
+                          <Typography fontWeight="bold">#{audit.auditId}</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" fontWeight="medium">
+                          {audit.model || 'N/A'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
                         <Chip
-                          label={`불량 ${defectCount}개`}
+                          label={audit.lineCode || 'N/A'}
                           size="small"
-                          color="error"
-                          sx={{ mt: 0.5 }}
+                          variant="outlined"
                         />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Box
-                          sx={{
-                            width: 60,
-                            height: 8,
-                            bgcolor: 'grey.200',
-                            borderRadius: 4,
-                            overflow: 'hidden'
-                          }}
-                        >
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {audit.inspections ? `${audit.inspections.length}개 항목` : '0개 항목'}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Box
                             sx={{
-                              width: `${progress}%`,
-                              height: '100%',
-                              bgcolor: progress === 100 ? 'success.main' : 'primary.main',
-                              transition: 'width 0.3s ease'
+                              width: 60,
+                              height: 8,
+                              bgcolor: 'grey.200',
+                              borderRadius: 4,
+                              overflow: 'hidden'
                             }}
-                          />
+                          >
+                            <Box
+                              sx={{
+                                width: `${progress}%`,
+                                height: '100%',
+                                bgcolor: progress === 100 ? 'success.main' : 'primary.main',
+                                transition: 'width 0.3s ease'
+                              }}
+                            />
+                          </Box>
+                          <Typography variant="body2" color="text.secondary">
+                            {progress}%
+                          </Typography>
                         </Box>
-                        <Typography variant="body2" color="text.secondary">
-                          {progress}%
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2">
+                          {audit.testAt ? new Date(audit.testAt).toLocaleString('ko-KR', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }) : 'N/A'}
                         </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2">
-                        {audit.testAt ? new Date(audit.testAt).toLocaleString('ko-KR', {
-                          year: 'numeric',
-                          month: '2-digit',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        }) : 'N/A'}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      {getStatusChip(audit.status)}
-                    </TableCell>
-                    <TableCell align="right">
-                      <IconButton
-                        component={Link}
-                        to={`/admin/audits/${audit.auditId}`}
-                        size="small"
-                        color="primary"
-                        sx={{
-                          '&:hover': {
-                            bgcolor: 'primary.lighter',
-                            transform: 'translateX(2px)'
-                          },
-                          transition: 'all 0.2s ease'
-                        }}
-                      >
-                        <ArrowForward />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            ) : (
-              <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 8 }}>
-                  <DirectionsCar sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    {searchTerm ? '검색 결과가 없습니다.' : '차량 데이터가 없습니다.'}
-                  </Typography>
-                  {!searchTerm && (
-                    <Typography variant="body2" color="text.secondary">
-                      테스트 생성 버튼을 눌러 샘플 데이터를 만들어보세요.
+                      </TableCell>
+                      <TableCell>
+                        {getStatusChip(audit.status)}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 8 }}>
+                    <DirectionsCar sx={{ fontSize: 48, color: 'grey.400', mb: 2 }} />
+                    <Typography variant="h6" color="text.secondary" gutterBottom>
+                      {searchTerm ? '검색 결과가 없습니다.' : '차량 데이터가 없습니다.'}
                     </Typography>
-                  )}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                    {!searchTerm && (
+                      <Typography variant="body2" color="text.secondary">
+                        테스트 생성 버튼을 눌러 샘플 데이터를 만들어보세요.
+                      </Typography>
+                    )}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Card>
 
       {/* 페이지네이션 */}
       {totalPages > 1 && (
@@ -582,3 +640,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+

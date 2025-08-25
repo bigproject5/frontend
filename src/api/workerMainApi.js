@@ -1,5 +1,5 @@
-const API_BASE_URL = '/api/vehicleaudit';
-const NOTICE_API_BASE_URL = '/api/operation';
+const API_BASE_URL = 'http://localhost:8080/api/vehicleaudit';
+const NOTICE_API_BASE_URL = 'http://localhost:8080/api/operation';
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');
