@@ -23,19 +23,23 @@ export const getInspections = async (params = {}) => {
   try {
     const { status, page = 0, size = 10, user, taskType } = params;
 
-    // 사용자 정보에서 taskType 가져오기, 없으면 에러
+    // 사용자 정보 확인
     console.log('user:', user);
     console.log('taskType:', taskType);
 
-    if (!user || !taskType) {
-      throw new Error('사용자 인증 정보가 없거나 taskType이 설정되지 않았습니다.');
+    if (!user) {
+      throw new Error('사용자 인증 정보가 없습니다.');
     }
 
     const queryParams = new URLSearchParams({
-      inspectionType: taskType, // user.taskType 대신 별도 taskType 사용
       page: page.toString(),
       size: size.toString()
     });
+
+    // taskType이 있을 때만 inspectionType 파라미터 추가
+    if (taskType && taskType !== 'ALL') {
+      queryParams.append('inspectionType', taskType);
+    }
 
     // status가 제공된 경우에만 추가
     if (status) {
