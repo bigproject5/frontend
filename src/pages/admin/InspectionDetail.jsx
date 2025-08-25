@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { fetchInspectionDetail as apiFetchInspectionDetail } from "../../api/adminApi";
+import {fetchInspectionDetail} from "../../api/adminApi";
 import { startTask, completeTask, saveResolve } from '../../api/workerTaskApi';
 import {
   Typography,
@@ -38,11 +38,11 @@ const InspectionDetail = () => {
   console.log('[InspectionDetail] user role:', role);
 
   useEffect(() => {
-    const fetchInspectionDetail = async () => {
+    const loadInspectionDetail = async () => {
       try {
         setLoading(true);
         setError(null);
-        const responseData = await apiFetchInspectionDetail(inspectionId);
+        const responseData = await fetchInspectionDetail(inspectionId);
 
         // Enhanced Debugging
         if (!responseData || !responseData.code) {
@@ -84,7 +84,7 @@ const InspectionDetail = () => {
       }
     };
 
-    fetchInspectionDetail();
+    loadInspectionDetail();
   }, [inspectionId, user?.id]);
 
   
