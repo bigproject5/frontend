@@ -1,4 +1,4 @@
-const API_BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}/api/vehicleaudit`;
+const API_BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}`;
 
 
 const getAuthHeaders = () => {
