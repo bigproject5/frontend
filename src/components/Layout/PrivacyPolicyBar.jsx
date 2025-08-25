@@ -27,11 +27,11 @@ const PrivacyPolicyBar = () => {
               }}
             >
               <Typography variant="h5" sx={{ color: 'white', fontWeight: 'bold' }}>
-                정
+                C
               </Typography>
             </Box>
             <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#ffffffff', fontSize: '18px' }}>
-              AIVLE SCHOOL
+              CHECKAR
             </Typography>
           </Box>
           
