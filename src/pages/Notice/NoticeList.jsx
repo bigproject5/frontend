@@ -18,7 +18,7 @@ import {
   AttachFile as AttachFileIcon,
   Create as CreateIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import { getNotices } from '../../api/NoticeAPI.js';
 import { useSelector } from 'react-redux';
 import './NoticeList.css';
@@ -30,13 +30,14 @@ function NoticeList() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { role } = useSelector(state => state.auth);
-
+  const curr = useLocation();
+  
   const isAdmin = role === 'ADMIN' || role === "DEV";
   const itemsPerPage = 10;
 
   useEffect(() => {
     fetchNotices();
-  }, [page]);
+  }, [page, curr]);
 
   const fetchNotices = async () => {
     try {
