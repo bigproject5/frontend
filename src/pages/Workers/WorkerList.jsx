@@ -102,7 +102,7 @@ const WorkerList = () => {
             <div className="stat-content">
               <div className="stat-text">
                 <p>활성 작업자</p>
-                <p>3</p>
+                <p>{workers.length}</p>
               </div>
               <span className="stat-icon">🟢</span>
             </div>
@@ -114,15 +114,6 @@ const WorkerList = () => {
                 <p>4</p>
               </div>
               <span className="stat-icon">🏢</span>
-            </div>
-          </div>
-          <div className="stat-card waiting">
-            <div className="stat-content">
-              <div className="stat-text">
-                <p>호출 대기</p>
-                <p>2</p>
-              </div>
-              <span className="stat-icon">📞</span>
             </div>
           </div>
         </div>
