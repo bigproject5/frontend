@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import PrivacyPolicyModal from './PrivacyPolicyModal';
 import { Box, Typography, Container, Grid, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import InstagramIcon from '@mui/icons-material/Instagram';
@@ -8,6 +9,10 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import RssFeedIcon from '@mui/icons-material/RssFeed';
 
 const PrivacyPolicyBar = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
   return (
     <Box component="footer" id="footer" sx={{ backgroundColor: '#133c65ff', mt: 16 }}>
       <Box sx={{ py: 2, px: 3 }}>
@@ -63,6 +68,7 @@ const PrivacyPolicyBar = () => {
               cursor: 'pointer',
               textDecoration: 'underline'
             }}
+            onClick={openModal}
           >
             개인정보처리방침
           </Typography>
@@ -81,8 +87,8 @@ const PrivacyPolicyBar = () => {
           </Typography>
         </Box>
 
-
       </Box>
+      {isModalOpen && <PrivacyPolicyModal onClose={closeModal} />}
     </Box>
   );
 };
