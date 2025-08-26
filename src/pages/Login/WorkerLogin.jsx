@@ -111,99 +111,105 @@ function WorkerLogin() {
     };
 
     return (
-        <div className="login-body worker-theme">
-            <div className="login-container">
-                <div className="login-header">
-                    <h2 style={{
-                        margin: "10px"
-                    }}>작업자 로그인</h2>
-                    {/*<p className="login-subtitle">작업자 전용 로그인 페이지입니다</p>*/}
+        <div className="login-wrapper">
+            <video autoPlay muted loop id="background-video">
+                <source src="/터널_속_현대차_주행_영상_생성.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+            <div className="login-body">
+                <div className="login-container">
+                    <div className="login-header">
+                        <h2 style={{
+                            margin: "10px"
+                        }}>작업자 로그인</h2>
+                        {/*<p className="login-subtitle">작업자 전용 로그인 페이지입니다</p>*/}
+                    </div>
+                    <form className="login-form" onSubmit={handleSubmit}>
+                        <div className="login-input-group">
+                            <label>
+                                아이디
+                                <input
+                                    type="text"
+                                    name="loginId"
+                                    value={formData.loginId}
+                                    onChange={handleChange}
+                                    required
+                                    className="login-input"
+                                    placeholder="작업자 아이디를 입력하세요"
+                                />
+                            </label>
+                        </div>
+                        <div className="login-input-group">
+                            <label>
+                                비밀번호
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    required
+                                    className="login-input"
+                                    placeholder="비밀번호를 입력하세요"
+                                />
+                            </label>
+                        </div>
+                        <div className="remember-me-container">
+                            <label className="remember-me-label">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={handleRememberChange}
+                                    className="remember-me-checkbox"
+                                />
+                                <span className="checkmark"></span>
+                                아이디 저장
+                            </label>
+                        </div>
+                        
+                        {/* 아이디/비밀번호 찾기 링크 */}
+                        <div className="login-links">
+                            <button 
+                                type="button" 
+                                className="link-button"
+                                onClick={() => setShowFindIdModal(true)}
+                            >
+                                아이디 찾기
+                            </button>
+                            <span className="link-divider">|</span>
+                            <button 
+                                type="button" 
+                                className="link-button"
+                                onClick={() => setShowFindPasswordModal(true)}
+                            >
+                                비밀번호 찾기
+                            </button>
+                        </div>
+                        
+                        <button type="submit" className="login-button">
+                            작업자 로그인
+                        </button>
+                    </form>
                 </div>
-                <form className="login-form" onSubmit={handleSubmit}>
-                    <div className="login-input-group">
-                        <label>
-                            아이디
-                            <input
-                                type="text"
-                                name="loginId"
-                                value={formData.loginId}
-                                onChange={handleChange}
-                                required
-                                className="login-input"
-                                placeholder="작업자 아이디를 입력하세요"
-                            />
-                        </label>
-                    </div>
-                    <div className="login-input-group">
-                        <label>
-                            비밀번호
-                            <input
-                                type="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                                className="login-input"
-                                placeholder="비밀번호를 입력하세요"
-                            />
-                        </label>
-                    </div>
-                    <div className="remember-me-container">
-                        <label className="remember-me-label">
-                            <input
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={handleRememberChange}
-                                className="remember-me-checkbox"
-                            />
-                            <span className="checkmark"></span>
-                            아이디 저장
-                        </label>
-                    </div>
-                    
-                    {/* 아이디/비밀번호 찾기 링크 */}
-                    <div className="login-links">
-                        <button 
-                            type="button" 
-                            className="link-button"
-                            onClick={() => setShowFindIdModal(true)}
-                        >
-                            아이디 찾기
-                        </button>
-                        <span className="link-divider">|</span>
-                        <button 
-                            type="button" 
-                            className="link-button"
-                            onClick={() => setShowFindPasswordModal(true)}
-                        >
-                            비밀번호 찾기
-                        </button>
-                    </div>
-                    
-                    <button type="submit" className="login-button">
-                        작업자 로그인
-                    </button>
-                </form>
-            </div>
 
-            {/* 아이디 찾기 모달 */}
-            {showFindIdModal && (
-                <FindIdModal
-                    onClose={() => setShowFindIdModal(false)}
-                    onSuccess={handleFindIdSuccess}
-                />
-            )}
+                {/* 아이디 찾기 모달 */}
+                {showFindIdModal && (
+                    <FindIdModal
+                        onClose={() => setShowFindIdModal(false)}
+                        onSuccess={handleFindIdSuccess}
+                    />
+                )}
 
-            {/* 비밀번호 찾기 모달 */}
-            {showFindPasswordModal && (
-                <FindPasswordModal
-                    onClose={() => setShowFindPasswordModal(false)}
-                    onSuccess={handleFindPasswordSuccess}
-                />
-            )}
+                {/* 비밀번호 찾기 모달 */}
+                {showFindPasswordModal && (
+                    <FindPasswordModal
+                        onClose={() => setShowFindPasswordModal(false)}
+                        onSuccess={handleFindPasswordSuccess}
+                    />
+                )}
 
-            <div className="footer_text">
-                © 2025 Hyundai Motor Company. All rights reserved.
+                <div className="footer_text">
+                    © 2025 CHECKAR
+                </div>
             </div>
         </div>
     );
