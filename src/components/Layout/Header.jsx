@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../../store/authSlice';
 import LogoutIcon from '@mui/icons-material/Logout';
-import logo from '../../../public/icons8-현대-480.svg';
+import logo from '../../../public/logo.png';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -76,19 +76,6 @@ const Header = () => {
               objectFit: 'contain'
             }}
           />
-          <Typography
-            variant="h5"
-            component="div"
-            sx={{
-              fontWeight: 800,
-              color: 'white',
-              fontSize: '24px',
-              letterSpacing: '1px',
-              textShadow: '0 2px 4px rgba(0,0,0,0.3)'
-            }}
-          >
-            CHECKAR
-          </Typography>
         </Box>
 
         {/* 오른쪽: 사용자 정보 + 로그아웃 */}
