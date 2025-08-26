@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { fetchInspectionDetail as apiFetchInspectionDetail } from "../../api/adminApi";
+import {fetchInspectionDetail} from "../../api/adminApi";
 import { startTask, completeTask, saveResolve } from '../../api/workerTaskApi';
 import {
   Typography,
@@ -32,14 +32,17 @@ const InspectionDetail = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Redux에서 사용자 정보 가져오기
-  const { user } = useSelector(state => state.auth);
+  const { user, role } = useSelector(state => state.auth);
+
+  // 디버깅용 로그 추가
+  console.log('[InspectionDetail] user role:', role);
 
   useEffect(() => {
-    const fetchInspectionDetail = async () => {
+    const loadInspectionDetail = async () => {
       try {
         setLoading(true);
         setError(null);
-        const responseData = await apiFetchInspectionDetail(inspectionId);
+        const responseData = await fetchInspectionDetail(inspectionId);
 
         // Enhanced Debugging
         if (!responseData || !responseData.code) {
@@ -81,7 +84,7 @@ const InspectionDetail = () => {
       }
     };
 
-    fetchInspectionDetail();
+    loadInspectionDetail();
   }, [inspectionId, user?.id]);
 
   
@@ -192,6 +195,12 @@ const InspectionDetail = () => {
   const getButtonCondition = () => {
     if (!inspectionData) return { showButton: false, buttonText: '', isReadOnly: true };
 
+    // 관리자인 경우 항상 readonly로 동작하고 버튼 숨김
+    if (role === 'ADMIN') {
+      console.log('[ButtonCondition] 관리자 권한으로 readonly 모드');
+      return { showButton: false, buttonText: '', isReadOnly: true };
+    }
+
     const currentUserId = user?.id;
     const taskWorkerId = inspectionData?.task?.workerId;
 
@@ -199,7 +208,8 @@ const InspectionDetail = () => {
     console.log('[ButtonCondition] status:', inspectionData?.status,
       'task.workerId:', taskWorkerId,
       'currentUserId:', currentUserId,
-      'hasTask:', !!inspectionData?.task);
+      'hasTask:', !!inspectionData?.task,
+      'role:', role);
 
     // 1) ABNORMAL 상태이고 task가 없음 -> 시작 버튼
     if (inspectionData.status === 'ABNORMAL' && !inspectionData.task) {
@@ -374,9 +384,12 @@ const InspectionDetail = () => {
                 border: '2px dashed #d1d5db',
                 overflow: 'hidden'
               }}>
-                {inspectionData.resultDataPath ? (
-                  (() => {
-                    const fileExtension = inspectionData.resultDataPath.split('.').pop().toLowerCase();
+                {(() => {
+                  // resultDataPath가 우선, 없으면 collectDataPath 사용
+                  const mediaPath = inspectionData.resultDataPath || inspectionData.collectDataPath;
+
+                  if (mediaPath) {
+                    const fileExtension = mediaPath.split('.').pop().toLowerCase();
                     const isVideo = ['mp4', 'avi', 'mov', 'mkv', 'webm'].includes(fileExtension);
                     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension);
 
@@ -389,7 +402,7 @@ const InspectionDetail = () => {
                           controls
                           sx={{ borderRadius: 2 }}
                         >
-                          <source src={inspectionData.resultDataPath} type="video/mp4" />
+                          <source src={mediaPath} type="video/mp4" />
                           Your browser does not support the video tag.
                         </Box>
                       );
@@ -397,7 +410,7 @@ const InspectionDetail = () => {
                       return (
                         <Box
                           component="img"
-                          src={inspectionData.resultDataPath}
+                          src={mediaPath}
                           alt="검사 결과 이미지"
                           sx={{
                             width: '100%',
@@ -414,12 +427,14 @@ const InspectionDetail = () => {
                         </Typography>
                       );
                     }
-                  })()
-                ) : (
-                  <Typography variant="body2" color="textSecondary" textAlign="center">
-                    검사 미디어가 없습니다.
-                  </Typography>
-                )}
+                  } else {
+                    return (
+                      <Typography variant="body2" color="textSecondary" textAlign="center">
+                        검사 미디어가 없습니다.
+                      </Typography>
+                    );
+                  }
+                })()}
               </Box>
             </Box>
           </CardContent>
