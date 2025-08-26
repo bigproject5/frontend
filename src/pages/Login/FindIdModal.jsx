@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { findWorkerIdApi } from '../../api/authApi';
 
 function FindIdModal({ onClose, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -44,10 +43,10 @@ function FindIdModal({ onClose, onSuccess }) {
         setIsLoading(true);
         
         try {
-            const response = await findWorkerIdApi({
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone
+            const response = ({
+                name: formData.name || "",
+                email: formData.email || "",
+                phone: formData.phone || ""
             });
 
             if (response.success && response.data && response.data.loginId) {

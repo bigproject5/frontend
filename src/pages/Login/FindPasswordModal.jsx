@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { findWorkerPasswordApi } from '../../api/authApi';
 
 function FindPasswordModal({ onClose, onSuccess }) {
     const [formData, setFormData] = useState({
@@ -17,6 +16,8 @@ function FindPasswordModal({ onClose, onSuccess }) {
             [name]: value
         }));
     };
+
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -43,11 +44,11 @@ function FindPasswordModal({ onClose, onSuccess }) {
         setIsLoading(true);
         
         try {
-            const response = await findWorkerPasswordApi({
-                loginId: formData.loginId,
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone
+            const response =({
+                loginId: formData.loginId || "",
+                name: formData.name || "",
+                email: formData.email || "",
+                phone: formData.phone || ""
             });
 
             if (response.success) {
