@@ -4,6 +4,9 @@ import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
 import './login.css'
 import { adminLoginApi, devLoginApi } from "../../api/loginApi.jsx";
+import FindIdModal from './FindIdModal';
+import FindPasswordModal from './FindPasswordModal';
+
 
 function Login() {
     const navigate = useNavigate();
@@ -15,7 +18,10 @@ function Login() {
     });
 
     const [rememberMe, setRememberMe] = useState(false);
+    const [showFindIdModal, setShowFindIdModal] = useState(false);
+    const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
 
+ 
     // 컴포넌트 마운트 시 저장된 아이디 불러오기
     useEffect(() => {
         const savedLoginId = localStorage.getItem('rememberedLoginId');
@@ -111,7 +117,22 @@ function Login() {
     const handleSignup = (e) => {
         e.preventDefault();
         navigate("/signup")
-    }
+    };
+
+    const handleFindIdSuccess = (foundId) => {
+        setFormData(prev => ({
+            ...prev,
+            loginId: foundId
+        }));
+        setShowFindIdModal(false);
+    };
+
+    // 비밀번호 찾기 성공 핸들러
+    const handleFindPasswordSuccess = () => {
+        setShowFindPasswordModal(false);
+        alert("임시 비밀번호가 등록된 이메일로 발송되었습니다.");
+    };
+
 
     return (
         <div className="login-wrapper">
@@ -172,7 +193,24 @@ function Login() {
                                 아이디 저장
                             </label>
                         </div>
-
+                        <div className="login-links">
+                            <button 
+                                type="button" 
+                                className="link-button"
+                                onClick={() => setShowFindIdModal(true)}
+                            >
+                                아이디 찾기
+                            </button>
+                            <span className="link-divider">|</span>
+                            <button 
+                                type="button" 
+                                className="link-button"
+                                onClick={() => setShowFindPasswordModal(true)}
+                            >
+                                비밀번호 찾기
+                            </button>
+                        </div>
+                    
                         <button type="submit" className="login-button">
                             관리자 로그인
                         </button>
@@ -223,6 +261,20 @@ function Login() {
                     </Link>
                 </div>
 
+                {showFindIdModal && (
+                    <FindIdModal
+                        onClose={() => setShowFindIdModal(false)}
+                        onSuccess={handleFindIdSuccess}
+                    />
+                )}
+
+                {/* 비밀번호 찾기 모달 */}
+                {showFindPasswordModal && (
+                    <FindPasswordModal
+                        onClose={() => setShowFindPasswordModal(false)}
+                        onSuccess={handleFindPasswordSuccess}
+                    />
+                )}
                 <div className="footer_text">
                     © 2025 Hyundai Motor Company. All rights reserved.
                 </div>
