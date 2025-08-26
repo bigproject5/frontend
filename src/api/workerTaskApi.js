@@ -1,4 +1,6 @@
-const API_BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}/api/vehicleaudit`;
+import API_BASE_URL_CONFIG from './apiConfig';
+
+const API_BASE_URL = `${API_BASE_URL_CONFIG}/api/vehicleaudit`;
 
 // 세션 스토리지에서 액세스 토큰 가져오기
 const getAccessToken = () => {

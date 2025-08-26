@@ -1,4 +1,4 @@
-const Base_URL = `${window.API_CONFIG.VITE_API_BASE_URL}`;
+import Base_URL from './apiConfig';
 
 export async function adminLoginApi(postData) {
     const response = await fetch(`${Base_URL}/api/operation/login/admin`, {

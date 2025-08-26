@@ -1,6 +1,8 @@
 
+import API_BASE_URL from './apiConfig';
+
 // 공지사항 API의 기본 URL
-const API_BASE = `${window.API_CONFIG.VITE_API_BASE_URL}/api/operation/notices`;
+const API_BASE = `${API_BASE_URL}/api/operation/notices`;
 const token = sessionStorage.getItem('accessToken');
 
 // Bearer 토큰 헤더 설정 (멀티파트용)

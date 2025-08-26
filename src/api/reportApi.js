@@ -1,4 +1,6 @@
-const BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}/api/taskreports`;
+import API_BASE_URL from './apiConfig';
+
+const BASE_URL = `${API_BASE_URL}/api/taskreports`;
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');

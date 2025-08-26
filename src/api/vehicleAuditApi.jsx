@@ -1,6 +1,6 @@
 // src/api/vehicleAuditApi.js
 
-const Base_URL = `${window.API_CONFIG.VITE_API_BASE_URL}`;
+import Base_URL from './apiConfig';
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');

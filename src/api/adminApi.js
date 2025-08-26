@@ -1,6 +1,7 @@
 import axios from "axios";
+import API_BASE_URL_CONFIG from './apiConfig';
 
-const API_BASE_URL = `${window.API_CONFIG.VITE_API_BASE_URL}/api/vehicleaudit`;
+const API_BASE_URL = `${API_BASE_URL_CONFIG}/api/vehicleaudit`;
 
 const getAuthHeaders = () => {
   const token = sessionStorage.getItem('accessToken');
