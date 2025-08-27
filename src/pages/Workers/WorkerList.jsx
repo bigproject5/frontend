@@ -227,9 +227,6 @@ const WorkerList = () => {
                           >
                             👤 프로필
                           </Link>
-                          <button className="action-button call">
-                            📞 호출
-                          </button>
                           <button
                               onClick={() => onDelete(workerId)}
                               className="action-button delete"
