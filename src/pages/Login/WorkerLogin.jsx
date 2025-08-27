@@ -116,7 +116,7 @@ function WorkerLogin() {
                 <source src="/터널_속_현대차_주행_영상_생성.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
             </video>
-            <div className="login-body">
+            <div className="login-body worker-theme">
                 <div className="login-container">
                     <div className="login-header">
                         <h2 style={{
@@ -208,7 +208,7 @@ function WorkerLogin() {
                 )}
 
                 <div className="footer_text">
-                    © 2025 CHECKAR
+                    © 2025 CHECKAR Company. All rights reserved.
                 </div>
             </div>
         </div>

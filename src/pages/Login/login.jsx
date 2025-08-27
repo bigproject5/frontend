@@ -277,7 +277,7 @@ function Login() {
                 </div>
 
                 <div className="footer_text">
-                    © 2025 Hyundai Motor Company. All rights reserved.
+                    © 2025 CHECKAR Company. All rights reserved.
                 </div>
             </div>
         </div>
