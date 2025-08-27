@@ -95,7 +95,7 @@ const InspectionDetail = () => {
       const result = await saveResolve(inspectionId, resolveText);
       if (result.code === 'SUCCESS') {
         alert('조치 사항이 저장되었습니다.');
-        await fetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+        await fetchInspectionDetail(inspectionId); // 페이지 새로고침 대신 데이터 재조회
       } else {
         alert('조치 사항 저장에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
       }
@@ -120,7 +120,7 @@ const InspectionDetail = () => {
       const result = await startTask(inspectionId);
       if (result.code === 'SUCCESS') {
         alert('작업이 시작되었습니다.');
-        await fetchInspectionDetail(); // 페이지 새로고침 대신 데이터 재조회
+        await fetchInspectionDetail(inspectionId); // 페이지 새로고침 대신 데이터 재조회
       } else {
         alert('작업 시작에 실패했습니다: ' + (result.message || '알 수 없는 오류'));
       }
