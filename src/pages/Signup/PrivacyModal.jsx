@@ -6,7 +6,7 @@ export default function PolicyModal({ visible, agreements, setAgreements, onClos
     if (!visible) return null;
 
     const contents = {
-        terms: { text: termsText, title: "이용 약관", required: true },
+        terms: { text: termsText, title: "서비스 이용약관", required: true },
         privacy: { text: privacyText, title: "개인정보 처리방침", required: true },
         marketing: { text: marketingText, title: "마케팅 수신 동의", required: false }
     };
@@ -32,7 +32,7 @@ export default function PolicyModal({ visible, agreements, setAgreements, onClos
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose(false)}>
             <div className="modal-content">
                 <div className="modal-header">
-                    <h2>약관 동의</h2>
+                    <h2>동의 항목</h2>
                 </div>
 
                 <div className="modal-body">
