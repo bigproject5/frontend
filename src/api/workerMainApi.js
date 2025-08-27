@@ -38,7 +38,7 @@ export const getInspections = async (params = {}) => {
     });
 
     // taskType이 있을 때만 inspectionType 파라미터 추가
-    if (taskType !== null && !(taskType === "dev" || taskType === "ALL")) {
+    if (taskType && !(taskType === "dev" || taskType === "ALL")) {
       queryParams.append('inspectionType', taskType);
     }
 
