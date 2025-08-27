@@ -254,7 +254,7 @@ const DashboardSummary = ({
                 {/* 두 번째 Box: 통계 카드들 */}
                 <Box sx={{ mb: 4, width: '100%' }}>
                   <Grid container spacing={3} sx={{ width: '100%' }}>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item sx={{ minWidth: '30%'}}>
                       <StatCard
                         title="총 차량 수"
                         value={totalElements}
@@ -263,7 +263,7 @@ const DashboardSummary = ({
                         bgColor="#e3f2fd"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item sx={{ minWidth: '30%'}}>
                       <StatCard
                         title="진행 중"
                         value={statistics.inProgress}
@@ -272,7 +272,7 @@ const DashboardSummary = ({
                         bgColor="#fff3e0"
                       />
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item sx={{ minWidth: '30%'}}>
                       <StatCard
                         title="완료"
                         value={statistics.completed}

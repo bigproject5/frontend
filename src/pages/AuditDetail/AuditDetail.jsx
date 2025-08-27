@@ -347,15 +347,15 @@ export default function AuditDetail() {
 
             <Box sx={{ p: 3 }}>
               {car.inspections && car.inspections.length > 0 ? (
-                <Grid container spacing={2}>
+                <Grid container spacing={4}>
                   {car.inspections.map((inspection) => {
                     const inspectionStatus = getInspectionStatusInfo(inspection.status, inspection.isDefect);
                     const InspectionIcon = inspectionStatus.icon;
 
                     return (
-                      <Grid item xs={12} sm={6} md={4} lg={3} key={inspection.inspectionId}>
+                      <Grid item xs={12} sm={6} md={4} lg={3} sx = {{width: '200px'}}key={inspection.inspectionId}>
                         <Card
-                          elevation={1}
+                          elevation={2}
                           sx={{
                             height: '100%',
                             border: `2px solid ${inspectionStatus.color}`,

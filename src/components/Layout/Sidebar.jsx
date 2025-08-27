@@ -264,7 +264,7 @@ const Sidebar = () => {
             fontWeight: 500
           }}
         >
-          H-AVIS v1.0
+          CHECKAR v1.0
         </Typography>
       </Box>
     </Box>
