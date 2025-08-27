@@ -148,39 +148,6 @@ button:focus {
     outline: none;
 }
 
-/* ========== 작업자 전용 테마 ========== */
-
-/* 작업자 전용 배경 그라데이션 (오렌지/주황 계열) */
-.login-body.worker-theme {
-    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
-}
-
-/* 작업자 전용 헤더 색상 */
-.worker-theme .login-header h2 {
-    color: #d84315;
-}
-
-/* 작업자 전용 버튼 색상 */
-.worker-theme .login-button {
-    background: #ff5722;
-}
-
-.worker-theme .login-button:hover {
-    background: #e64a19;
-}
-
-/* 작업자 전용 입력 필드 포커스 색상 */
-.worker-theme .login-input:focus {
-    border-color: #ff5722;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.2);
-}
-
-/* 작업자 전용 푸터 색상 (흰색으로 변경) */
-.worker-theme .footer-container {
-    color: rgba(255, 255, 255, 0.9);
-}
-
 /* 반응형 디자인 */
 @media (max-width: 480px) {
     .login-container {
@@ -313,16 +280,6 @@ button:focus {
     color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
     font-weight: 300;
-}
-
-/* 작업자 테마 전용 버튼 스타일 */
-.worker-theme .link-button {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.worker-theme .link-button:hover {
-    background: rgba(255, 87, 34, 0.2);
-    color: #ffffff;
 }
 
 /* ========== 새로 추가: 모달 스타일 ========== */

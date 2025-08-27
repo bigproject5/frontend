@@ -7,17 +7,20 @@ import { adminLoginApi, devLoginApi } from "../../api/loginApi.jsx";
 import FindIdModal from './FindIdModal';
 import FindPasswordModal from './FindPasswordModal';
 
+
 function Login() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const [showFindIdModal, setShowFindIdModal] = useState(false);
-    const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
+
     const [formData, setFormData] = useState({
         "loginId": "",
         "password": ""
     });
 
     const [rememberMe, setRememberMe] = useState(false);
+    const [showFindIdModal, setShowFindIdModal] = useState(false);
+    const [showFindPasswordModal, setShowFindPasswordModal] = useState(false);
+
 
     // 컴포넌트 마운트 시 저장된 아이디 불러오기
     useEffect(() => {
@@ -65,20 +68,6 @@ function Login() {
             alert("로그인 실패")
         }
     }
-
-    const handleFindIdSuccess = (foundId) => {
-        setFormData(prev => ({
-            ...prev,
-            loginId: foundId
-        }));
-        setShowFindIdModal(false);
-    };
-
-    // 비밀번호 찾기 성공 핸들러
-    const handleFindPasswordSuccess = () => {
-        setShowFindPasswordModal(false);
-        alert("임시 비밀번호가 등록된 이메일로 발송되었습니다.");
-    };
 
     const handleDevLogin = async () => {
         try {
@@ -128,7 +117,22 @@ function Login() {
     const handleSignup = (e) => {
         e.preventDefault();
         navigate("/signup")
-    }
+    };
+
+    const handleFindIdSuccess = (foundId) => {
+        setFormData(prev => ({
+            ...prev,
+            loginId: foundId
+        }));
+        setShowFindIdModal(false);
+    };
+
+    // 비밀번호 찾기 성공 핸들러
+    const handleFindPasswordSuccess = () => {
+        setShowFindPasswordModal(false);
+        alert("임시 비밀번호가 등록된 이메일로 발송되었습니다.");
+    };
+
 
     return (
         <div className="login-wrapper">
@@ -191,21 +195,22 @@ function Login() {
                         </div>
                         <div className="login-links">
                             <button
-                              type="button"
-                              className="link-button"
-                              onClick={() => setShowFindIdModal(true)}
+                                type="button"
+                                className="link-button"
+                                onClick={() => setShowFindIdModal(true)}
                             >
                                 아이디 찾기
                             </button>
                             <span className="link-divider">|</span>
                             <button
-                              type="button"
-                              className="link-button"
-                              onClick={() => setShowFindPasswordModal(true)}
+                                type="button"
+                                className="link-button"
+                                onClick={() => setShowFindPasswordModal(true)}
                             >
                                 비밀번호 찾기
                             </button>
                         </div>
+
                         <button type="submit" className="login-button">
                             관리자 로그인
                         </button>
