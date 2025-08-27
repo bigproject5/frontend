@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom"
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '../../store/authSlice';
 import './login.css'
-import { adminLoginApi, devLoginApi } from "../../api/loginApi.jsx";
+import {adminLoginApi, devLoginApi, workerLoginApi} from "../../api/loginApi.jsx";
 import FindIdModal from './FindIdModal';
 import FindPasswordModal from './FindPasswordModal';
 
@@ -83,6 +83,48 @@ function Login() {
         } catch (error) {
             console.error('Error during DEV login:', error);
             alert('An error occurred during DEV login.');
+        }
+    };
+
+    const handleAdminLoginButton = async () => {
+        try {
+            const loginData ={
+                "loginId": "admin1234",
+                "password": "Qq11111111!"
+            }
+            const data = await adminLoginApi(loginData);
+            if (data.token) {
+                sessionStorage.setItem('accessToken', data.token);
+                dispatch(loginSuccess({ user: data.user, role: data.user.role }));
+                alert('Admin token acquired and user role set to admin.');
+                navigate('/admin/dashboard');
+            } else {
+                alert('Failed to get admin token.');
+            }
+        } catch (error) {
+            console.error('Error during DEV login:', error);
+            alert('An error occurred during DEV login.');
+        }
+    };
+
+    const handleWorkerLoginButton = async () => {
+        try {
+            const loginData ={
+                "loginId": "worker123",
+                "password": "Qq11111111!"
+            }
+            const data = await workerLoginApi(loginData);
+            if (data.token) {
+                sessionStorage.setItem('accessToken', data.token);
+                dispatch(loginSuccess({ user: data.user, role: data.user.role }));
+                alert('Worker token acquired and user role set to ALL task.');
+                navigate('/worker/main');
+            } else {
+                alert('Failed to get Worker token.');
+            }
+        } catch (error) {
+            console.error('Error during Worker login:', error);
+            alert('An error occurred during Worker login.');
         }
     };
 
@@ -262,6 +304,36 @@ function Login() {
                     >
                         DEV Login
                     </button>
+                    <button
+                      type="button"
+                      className="login-role-btn"
+                      onClick={handleWorkerLoginButton}
+                      style={{
+                          backgroundColor: '#4CAF50',
+                          color: 'white',
+                          padding: '10px 15px',
+                          border: 'none',
+                          borderRadius: '5px',
+                          cursor: 'pointer',
+                      }}
+                    >
+                        작업자 Login(ALL task)
+                    </button>
+                    <button
+                      type="button"
+                      className="login-role-btn"
+                      onClick={handleAdminLoginButton}
+                      style={{
+                          backgroundColor: '#4CAF50',
+                          color: 'white',
+                          padding: '10px 15px',
+                          border: 'none',
+                          borderRadius: '5px',
+                          cursor: 'pointer',
+                      }}
+                    >
+                        관리자 Login
+                    </button>
                     <Link to="/dev" style={{
                         backgroundColor: '#008CBA',
                         color: 'white',
@@ -273,6 +345,18 @@ function Login() {
                         textAlign: 'center',
                     }}>
                         /dev
+                    </Link>
+                    <Link to="/login" style={{
+                        backgroundColor: '#008CBA',
+                        color: 'white',
+                        padding: '10px 15px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                    }}>
+                        /login
                     </Link>
                 </div>
 

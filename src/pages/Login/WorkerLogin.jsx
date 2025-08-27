@@ -206,6 +206,27 @@ function WorkerLogin() {
                         onSuccess={handleFindPasswordSuccess}
                     />
                 )}
+                <div style={{
+                    position: 'absolute',
+                    top: '10px',
+                    right: '10px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                }}>
+                    <Link to="/admin-login" style={{
+                        backgroundColor: '#008CBA',
+                        color: 'white',
+                        padding: '10px 15px',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        textDecoration: 'none',
+                        textAlign: 'center',
+                    }}>
+                        /admin-login
+                    </Link>
+                </div>
 
                 <div className="footer_text">
                     © 2025 CHECKAR Company. All rights reserved.
