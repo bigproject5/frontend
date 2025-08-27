@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./ReportDetail.css";
 import { useParams } from "react-router-dom";
 import { fetchReportDetail, resummarizeReport } from "../../api/reportApi.js";
+import ReactMarkdown from 'react-markdown';
 
 export default function ReportDetail() {
   const { reportId } = useParams();
@@ -36,6 +37,18 @@ export default function ReportDetail() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // 미디어 파일 확장자 확인 함수
+  const getMediaType = (filePath) => {
+    if (!filePath) return null;
+    const extension = filePath.split('.').pop().toLowerCase();
+    const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+    const videoExtensions = ['mp4', 'webm', 'ogg', 'avi', 'mov'];
+
+    if (imageExtensions.includes(extension)) return 'image';
+    if (videoExtensions.includes(extension)) return 'video';
+    return 'unknown';
   };
 
   if (error) return <div className="report-container"><div className="error-container">오류: {error}</div></div>;
@@ -112,23 +125,52 @@ export default function ReportDetail() {
         
         <table className="report-table">
           <tbody>
-            {/* 결과 데이터 사진 */}
+            {/* 결과 데이터 사진/영상 */}
             {report.resultDataPath && (
               <tr>
                 <td className="table-header">결과 데이터</td>
                 <td className="content-cell">
-                  <img 
-                    src={report.resultDataPath} 
-                    alt="검사 결과 이미지" 
-                    className="result-image"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'block';
-                    }}
-                  />
-                  <div style={{display: 'none', color: '#ef4444', padding: '16px', textAlign: 'center', backgroundColor: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca'}}>
-                    ⚠️ 이미지를 불러올 수 없습니다: {report.resultDataPath}
-                  </div>
+                  {getMediaType(report.resultDataPath) === 'image' && (
+                    <>
+                      <img
+                        src={report.resultDataPath}
+                        alt="검사 결과 이미지"
+                        className="result-image"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'block';
+                        }}
+                      />
+                      <div style={{display: 'none', color: '#ef4444', padding: '16px', textAlign: 'center', backgroundColor: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca'}}>
+                        ⚠️ 이미지를 불러올 수 없습니다: {report.resultDataPath}
+                      </div>
+                    </>
+                  )}
+
+                  {getMediaType(report.resultDataPath) === 'video' && (
+                    <>
+                      <video
+                        src={report.resultDataPath}
+                        className="result-video"
+                        controls
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'block';
+                        }}
+                      >
+                        브라우저에서 이 비디오 형식을 지원하지 않습니다.
+                      </video>
+                      <div style={{display: 'none', color: '#ef4444', padding: '16px', textAlign: 'center', backgroundColor: '#fef2f2', borderRadius: '8px', border: '1px solid #fecaca'}}>
+                        ⚠️ 영상을 불러올 수 없습니다: {report.resultDataPath}
+                      </div>
+                    </>
+                  )}
+
+                  {getMediaType(report.resultDataPath) === 'unknown' && (
+                    <div style={{color: '#6b7280', padding: '16px', textAlign: 'center', backgroundColor: '#f9fafb', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
+                      📄 지원하지 않는 파일 형식입니다: {report.resultDataPath}
+                    </div>
+                  )}
                 </td>
               </tr>
             )}
@@ -171,10 +213,10 @@ export default function ReportDetail() {
         </table>
       </div>
 
-      {/* AI 분석 결과 (요약) */}
+      {/* AI 생성 보고서 (요약) */}
       {report.summary && (
         <div className="ai-analysis-card">
-          <h2 className="ai-card-title">🤖 AI 분석 결과</h2>
+          <h2 className="ai-card-title">🤖 AI 생성 보고서</h2>
           <div className="ai-content">
             <div className="summary-header">
               <button
@@ -182,11 +224,11 @@ export default function ReportDetail() {
                 onClick={handleResummarize}
                 disabled={loading}
               >
-                {loading ? "🔄 요약 중..." : "🔄 다시 요약"}
+                {loading ? "🔄 생성 중..." : "🔄 다시 생성"}
               </button>
             </div>
             <div className="ai-summary">
-              {report.summary}
+              <ReactMarkdown>{report.summary}</ReactMarkdown>
             </div>
           </div>
         </div>
