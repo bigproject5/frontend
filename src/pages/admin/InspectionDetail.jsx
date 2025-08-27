@@ -85,7 +85,7 @@ const InspectionDetail = () => {
     };
 
     loadInspectionDetail();
-  }, [inspectionId, user?.id]);
+  }, [user?.id]);
 
   
 
@@ -819,7 +819,7 @@ const InspectionDetail = () => {
                 <Box sx={{
                   display: 'flex',
                   justifyContent: 'flex-end',
-                  mt: 2
+                  margin: '16px'
                 }}>
                   <Button
                     variant="contained"
