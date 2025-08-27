@@ -26,6 +26,7 @@ export const getInspections = async (params = {}) => {
     // 사용자 정보 확인
     console.log('user:', user);
     console.log('taskType:', taskType);
+    const upperTaskType = taskType.toUpperCase();
 
     if (!user) {
       throw new Error('사용자 인증 정보가 없습니다.');
@@ -37,8 +38,8 @@ export const getInspections = async (params = {}) => {
     });
 
     // taskType이 있을 때만 inspectionType 파라미터 추가
-    if (taskType && taskType !== 'ALL') {
-      queryParams.append('inspectionType', taskType);
+    if (taskType) {
+      queryParams.append('inspectionType', upperTaskType);
     }
 
     // status가 제공된 경우에만 추가
