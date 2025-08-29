@@ -13,12 +13,10 @@ function ReportRow({ report, onView }) {
     const navigate = useNavigate();
 
     const formatDateTime = (dateString) => {
-        return new Date(dateString).toLocaleString('ko-KR', {
+        return new Date(dateString).toLocaleDateString('ko-KR', {
             year: 'numeric',
             month: '2-digit',
             day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
         });
     };
 
@@ -151,7 +149,7 @@ export default function ReportsList() {
                         <th className="reports-table-header-cell">작업자</th>
                         <th className="reports-table-header-cell">감사 ID</th>
                         <th className="reports-table-header-cell">검사 유형</th>
-                        <th className="reports-table-header-cell">생성일시</th>
+                        <th className="reports-table-header-cell">생성일</th>
                     </tr>
                     </thead>
                     <tbody className="reports-table-body">
