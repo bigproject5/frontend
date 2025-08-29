@@ -34,7 +34,7 @@ export default function ReportDashboard() {
         setStats({
             total: reports.length,
             today: reports.filter(r => r.createdAt.startsWith(today)).length,
-            lastUpdated: new Date(mostRecentReport.createdAt).toLocaleDateString('ko-KR'),
+            lastUpdated: new Date(mostRecentReport.createdAt).toLocaleDateString('ko-KR').slice(0, -1),
         });
     }, []);
 
