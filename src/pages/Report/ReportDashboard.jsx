@@ -27,14 +27,14 @@ export default function ReportDashboard() {
 
         const today = new Date().toISOString().slice(0, 10);
 
-        const lastUpdatedReport = reports.reduce((latest, report) => {
-            return new Date(latest.updatedAt) > new Date(report.updatedAt) ? latest : report;
+        const mostRecentReport = reports.reduce((latest, report) => {
+            return new Date(latest.createdAt) > new Date(report.createdAt) ? latest : report;
         });
 
         setStats({
             total: reports.length,
             today: reports.filter(r => r.createdAt.startsWith(today)).length,
-            lastUpdated: new Date(lastUpdatedReport.updatedAt).toLocaleString('ko-KR'),
+            lastUpdated: new Date(mostRecentReport.createdAt).toLocaleString('ko-KR'),
         });
     }, []);
 
