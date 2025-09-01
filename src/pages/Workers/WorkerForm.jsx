@@ -368,11 +368,11 @@ const WorkerForm = () => {
               color: '#374151',
               marginBottom: '8px'
             }}>
-              회사번호
+              사원번호
             </label>
             <input
               type="text"
-              placeholder="회사번호를 입력하세요"
+              placeholder="사번호를 입력하세요"
               value={formData.employeeNumber}
               onChange={(e) => handleInputChange('employeeNumber', e.target.value)}
               style={inputStyle}
