@@ -1,4 +1,4 @@
-# CHECKAR Frontend
+# CHECKAR :: Frontend
 
 CHECKAR 서비스의 프론트엔드 애플리케이션입니다. 이 프로젝트는 Vite를 사용하여 빌드된 React 기반의 싱글 페이지 애플리케이션(SPA)입니다.
 
